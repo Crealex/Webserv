@@ -9,7 +9,7 @@ On essaye de creer une branche par feature et on merge (via pull request) une fo
 
 ### Pull request
 
-Une pull request créer un espace "bac a sable" qui permet de tester l'ingtegration de la branch avec le main sans risquer de casser le main.
+Une pull request créer un espace "bac a sable" qui permet de tester l'integration de la branch avec le main sans risquer de casser le main.
 
 Possibilité de creer des scripts pour tester automatiquement notre programme afin de se faciliter le travail de test en chaque pull.
 
