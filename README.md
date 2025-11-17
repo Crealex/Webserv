@@ -1,5 +1,5 @@
 # Webserv
-Create a webserver in C and CPP, with beatiful people
+Create a webserver in C and CPP, with beautiful people
 
 ## Github tips:
 
