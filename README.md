@@ -23,7 +23,8 @@ Tout est gerable via l'interface graphique de github ou directement en ligne de 
 
 ### Utils cmds
 - **Create and go to new branch:** `git -b checkout <new-branch>`
-- **Create new pull request:** `gh pr create --title "Title of pr" --body "Explain the pr"`
+- **Setup new branch when push:** `git push --set-upstream origin <branch> `
+- **Create new pull request:** `gh pr create --title "Title of pull request" --body "Explain the pull request"`
 
 ### Warning
 
