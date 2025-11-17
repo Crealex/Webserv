@@ -37,6 +37,8 @@ Si plusieurs personnes travaillent sur la meme feature a definir si:
 
 Definir si besoin de seulement une personne pour valider la pull request ou si il faut que **Toute la team** la valide.
 
+Avant d'utilser les commandes `gh` il faut faire `gh login` pour se log à son compte github (c'est pas très compliqué promis)
+
 ### Liens utiles
 
 - [https://docs.github.com/fr/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request?tool=cli]

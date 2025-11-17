@@ -1,0 +1,24 @@
+{
+	"server": {
+		"port": 4242,
+		"host": "localhost",
+		"root": "/www/",
+		"path": "/images",
+		"error_page": {
+			"code": [
+				400,
+				401,
+				403,
+				404
+			],
+			"path": "/error"
+		},
+		"max_size": 1024,
+		"demo": {
+			"protocol": "HTTP/1.1",
+			"list_directory": true,
+			"default_file": "/demo/index.html",
+			"uploading_file": true
+		}
+	}
+}
