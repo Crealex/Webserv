@@ -30,21 +30,19 @@ class Config
 	~Config();
 
 	// GETTER
-	std::string getAddress();
-	const unsigned int getPort();
-	const std::string getErrorPage();
-	const unsigned int getMaxSize();
-	const
+	std::string getAddress() const;
+	unsigned int getPort() const;
+	std::string getErrorPage() const;
+	unsigned int getMaxSize() const;
 
-		// GETTER FROM struct site
-		std::string getProtocol(std::string siteName);
-	const std::string getRedirection(std::string siteName);
-	const std::string getDirRoot(std::string siteName);
-	const bool getDirListing(std::string siteName);
-	const std::string getDefaultFile(std::string siteName);
-	const bool getUploadFiles(std::string siteName);
-	const std::string getCGI(std::string siteName);
-	const
+	// GETTER FROM struct site
+	std::string getProtocol(std::string siteName) const;
+	std::string getRedirection(std::string siteName) const;
+	std::string getDirRoot(std::string siteName) const;
+	bool getDirListing(std::string siteName) const;
+	std::string getDefaultFile(std::string siteName) const;
+	bool getUploadFiles(std::string siteName) const;
+	std::string getCGI(std::string siteName) const;
 };
 
 #endif
