@@ -15,11 +15,11 @@ Config::~Config()
 	std::cout << RED << "Destructor called" << RESET << std::endl;
 }
 
-// GETTER
+// GETTER FROM addressPort
 
 std::string Config::getAddress() const
 {
-	return (this->address);
+	return (this->addressPort);
 }
 
 unsigned int Config::getPort() const
@@ -27,7 +27,9 @@ unsigned int Config::getPort() const
 	return (this->port);
 }
 
-std::string Config::getErrorPage() const
+// GETTER
+
+std::string Config::getErrorPath() const
 {
 	return (this->errorPage);
 }
@@ -38,12 +40,11 @@ unsigned int Config::getMaxSize() const
 }
 
 // GETTER struct file
-
-std::string Config::getProtocol(std::string siteName) const
+std::vector<std::string>	Config::getMethod(std::string siteName) const
 {
 	try 
 	{
-		return (this->sites.at(siteName).protocol);
+		return (this->sites.at(siteName).methods);
 	}
 	catch (std::exception &e)
 	{
@@ -52,7 +53,7 @@ std::string Config::getProtocol(std::string siteName) const
 	}
 }
 
-std::string Config::getRedirection(std::string siteName) const
+std::vector<std::string>	Config::getRedirection(std::string siteName) const
 {
 	try 
 	{
@@ -65,7 +66,7 @@ std::string Config::getRedirection(std::string siteName) const
 	}
 }
 
-std::string Config::getDirRoot(std::string siteName) const
+std::string					Config::getDirRoot(std::string siteName) const
 {
 	try 
 	{
@@ -78,7 +79,7 @@ std::string Config::getDirRoot(std::string siteName) const
 	}
 }
 
-bool Config::getDirListing(std::string siteName) const
+bool						Config::getDirListing(std::string siteName) const
 {
 	try 
 	{
@@ -92,7 +93,7 @@ bool Config::getDirListing(std::string siteName) const
 
 }
 
-std::string Config::getDefaultFile(std::string siteName) const
+std::string					Config::getDefaultFile(std::string siteName) const
 {
 	try 
 	{
@@ -105,7 +106,7 @@ std::string Config::getDefaultFile(std::string siteName) const
 	}
 }
 
-bool Config::getUploadFiles(std::string siteName) const
+bool						Config::getUploadFiles(std::string siteName) const
 {
 	try 
 	{
@@ -118,7 +119,7 @@ bool Config::getUploadFiles(std::string siteName) const
 	}
 }
 
-std::string Config::getCGI(std::string siteName) const
+std::string					Config::getCGI(std::string siteName) const
 {
 	try 
 	{
