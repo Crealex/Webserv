@@ -5,6 +5,12 @@
 #include <iostream>
 #include <map>
 
+struct pair
+{
+	std::string		address;
+	unsigned int	port;
+};
+
 struct site
 {
 	std::string		protocol;	 // List of accepted methods for the route (Not sure of name and variabel type)
@@ -19,11 +25,10 @@ struct site
 class Config
 {
   private:
-	std::string							address;	// IP address or localhost
-	unsigned int						port;		// port (maybe can be a array)
-	std::string							errorPage;	// Path of default error page (maybe needed error code)
-	unsigned int						maxSize;	// max size bodies request
-	std::map<std::string, struct site>	sites;		// key = site name, value = struct of element
+	std::vector<struct pair>					addressPort;	// port (maybe can be a array)
+	std::string							errorPage;		// Path of default error page (maybe needed error code)
+	unsigned int						maxSize;		// max size bodies request
+	std::map<std::string, struct site>	sites;			// key = site name, value = struct of element
 
   public:
 	Config(std::string path);
