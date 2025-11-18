@@ -14,7 +14,7 @@
 				503,
 				504
 			],
-			"path": "/error"
+			"path": "/error/"
 		},
 		"max_size": 1024,
 		"demo": {
