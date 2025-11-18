@@ -5,7 +5,7 @@ Create a webserver in C and CPP, with beautiful people
 
 ### Branch
 
-On essaye de creer une branche par feature et on merge (via pull request) une fois la feature finie.
+On essaye de créer une branche par feature et on merge (via pull request) une fois la feature finie.
 
 ### Pull request
 
