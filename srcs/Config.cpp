@@ -17,21 +17,16 @@ Config::~Config()
 
 // GETTER FROM addressPort
 
-std::string Config::getAddress() const
+std::vector<struct pair> Config::getAddressPort() const
 {
 	return (this->addressPort);
-}
-
-unsigned int Config::getPort() const
-{
-	return (this->port);
 }
 
 // GETTER
 
 std::string Config::getErrorPath() const
 {
-	return (this->errorPage);
+	return (this->errorPath);
 }
 
 unsigned int Config::getMaxSize() const
@@ -39,95 +34,39 @@ unsigned int Config::getMaxSize() const
 	return (this->maxSize);
 }
 
-// GETTER struct file
-std::vector<std::string>	Config::getMethod(std::string siteName) const
+// GETTER FROM struct site
+
+std::map<std::string, bool>	Config::getMethod(std::string siteName) const
 {
-	try 
-	{
-		return (this->sites.at(siteName).methods);
-	}
-	catch (std::exception &e)
-	{
-		std::cerr << RED << "Invalid element attribut" << RESET << std::endl;
-		return (NULL);
-	}
+	return (this->sites.at(siteName).method); //throw
 }
 
 std::vector<std::string>	Config::getRedirection(std::string siteName) const
 {
-	try 
-	{
-		return (this->sites.at(siteName).redirection);
-	} 
-	catch (std::exception &e) 
-	{
-		std::cerr << "Error, invalid element attribut" << RESET << std::endl;
-		return (NULL);
-	}
+	return (this->sites.at(siteName).redirection);
 }
 
-std::string					Config::getDirRoot(std::string siteName) const
+std::string	Config::getDirRoot(std::string siteName) const
 {
-	try 
-	{
-		return (this->sites.at(siteName).dirRoot);
-	} 
-	catch (std::exception &e)
-	{
-		std::cerr << "Error, invalid element attribut" << RESET << std::endl;
-		return (NULL);
-	}
+	return (this->sites.at(siteName).dirRoot);
 }
 
-bool						Config::getDirListing(std::string siteName) const
+bool	Config::getDirListing(std::string siteName) const
 {
-	try 
-	{
-		return (this->sites.at(siteName).dirListing);
-	} 
-	catch (std::exception &e)
-	{
-		std::cerr << "Error, invalid element attribut" << RESET << std::endl;
-		return (0);
-	}
-
+	return (this->sites.at(siteName).dirListing);
 }
 
-std::string					Config::getDefaultFile(std::string siteName) const
+std::string	Config::getDefaultFile(std::string siteName) const
 {
-	try 
-	{
-		return (this->sites.at(siteName).defaultFile);
-	} 
-	catch (std::exception &e)
-	{
-		std::cerr << "Error, invalid element attribut" << RESET << std::endl;
-		return (NULL);
-	}
+	return (this->sites.at(siteName).defaultFile);
 }
 
-bool						Config::getUploadFiles(std::string siteName) const
+bool	Config::getUploadFiles(std::string siteName) const
 {
-	try 
-	{
-		return (this->sites.at(siteName).uploadFiles);
-	} 
-	catch (std::exception &e)
-	{
-		std::cerr << "Error, invalid element attribut" << RESET << std::endl;
-		return (0);
-	}
+	return (this->sites.at(siteName).uploadFiles);
 }
 
-std::string					Config::getCGI(std::string siteName) const
+std::string	Config::getCGI(std::string siteName) const
 {
-	try 
-	{
-		return (this->sites.at(siteName).CGI);
-	} 
-	catch (std::exception &e)
-	{
-		std::cerr << "Error, invalid element attribut" << RESET << std::endl;
-		return (NULL);
-	}
+	return (this->sites.at(siteName).CGI);
 }

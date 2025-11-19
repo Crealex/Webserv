@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <map>
+#include <vector>
 
 struct pair
 {
@@ -13,7 +14,7 @@ struct pair
 
 struct site
 {
-	std::vector<std::string>	method;	 // List of accepted methods for the route (Not sure of name and variabel type)
+	std::map<std::string, bool>	method;	 // List of accepted methods for the route (Not sure of name and variabel type)
 	std::vector<std::string>	redirection; // HTTP redirection
 	std::string					dirRoot;	 // not sure
 	bool						dirListing;	 // Enable or disable listening of directory
@@ -26,8 +27,8 @@ class Config
 {
   private:
 	std::vector<struct pair>			addressPort;	// port (maybe can be a array)
-	std::string							errorPath;		// Path of default error page (maybe needed error code)
 	std::vector<unsigned int>			error_code;		// all the error codes
+	std::string							errorPath;		// Path of default error page (maybe needed error code)
 	unsigned int						maxSize;		// max size bodies request
 	std::map<std::string, struct site>	sites;			// key = site name, value = struct of element
 
@@ -36,16 +37,15 @@ class Config
 	~Config();
 
 	// GETTER FROM addressPort
-	std::string		getAddress() const;
-	unsigned int	getPort() const;
+	std::vector<struct pair>	getAddressPort() const;
 
 	// GETTER
-	std::string		getErrorPath() const;
-	std::vector<unsigned int> getErrorCode() const;
-	unsigned int	getMaxSize() const;
+	std::vector<unsigned int>	getErrorCode() const;
+	std::string					getErrorPath() const;
+	unsigned int				getMaxSize() const;
 
 	// GETTER FROM struct site
-	std::vector<std::string>	getMethod(std::string siteName) const;
+	std::map<std::string, bool>	getMethod(std::string siteName) const;
 	std::vector<std::string>	getRedirection(std::string siteName) const;
 	std::string					getDirRoot(std::string siteName) const;
 	bool						getDirListing(std::string siteName) const;
