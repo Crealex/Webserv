@@ -27,7 +27,7 @@ class Config
 {
   private:
 	std::vector<struct pair>			addressPort;	// port (maybe can be a array)
-	std::vector<unsigned int>			error_code;		// all the error codes
+	std::vector<unsigned int>			errorCode;		// all the error codes
 	std::string							errorPath;		// Path of default error page (maybe needed error code)
 	unsigned int						maxSize;		// max size bodies request
 	std::map<std::string, struct site>	sites;			// key = site name, value = struct of element
