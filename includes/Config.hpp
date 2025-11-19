@@ -41,6 +41,7 @@ class Config
 
 	// GETTER
 	std::string		getErrorPath() const;
+	std::vector<unsigned int> getErrorCode() const;
 	unsigned int	getMaxSize() const;
 
 	// GETTER FROM struct site
