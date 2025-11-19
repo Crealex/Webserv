@@ -1,12 +1,13 @@
 
 #include "../includes/Config.hpp"
 #include "../includes/colors.hpp"
+#include "../includes/structParse.hpp"
 #include <exception>
 #include <stdexcept>
 
 // Constructor & Destructor
 
-Config::Config(struct parseElt data)
+Config::Config(structParse data)
 {
 	// parsing config file
 	std::cout << GREEN << "Default Config constructor called" << RESET << std::endl;

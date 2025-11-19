@@ -14,13 +14,13 @@ struct pair
 
 struct site
 {
-	std::map<std::string, bool>	method;	 // List of accepted methods for the route (Not sure of name and variabel type)
-	std::vector<std::string>	redirection; // HTTP redirection
-	std::string					dirRoot;	 // not sure
-	bool						dirListing;	 // Enable or disable listening of directory
-	std::string					defaultFile; // default file when the request ressource is a directory
-	bool						uploadFiles; // Enable or disable uploading files from the clients to the server is authorized, and storage location is provided
-	std::string					CGI;		 // path of the CGI (maybe need more rule)
+	std::map<std::string, bool>	method;	 		// List of accepted methods for the route (Not sure of name and variabel type)
+	std::vector<std::string>	redirection;	// HTTP redirection
+	std::string					dirRoot;		// not sure
+	bool						dirListing;		// Enable or disable listening of directory
+	std::string					defaultFile;	// default file when the request ressource is a directory
+	bool						uploadFiles;	// Enable or disable uploading files from the clients to the server is authorized, and storage location is provided
+	std::string					CGI;			// path of the CGI (maybe need more rule)
 };
 
 class Config
@@ -31,14 +31,14 @@ class Config
 	std::vector<unsigned int>			errorCode;	// all the error codes
 	std::string							errorPath;	// Path of default error page (maybe needed error code)
 	unsigned int						maxSize;	// max size bodies request
-	std::map<std::string, struct site>	sites;		// key = site name, value = struct of element
+	std::map<std::string, site>			sites;		// key = site name, value = struct of element
 
   public:
-	Config(std::string path);
+	Config(structParse data);
 	~Config();
 
 	// GETTER FROM addressPort
-	std::vector<struct pair>	getAddressPort() const;
+	std::vector<pair>	getAddressPort() const;
 
 	// GETTER
 	std::vector<unsigned int>	getErrorCode() const;
