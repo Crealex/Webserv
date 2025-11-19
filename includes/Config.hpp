@@ -42,7 +42,7 @@ class Config
 	// GETTER
 	std::string		getErrorPath() const;
 	std::vector<unsigned int> getErrorCode() const;
-	unsigned int	getMaxSize() const;
+	unsigned int	getMaxSize() consti;
 
 	// GETTER FROM struct site
 	std::vector<std::string>	getMethod(std::string siteName) const;
