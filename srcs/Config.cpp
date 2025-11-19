@@ -1,10 +1,10 @@
-
+#include "../includes/structParse.hpp"
 #include "../includes/Config.hpp"
 #include "../includes/colors.hpp"
 #include <exception>
 #include <stdexcept>
 
-Config::Config(struct parseElt data)
+Config::Config(struct structParse data)
 {
 	// parsing config file
 	std::cout << GREEN << "Default Config constructor called" << RESET << std::endl;
@@ -77,7 +77,14 @@ std::string	Config::getCGI(std::string siteName) const
 	return (this->sites.at(siteName).CGI);
 }
 
-void	Config::parseElt(struct structParse)
+void	Config::parseElt(struct structParse data)
 {
 	// this->errorPath = parseErrorPath();
+
+	for (std::vector<struct siteParse>::iterator it = data.site.begin();
+		it != data.site.end();
+		it++)
+	{
+		siteParsing((*it));
+	}
 }
