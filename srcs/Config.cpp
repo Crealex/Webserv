@@ -24,6 +24,11 @@ std::vector<struct pair> Config::getAddressPort() const
 
 // GETTER
 
+std::vector<unsigned int>	Config::getErrorCode() const
+{
+	return (this->errorCode);
+}
+
 std::string Config::getErrorPath() const
 {
 	return (this->errorPath);
