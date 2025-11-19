@@ -4,6 +4,8 @@
 #include <exception>
 #include <stdexcept>
 
+// Constructor & Destructor
+
 Config::Config(struct parseElt data)
 {
 	// parsing config file
@@ -14,7 +16,6 @@ Config::~Config()
 {
 	std::cout << RED << "Destructor called" << RESET << std::endl;
 }
-
 
 // GETTER FROM addressPort
 
@@ -76,6 +77,8 @@ std::string	Config::getCGI(std::string siteName) const
 {
 	return (this->sites.at(siteName).CGI);
 }
+
+// Private methods
 
 void	Config::parseElt(struct structParse)
 {
