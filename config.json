@@ -2,23 +2,27 @@
 	"server": {
 		"port": 4242,
 		"host": "localhost",
-		"root": "/www/",
-		"path": "/images",
 		"error_page": {
 			"code": [
 				400,
 				401,
 				403,
-				404
+				404,
+				500,
+				501,
+				502,
+				503,
+				504
 			],
-			"path": "/error"
+			"path": "/error/"
 		},
 		"max_size": 1024,
 		"demo": {
 			"protocol": "HTTP/1.1",
 			"list_directory": true,
 			"default_file": "/demo/index.html",
-			"uploading_file": true
+			"uploading_file": true,
+			"root": "/www/"
 		}
 	}
 }
