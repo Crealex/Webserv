@@ -4,7 +4,7 @@
 #include <exception>
 #include <stdexcept>
 
-Config::Config(std::string path)
+Config::Config(struct parseElt data)
 {
 	// parsing config file
 	std::cout << GREEN << "Default Config constructor called" << RESET << std::endl;
@@ -14,6 +14,7 @@ Config::~Config()
 {
 	std::cout << RED << "Destructor called" << RESET << std::endl;
 }
+
 
 // GETTER FROM addressPort
 
@@ -74,4 +75,9 @@ bool	Config::getUploadFiles(std::string siteName) const
 std::string	Config::getCGI(std::string siteName) const
 {
 	return (this->sites.at(siteName).CGI);
+}
+
+void	Config::parseElt(struct structParse)
+{
+	// this->errorPath = parseErrorPath();
 }
