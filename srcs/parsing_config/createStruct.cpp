@@ -115,6 +115,7 @@ void addLine(std::string line, struct structParse *configStruct)
 
 struct structParse createStruct(std::string configPath)
 {
+	// TODO: verif si un des 3 vecto, il faut les 3 ou mettre des valeurs par default
 	structParse configStruct;
 	siteParse temp;
 	std::ifstream configFile;
