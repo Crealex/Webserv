@@ -19,7 +19,6 @@ struct siteParse
 
 struct structParse
 {
-	std::string hostname;
 	std::string	address;
 	std::string	port;
 	std::string errorCode;
