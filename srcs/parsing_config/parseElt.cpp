@@ -4,7 +4,7 @@
 #include "../../includes/structParse.hpp"
 #include "../../includes/Config.hpp"
 
-static std::string getSiteName(struct siteParse site)
+static std::string getSiteName(siteParse site)
 {
 	std::stringstream ss(site.siteName);
 	std::string str;
@@ -89,7 +89,7 @@ static bool returnBool(std::string str)
 }
 
 
-static struct site createStructSite(struct siteParse site)
+static site createStructSite(siteParse site)
 {
 	struct site ret;
 
@@ -104,7 +104,7 @@ static struct site createStructSite(struct siteParse site)
 	return ret;
 }
 
-void Config::siteParsing(struct siteParse site)
+void Config::siteParsing(siteParse site)
 {
 	std::string siteName = getSiteName(site);
 	struct site siteStruct = createStructSite(site);
