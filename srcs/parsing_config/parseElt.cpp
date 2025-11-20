@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include "../../includes/colors.hpp"
 #include "../../includes/structParse.hpp"
 #include "../../includes/Config.hpp"
@@ -92,7 +93,7 @@ static std::vector<std::string> createRedirection(std::string str)
 	return ret;
 }
 
-static std::string returnSecond(std::string str)
+static std::string returnRoot(std::string str)
 {
 	removeSemiColon(str);
 	std::stringstream ss(str);
@@ -108,9 +109,42 @@ static std::string returnSecond(std::string str)
 	return ret;
 }
 
+static std::string returnDefaultFile(std::string str)
+{
+	removeSemiColon(str);
+	std::stringstream ss(str);
+	std::string ret;
+
+	ss >> ret;
+	ss >> ret;
+	
+	std::ifstream stream(ret);
+	if (!stream.is_open())
+	{
+		std::string error("Error: invalid variable in line:\n\t");
+		throw std::invalid_argument(error + str);
+	}
+
+	// debug
+	std::cout << "Second element of " << str << " is\n\t";
+	std::cout << GREEN << str << " return -> " << ret << RESET << std::endl;
+	
+	return ret;
+}
+
 static bool returnBool(std::string str)
 {
 	removeSemiColon(str);
+
+	std::stringstream ss(str);
+	std::string word;
+	for (int i = 0; ss >> word;i++)
+	if (i != 2)
+	{
+		std::string error("Error: invalid number of variable in line:\n\t");
+		throw std::invalid_argument(error + str);
+	}
+
 	if (str.find("true") != std::string::npos)
 		return true;
 	else if (str.find("false") != std::string::npos)
@@ -120,17 +154,33 @@ static bool returnBool(std::string str)
 	throw std::invalid_argument(error + str);
 }
 
+static std::string returnCGI(std::string str)
+{
+	removeSemiColon(str);
+	std::stringstream ss(str);
+	std::string ret;
+
+	ss >> ret;
+	ss >> ret;
+
+	// debug
+	std::cout << "Second element of " << str << " is\n\t";
+	std::cout << GREEN << str << " return -> " << ret << RESET << std::endl;
+	
+	return ret;
+}
+
 static site createStructSite(siteParse site)
 {
 	struct site ret;
 
 	ret.method = createMethod(site.method);
 	ret.redirection = createRedirection(site.redirection);
-	ret.dirRoot = returnSecond(site.dirRoot);
+	ret.dirRoot = returnRoot(site.dirRoot);
 	ret.dirListing = returnBool(site.dirListing);
-	ret.defaultFile = returnSecond(site.defaultFile);
+	ret.defaultFile = returnDefaultFile(site.defaultFile);
 	ret.uploadFiles = returnBool(site.uploadFiles);
-	ret.CGI = returnSecond(site.CGI);
+	ret.CGI = returnCGI(site.CGI);
 
 	return ret;
 }
