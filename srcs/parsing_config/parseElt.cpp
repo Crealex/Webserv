@@ -4,9 +4,23 @@
 #include "../../includes/structParse.hpp"
 #include "../../includes/Config.hpp"
 
+static void removeSemiColon(std::string &str)
+{
+	size_t size = str.size();
+	if (str[size] == ';')
+		str.erase((str.end())--);
+	else
+	{
+		std::string error("Error: no semicolon on line:\n\t");
+		throw std::invalid_argument(error + str);
+	}
+}
+
 static std::string getSiteName(siteParse site)
 {
-	std::stringstream ss(site.siteName);
+	std::string sName(site.siteName);
+	removeSemiColon(sName);
+	std::stringstream ss(sName);
 	std::string str;
 	ss >> str;
 	ss >> str;
@@ -23,17 +37,27 @@ static std::map<std::string, bool> createMethod(std::string str)
 	bool POST = false;
 	bool DELETE = false;
 
-	if (str.find("GET", str.size()) != std::string::npos)
-		GET = true;
-	if (str.find("POST", str.size()) != std::string::npos)
-		POST = true;
-	if (str.find("DELETE", str.size()) != std::string::npos)
-		DELETE = true;
-
 	std::map<std::string, bool> method;
 	method.insert(std::make_pair(std::string("GET"), GET));
 	method.insert(std::make_pair(std::string("POST"), POST));
 	method.insert(std::make_pair(std::string("DELETE"), DELETE));
+
+	removeSemiColon(str);
+	std::stringstream ss(str);
+	std::string word;
+	ss >> word;
+	while (ss >> word)
+	{
+		try
+		{
+			method.at(word) = true;
+		}
+		catch (...)
+		{
+			std::string error("Error: invalid variable in line:\n\t");
+			throw std::invalid_argument(error + str);
+		}
+	}
 
 	// debug
 	std::cout << "Method :\n\t";
@@ -44,6 +68,7 @@ static std::map<std::string, bool> createMethod(std::string str)
 
 static std::vector<std::string> createRedirection(std::string str)
 {
+	removeSemiColon(str);
 	std::stringstream ss(str);
 	std::string line;
 	ss >> line;
@@ -69,6 +94,7 @@ static std::vector<std::string> createRedirection(std::string str)
 
 static std::string returnSecond(std::string str)
 {
+	removeSemiColon(str);
 	std::stringstream ss(str);
 	std::string ret;
 
@@ -84,12 +110,15 @@ static std::string returnSecond(std::string str)
 
 static bool returnBool(std::string str)
 {
+	removeSemiColon(str);
 	if (str.find("true") != std::string::npos)
 		return true;
-	else
+	else if (str.find("false") != std::string::npos)
 		return false;
-}
 
+	std::string error("Error: invalid variable in line:\n\t");
+	throw std::invalid_argument(error + str);
+}
 
 static site createStructSite(siteParse site)
 {
