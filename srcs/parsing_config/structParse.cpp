@@ -17,13 +17,11 @@ std::vector<std::string>	getInfoStruct(std::string data)
 
 std::string	parseServerAddressPort(structParse data)
 {
-	std::stringstream			value;
 	std::vector<std::string>	result;
 
-	value << data;
-	for (int i = 0; getline(value, result[i], ' '););
+	getInfoStruct(data.hostname);
 	if (result[i - 1] != ";")
 		throw std::invalid_argument(RED "Invalid argument" RESET);
-	 
+	
 	return (address);
 }

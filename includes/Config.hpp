@@ -26,7 +26,7 @@ struct site
 class Config
 {
   private:
-	std::vector<std::string>			server_name;
+	std::vector<std::string>			hostname;
 	std::map<std::string, pair>			addressPort;// port (maybe can be a array)
 	std::vector<unsigned int>			errorCode;	// all the error codes
 	std::string							errorPath;	// Path of default error page (maybe needed error code)
