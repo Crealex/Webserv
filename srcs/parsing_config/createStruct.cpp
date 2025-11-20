@@ -37,39 +37,41 @@ void checkEmptyElem(struct structParse configStruct)
 		throw(std::invalid_argument("missing address!"));
 }
 
-std::string addElemTab(std::string line, std::string elem, std::ifstream *fileConfig)
-{
-	std::string ret;
-	if (!elem.empty())
-		throw std::invalid_argument(elem + " already exist!");
-	while (line.find("]"))
-	{
-		std::getline(*fileConfig, line, '\n');
-		if (line.find("]"))
-			break;
-		if (ret.empty())
-			ret = line;
-		else
-			ret += ", " + line;
-	}
-	return (ret);
-}
+//std::string addElemTab(std::string line, std::string elem, std::ifstream *fileConfig)
+//{
+//	std::string ret;
+//	if (!elem.empty())
+//		throw std::invalid_argument(elem + " already exist!");
+//	while (line.find("]"))
+//	{
+//		std::getline(*fileConfig, line, '\n');
+//		if (line.find("]"))
+//			break;
+//		if (ret.empty())
+//			ret = line;
+//		else
+//			ret += ", " + line;
+//	}
+//	return (ret);
+//}
 
 std::string addElem(std::string line, std::string elem)
 {
+	std::cout << BLUE << "in addElem, line: " << line << RESET << std::endl;
 	if (!elem.empty())
 		throw std::invalid_argument(elem + " already exist!");
 	return (line);
 }
 
-void addLine(std::string line, struct structParse *configStruct, std::ifstream *configFile)
+void addLine(std::string line, struct structParse *configStruct)
 {
 	static bool inErrorPage = 0;
 	static bool inSite = 0;
 	static int iSite = 0;
 
 	rmWhiteSpaces(&line);
-	if (!line.compare(0, 4, "host"))
+	std::cout << BLUE << "test, line: " << line << RESET << std::endl;
+	if (!line.compare(0, 4, "address"))
 		configStruct->address = addElem(line, configStruct->address);
 	else if (!line.compare(0, 4, "port"))
 		configStruct->port = addElem(line, configStruct->port);
@@ -84,7 +86,7 @@ void addLine(std::string line, struct structParse *configStruct, std::ifstream *
 	else if (line.find(": {", 0) > 0)
 		configStruct->site[iSite].siteName = addSiteName(line, configStruct->site[iSite].siteName, &inSite, configStruct);
 	else if (!line.compare(0, 5, "methods"))
-		configStruct->site[iSite].method = addElemTab(line, configStruct->site[iSite].method, configFile);
+		configStruct->site[iSite].method = addElem(line, configStruct->site[iSite].method);
 	else if (!line.compare(0, 11, "redirection"))
 		configStruct->site[iSite].redirection = addElem(line, configStruct->site[iSite].redirection);
 	else if (!line.compare(0, 4, "root"))
@@ -99,6 +101,8 @@ void addLine(std::string line, struct structParse *configStruct, std::ifstream *
 		configStruct->site[iSite].CGI = addElem(line, configStruct->site[iSite].CGI);
 	else if (!line.compare(0, 1, "}") && inErrorPage)
 		inErrorPage = 0;
+	else if (!line.compare(0, 6, "server"))
+		return;
 	else if (!line.compare(0, 1, "{"))
 		return;
 	else if (!line.compare(0, 1, "}") && inSite)
@@ -111,19 +115,19 @@ void addLine(std::string line, struct structParse *configStruct, std::ifstream *
 
 struct structParse createStruct(std::string configPath)
 {
-	// TODO:: Changer tout le parsing conf
-	struct structParse configStruct;
+	structParse configStruct;
+	siteParse temp;
 	std::ifstream configFile;
 	std::string line;
 
 	configFile.open(configPath.c_str());
-
+	configStruct.site.push_back(temp);
 	while (1)
 	{
 		std::getline(configFile, line, '\n');
 		if (line.empty())
 			break;
-		addLine(line, &configStruct, &configFile);
+		addLine(line, &configStruct);
 	}
 	configFile.close();
 	checkEmptyElem(configStruct);
@@ -138,7 +142,7 @@ int main(void)
 
 	try
 	{
-		createStruct("../../config.json");
+		createStruct("../../config.conf");
 	} catch (const std::exception &e)
 	{
 		std::cerr << RED << e.what() << RESET << std::endl;
