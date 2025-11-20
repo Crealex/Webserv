@@ -1,11 +1,10 @@
 
-#include "../../includes/structParse.hpp"
 #include "../../includes/colors.hpp"
+#include "../../includes/structParse.hpp"
 #include <fstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
-
 
 void rmWhiteSpaces(std::string *line)
 {
@@ -19,18 +18,23 @@ void rmWhiteSpaces(std::string *line)
 	}
 }
 
-std::string addSiteName(std::string line, std::string elem, bool *inSite)
+std::string addSiteName(std::string line, std::string elem, bool *inSite, structParse *structConfig)
 {
 	*inSite = 1;
+	siteParse temp;
+
 	if (!elem.empty())
 		throw std::invalid_argument(elem + " already exist!");
+	std::cout << "add empty struct siteParse:" << std::endl;
+	structConfig->site.push_back(temp);
+	std::cout << "added with succes!" << std::endl;
 	return (line.substr(0, line.find(':') - 1));
 }
 
 void checkEmptyElem(struct structParse configStruct)
 {
 	if (configStruct.address.empty())
-		throw (std::invalid_argument("missing address!"));
+		throw(std::invalid_argument("missing address!"));
 }
 
 std::string addElemTab(std::string line, std::string elem, std::ifstream *fileConfig)
@@ -58,12 +62,11 @@ std::string addElem(std::string line, std::string elem)
 	return (line);
 }
 
-void addLine(std::string line, struct structParse *configStruct, std::ifstream *configFile, siteParse *siteStructTemp)
+void addLine(std::string line, struct structParse *configStruct, std::ifstream *configFile)
 {
-	// TODO: Mettre tout les element de la struct siteParse d'abord dans une struct temporaire qui a le type structParse et ensuite la push_back dans le bon emplacemnt de la strcture plus grobale
 	static bool inErrorPage = 0;
 	static bool inSite = 0;
-	static int	iSite = 0;
+	static int iSite = 0;
 
 	rmWhiteSpaces(&line);
 	if (!line.compare(0, 4, "host"))
@@ -79,7 +82,7 @@ void addLine(std::string line, struct structParse *configStruct, std::ifstream *
 	else if (!line.compare(0, 7, "maxSize"))
 		configStruct->maxSize = addElem(line, configStruct->maxSize);
 	else if (line.find(": {", 0) > 0)
-		configStruct->site[iSite].siteName =  addSiteName(line, configStruct->site[iSite].siteName, &inSite);
+		configStruct->site[iSite].siteName = addSiteName(line, configStruct->site[iSite].siteName, &inSite, configStruct);
 	else if (!line.compare(0, 5, "methods"))
 		configStruct->site[iSite].method = addElemTab(line, configStruct->site[iSite].method, configFile);
 	else if (!line.compare(0, 11, "redirection"))
@@ -97,42 +100,35 @@ void addLine(std::string line, struct structParse *configStruct, std::ifstream *
 	else if (!line.compare(0, 1, "}") && inErrorPage)
 		inErrorPage = 0;
 	else if (!line.compare(0, 1, "{"))
-		return ;
+		return;
 	else if (!line.compare(0, 1, "}") && inSite)
 	{
 		inSite = 0;
 		iSite++;
-		// push_back structSite
-	}
-	else
-		throw (std::invalid_argument("Invalid input: " + line));
-	
+	} else
+		throw(std::invalid_argument("Invalid input: " + line));
 }
 
 struct structParse createStruct(std::string configPath)
 {
+	// TODO:: Changer tout le parsing conf
 	struct structParse configStruct;
-	struct siteParse	siteTemp;
 	std::ifstream configFile;
 	std::string line;
-	
+
 	configFile.open(configPath.c_str());
 
-	std::cout << "test d'acces" << std::endl;
-	std::cout << configStruct.site[0].defaultFile;
-	std::cout << "test d'acces reussis!" << std::endl;
 	while (1)
 	{
 		std::getline(configFile, line, '\n');
 		if (line.empty())
 			break;
-		addLine(line, &configStruct, &configFile, &siteTemp);
+		addLine(line, &configStruct, &configFile);
 	}
 	configFile.close();
 	checkEmptyElem(configStruct);
 	return (configStruct);
 }
-
 
 // *** MAIN DE TEST ***
 
@@ -140,22 +136,21 @@ int main(void)
 {
 	struct structParse structTest;
 
-	try 
+	try
 	{
 		createStruct("../../config.json");
-	}
-	catch (const std::exception &e) 
+	} catch (const std::exception &e)
 	{
 		std::cerr << RED << e.what() << RESET << std::endl;
 	}
 
 	std::cout << BLUE << "The struct:" << RESET << std::endl;
-	std::cout << BOLD << "address: "<< RESET << structTest.address << std::endl;
+	std::cout << BOLD << "address: " << RESET << structTest.address << std::endl;
 	std::cout << BOLD << "port: " << RESET << structTest.port << std::endl;
 	std::cout << BOLD << "errorCode: " << RESET << structTest.errorCode << std::endl;
 	std::cout << BOLD << "errorPath: " << RESET << structTest.errorPath << std::endl;
 	std::cout << BOLD << "maxSize: " << RESET << structTest.maxSize << std::endl;
-	for (int i = 0; i < 1; i++) 
+	for (int i = 0; i < 1; i++)
 	{
 		std::cout << BOLD << "site " << i << ", siteName : " << RESET << structTest.site[i].siteName << std::endl;
 		std::cout << BOLD << "site " << i << ", method : " << RESET << structTest.site[i].method << std::endl;
@@ -166,5 +161,4 @@ int main(void)
 		std::cout << BOLD << "site " << i << ", uploadFiles : " << RESET << structTest.site[i].uploadFiles << std::endl;
 		std::cout << BOLD << "site " << i << ", CGI : " << RESET << structTest.site[i].CGI << std::endl;
 	}
-
 }
