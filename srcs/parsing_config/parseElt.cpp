@@ -36,6 +36,7 @@ static std::map<std::string, bool> createMethod(std::string str)
 	method.insert(std::make_pair(std::string("DELETE"), DELETE));
 
 	// debug
+	std::cout << "Method :\n\t";
 	std::cout << GREEN << std::boolalpha << "Get: " << GET << "\nPOST: " << POST << "\nDELETE: " << DELETE << RESET << std::endl;
 
 	return method;
@@ -56,7 +57,7 @@ static std::vector<std::string> createRedirection(std::string str)
 	}
 
 	// debug
-	std::cout << "vector contain: ";
+	std::cout << "Redirection contain: \n\t";
 	for (std::vector<std::string>::iterator it = ret.begin(); it != ret.end(); it++)
 	{
 		std::cout << *it << " - ";
@@ -75,6 +76,7 @@ static std::string returnSecond(std::string str)
 	ss >> ret;
 	
 	// debug
+	std::cout << "Second element of " << str << " is\n\t";
 	std::cout << GREEN << str << " return -> " << ret << RESET << std::endl;
 	
 	return ret;
