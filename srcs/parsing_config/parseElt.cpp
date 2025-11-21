@@ -18,6 +18,21 @@ static void removeSemiColon(std::string &str)
 	}
 }
 
+static void twoElement(std::string str)
+{
+	std::stringstream ss(str);
+	std::string word;
+	int i = 0;
+	for (; ss >> word; i++)
+	{	
+	}
+	if (i != 2)
+	{
+		std::string error("Error: invalid number of variable in line:\n\t");
+		throw std::invalid_argument(error + str);
+	}
+}
+
 static std::string getSiteName(std::string sName)
 {
 	std::stringstream ss(sName);
@@ -91,6 +106,7 @@ static std::vector<std::string> createRedirection(std::string str)
 static std::string returnRoot(std::string str)
 {
 	removeSemiColon(str);
+	twoElement(str);
 	std::stringstream ss(str);
 	std::string ret;
 
@@ -107,6 +123,7 @@ static std::string returnRoot(std::string str)
 static std::string returnDefaultFile(std::string str)
 {
 	removeSemiColon(str);
+	twoElement(str);
 	std::stringstream ss(str);
 	std::string ret;
 
@@ -130,18 +147,7 @@ static std::string returnDefaultFile(std::string str)
 static bool returnBool(std::string str)
 {
 	removeSemiColon(str);
-
-	std::stringstream ss(str);
-	std::string word;
-	int i = 0;
-	for (; ss >> word; i++)
-	{	
-	}
-	if (i != 2)
-	{
-		std::string error("Error: invalid number of variable in line:\n\t");
-		throw std::invalid_argument(error + str);
-	}
+	twoElement(str);
 
 	if (str.find("true") != std::string::npos)
 		return true;
@@ -165,6 +171,7 @@ static bool endsWith(const std::string& fullString, const std::string& ending)
 static std::string returnCGI(std::string str)
 {
 	removeSemiColon(str);
+	twoElement(str);
 	std::stringstream ss(str);
 	std::string ret;
 
