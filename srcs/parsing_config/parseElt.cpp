@@ -61,7 +61,7 @@ static std::map<std::string, bool> createMethod(std::string str)
 	}
 
 	// debug
-	std::cout << "Method :\n\t";
+	std::cout << BOLD << "Method :\n\t" << RESET;
 	std::cout << GREEN << std::boolalpha << "Get: " << method.at("GET") << "\n\tPOST: " << method.at("POST") << "\n\tDELETE: " << method.at("DELETE") << RESET << std::endl;
 
 	return method;
@@ -83,12 +83,12 @@ static std::vector<std::string> createRedirection(std::string str)
 	}
 
 	// debug
-	std::cout << "Redirection contain: \n\t";
+	std::cout << BOLD << "Redirection contain: \n\t" << RESET << GREEN;
 	for (std::vector<std::string>::iterator it = ret.begin(); it != ret.end(); it++)
 	{
 		std::cout << *it << " - ";
 	}
-	std::cout << std::endl;
+	std::cout << RESET << std::endl;
 
 	return ret;
 }
@@ -103,8 +103,8 @@ static std::string returnRoot(std::string str)
 	ss >> ret;
 	
 	// debug
-	std::cout << "Second element of " << str << " is\n\t";
-	std::cout << GREEN << str << " return -> " << ret << RESET << std::endl;
+	std::cout << BOLD << "Second element of " << str << " is\n\t";
+	std::cout << RESET << GREEN << str << " return -> " << ret << RESET << std::endl;
 	
 	return ret;
 }
@@ -126,8 +126,8 @@ static std::string returnDefaultFile(std::string str)
 	}
 
 	// debug
-	std::cout << "Second element of " << str << " is\n\t";
-	std::cout << GREEN << str << " return -> " << ret << RESET << std::endl;
+	std::cout << BOLD << "Second element of " << str << " is\n\t";
+	std::cout << RESET << GREEN << str << " return -> " << ret << RESET << std::endl;
 	
 	return ret;
 }
@@ -182,8 +182,8 @@ static std::string returnCGI(std::string str)
 	}
 
 	// debug
-	std::cout << "Second element of " << str << " is\n\t";
-	std::cout << GREEN << str << " return -> " << ret << RESET << std::endl;
+	std::cout << BOLD << "Second element of " << str << " is\n\t";
+	std::cout << RESET << GREEN << str << " return -> " << ret << RESET << std::endl;
 	
 	return ret;
 }

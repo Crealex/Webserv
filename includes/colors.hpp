@@ -28,4 +28,14 @@
 #define REVERSE "\033[7m"
 #define CROSSED "\033[9m"
 
+template <typename T>
+void writeColors(T input, char *colors);
+
+template <typename T>
+void writeStyle(T input, char *style);
+
+template <typename T>
+void writeColorsStyle(T input, char *colors, char *style);
+
+
 #endif
