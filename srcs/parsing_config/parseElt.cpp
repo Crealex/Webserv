@@ -105,8 +105,8 @@ static std::vector<std::string> createRedirection(std::string str)
 
 static std::string returnRoot(std::string str)
 {
-	removeSemiColon(str);
 	twoElement(str);
+	removeSemiColon(str);
 	std::stringstream ss(str);
 	std::string ret;
 
@@ -122,8 +122,8 @@ static std::string returnRoot(std::string str)
 
 static std::string returnDefaultFile(std::string str)
 {
-	removeSemiColon(str);
 	twoElement(str);
+	removeSemiColon(str);
 	std::stringstream ss(str);
 	std::string ret;
 
@@ -146,8 +146,8 @@ static std::string returnDefaultFile(std::string str)
 
 static bool returnBool(std::string str)
 {
-	removeSemiColon(str);
 	twoElement(str);
+	removeSemiColon(str);
 
 	if (str.find("true") != std::string::npos)
 		return true;
@@ -170,8 +170,8 @@ static bool endsWith(const std::string& fullString, const std::string& ending)
 
 static std::string returnCGI(std::string str)
 {
-	removeSemiColon(str);
 	twoElement(str);
+	removeSemiColon(str);
 	std::stringstream ss(str);
 	std::string ret;
 
@@ -225,7 +225,7 @@ int main()
 	site.siteName = std::string("demo {");
 	site.method = std::string("methods GET POST DELETE;");
 	site.redirection = std::string("redirection www.localhost pipi;");
-	site.dirRoot = std::string("root /www/;");
+	site.dirRoot = std::string("root /www/ caca;");
 	site.dirListing = std::string("listDirectory true;");
 	site.defaultFile = std::string("defaultFile ./www/demo/index.html;");
 	site.uploadFiles = std::string("uploadingFile true;");
@@ -239,7 +239,7 @@ int main()
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << e.what() << '\n';
+		std::cerr << RED << e.what() << '\n';
 	}
 	
 }
