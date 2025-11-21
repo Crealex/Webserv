@@ -34,14 +34,14 @@ static std::string getSiteName(siteParse site)
 
 static std::map<std::string, bool> createMethod(std::string str)
 {
-	bool GET = false;
-	bool POST = false;
-	bool DELETE = false;
+	// bool GET = false;
+	// bool POST = false;
+	// bool DELETE = false;
 
 	std::map<std::string, bool> method;
-	method.insert(std::make_pair(std::string("GET"), GET));
-	method.insert(std::make_pair(std::string("POST"), POST));
-	method.insert(std::make_pair(std::string("DELETE"), DELETE));
+	method.insert(std::make_pair(std::string("GET"), false));
+	method.insert(std::make_pair(std::string("POST"), false));
+	method.insert(std::make_pair(std::string("DELETE"), false));
 
 	removeSemiColon(str);
 	std::stringstream ss(str);
@@ -62,7 +62,7 @@ static std::map<std::string, bool> createMethod(std::string str)
 
 	// debug
 	std::cout << "Method :\n\t";
-	std::cout << GREEN << std::boolalpha << "Get: " << GET << "\nPOST: " << POST << "\nDELETE: " << DELETE << RESET << std::endl;
+	std::cout << GREEN << std::boolalpha << "Get: " << method.at("GET") << "\n\tPOST: " << method.at("POST") << "\n\tDELETE: " << method.at("DELETE") << RESET << std::endl;
 
 	return method;
 }
@@ -154,6 +154,16 @@ static bool returnBool(std::string str)
 	throw std::invalid_argument(error + str);
 }
 
+static bool endsWith(const std::string& fullString, const std::string& ending)
+{
+    if (ending.size() > fullString.size())
+        return false;
+
+    return fullString.compare(fullString.size()
+                              - ending.size(),
+                              ending.size(), ending) == 0;
+}
+
 static std::string returnCGI(std::string str)
 {
 	removeSemiColon(str);
@@ -162,6 +172,14 @@ static std::string returnCGI(std::string str)
 
 	ss >> ret;
 	ss >> ret;
+	
+	if (!endsWith(str, std::string(".php")) &&
+		!endsWith(str, std::string(".py")) &&
+		!endsWith(str, std::string(".sh")))
+	{
+		std::string error("Error: invalid codec file on line:\n\t");
+		throw std::invalid_argument(error + str);
+	}
 
 	// debug
 	std::cout << "Second element of " << str << " is\n\t";
