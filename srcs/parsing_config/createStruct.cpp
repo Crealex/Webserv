@@ -40,8 +40,11 @@ void addVectString(std::string line, structParse *configStruct)
 		if (configStruct->port.size() <= iAdd)
 			configStruct->port.push_back("4242 (default)");
 		if (configStruct->hostname.size() <= iAdd)
-			configStruct->hostname.push_back("perfectServer (default)");
-		configStruct->address.push_back(line);
+			configStruct->hostname.push_back("missing");
+		if (configStruct->address.size() <= iAdd)
+			configStruct->address.push_back(line);
+		else
+			configStruct->address[iAdd] = line;
 		iAdd++;
 		return;
 	} else if (!line.compare(0, 4, "port"))
@@ -49,8 +52,11 @@ void addVectString(std::string line, structParse *configStruct)
 		if (configStruct->address.size() <= iPort)
 			configStruct->address.push_back("localhost (default)");
 		if (configStruct->hostname.size() <= iPort)
-			configStruct->hostname.push_back("perfectServer (default)");
-		configStruct->port.push_back(line);
+			configStruct->hostname.push_back("missing");
+		if (configStruct->port.size() <= iPort)
+			configStruct->port.push_back(line);
+		else
+			configStruct->port[iPort] = line;
 		iPort++;
 		return;
 	} else if (!line.compare(0, 8, "hostname"))
@@ -73,14 +79,13 @@ void addNewSite(std::string line, structParse *configStruct, bool *inSite)
 {
 	static siteParse tempStruct;
 
-	std::cout << "	in addNewSite" << std::endl;
 	if (*inSite == 0)
 	{
 		tempStruct.siteName = line.substr(0, line.find(':') - 1);
 		*inSite = 1;
 		return;
 	}
-	if (!line.compare(0, 8, "protocol"))
+	if (!line.compare(0, 8, "methods"))
 		tempStruct.method = addElem(line, tempStruct.method);
 	else if (!line.compare(0, 11, "redirection"))
 		tempStruct.redirection = addElem(line, tempStruct.redirection);
@@ -146,7 +151,6 @@ void addLine(std::string line, structParse *configStruct)
 
 struct structParse createStruct(std::string configPath)
 {
-	// TODO: verif si un des 3 vecto, il faut les 3 ou mettre des valeurs par default
 	structParse configStruct;
 	std::ifstream configFile;
 	std::string line;
@@ -172,7 +176,7 @@ int main(void)
 
 	try
 	{
-		structTest = createStruct("../../config.conf");
+		structTest = createStruct("../../test.conf");
 	} catch (const std::exception &e)
 	{
 		std::cerr << RED << e.what() << RESET << std::endl;
@@ -180,16 +184,22 @@ int main(void)
 	}
 
 	std::cout << GREEN << "The struct:" << RESET << std::endl;
-	std::cout << BOLD << "address: " << RESET << structTest.address.at(0) << std::endl;
-	std::cout << BOLD << "port: " << RESET << structTest.port[0] << std::endl;
-	std::cout << BOLD << "hostname: " << RESET << structTest.hostname[0] << std::endl;
+	std::cout << BLUE << "all addres:" << RESET << std::endl;
+	for (int i = 0; i < structTest.address.size(); i++)
+		std::cout << BOLD << "	address " << i << ": " << RESET << structTest.address[i] << std::endl;
+	std::cout << BLUE << "All ports:" << RESET << std::endl;
+	for (int i = 0; i < structTest.port.size(); i++)
+		std::cout << BOLD << "	port " << i << ": "<< RESET << structTest.port[i] << std::endl;
+	std::cout << BLUE << "All hostnames:" << RESET << std::endl;
+	for (int i = 0; i < structTest.hostname.size(); i++)
+		std::cout << BOLD << "	hostname " << i << ": "<< RESET << structTest.hostname[i] << std::endl;
 	std::cout << BOLD << "errorCode: " << RESET << structTest.errorCode << std::endl;
 	std::cout << BOLD << "errorPath: " << RESET << structTest.errorPath << std::endl;
 	std::cout << BOLD << "maxSize: " << RESET << structTest.maxSize << std::endl;
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < structTest.site.size(); i++)
 	{
 		std::cout << BOLD << "site " << i << ", siteName : " << RESET << structTest.site[i].siteName << std::endl;
-		std::cout << BOLD << "site " << i << ", method : " << RESET << structTest.site[i].method << std::endl;
+		std::cout << BOLD << "site " << i << ", methods : " << RESET << structTest.site[i].method << std::endl;
 		std::cout << BOLD << "site " << i << ", redirection : " << RESET << structTest.site[i].redirection << std::endl;
 		std::cout << BOLD << "site " << i << ", dirRoot : " << RESET << structTest.site[i].dirRoot << std::endl;
 		std::cout << BOLD << "site " << i << ", dirListing : " << RESET << structTest.site[i].dirListing << std::endl;
