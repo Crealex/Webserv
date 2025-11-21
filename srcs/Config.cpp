@@ -6,7 +6,8 @@
 
 Config::Config(structParse data)
 {
-	// parsing config file
+	parseElt(data);
+
 	std::cout << GREEN << "Default Config constructor called" << RESET << std::endl;
 }
 

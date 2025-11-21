@@ -7,9 +7,10 @@
 
 static void removeSemiColon(std::string &str)
 {
-	size_t size = str.size();
-	if (str[size] == ';')
-		str.erase((str.end())--);
+	std::string::iterator ite = str.end();
+	ite--;
+	if (*ite == ';')
+		str.erase(ite);
 	else
 	{
 		std::string error("Error: no semicolon on line:\n\t");
@@ -17,13 +18,10 @@ static void removeSemiColon(std::string &str)
 	}
 }
 
-static std::string getSiteName(siteParse site)
+static std::string getSiteName(std::string sName)
 {
-	std::string sName(site.siteName);
-	removeSemiColon(sName);
 	std::stringstream ss(sName);
 	std::string str;
-	ss >> str;
 	ss >> str;
 
 	// debug
@@ -73,15 +71,12 @@ static std::vector<std::string> createRedirection(std::string str)
 	std::stringstream ss(str);
 	std::string line;
 	ss >> line;
-	ss >> line;
 
 	std::vector<std::string> ret;
-	std::stringstream ss2(line);
-	while (std::getline(ss2, line, ','))
+	while (ss >> line)
 	{
 		ret.push_back(line);
 	}
-
 	// debug
 	std::cout << BOLD << "Redirection contain: \n\t" << RESET << GREEN;
 	for (std::vector<std::string>::iterator it = ret.begin(); it != ret.end(); it++)
@@ -138,7 +133,10 @@ static bool returnBool(std::string str)
 
 	std::stringstream ss(str);
 	std::string word;
-	for (int i = 0; ss >> word;i++)
+	int i = 0;
+	for (; ss >> word; i++)
+	{	
+	}
 	if (i != 2)
 	{
 		std::string error("Error: invalid number of variable in line:\n\t");
@@ -205,8 +203,36 @@ static site createStructSite(siteParse site)
 
 void Config::siteParsing(siteParse site)
 {
-	std::string siteName = getSiteName(site);
+	std::string siteName = getSiteName(site.siteName);
 	struct site siteStruct = createStructSite(site);
 
 	sites.insert(std::make_pair(siteName, siteStruct));
+}
+
+
+int main()
+{
+	structParse data;
+	siteParse site;
+
+	site.siteName = std::string("demo {");
+	site.method = std::string("methods GET POST DELETE;");
+	site.redirection = std::string("redirection www.localhost pipi;");
+	site.dirRoot = std::string("root /www/;");
+	site.dirListing = std::string("listDirectory true;");
+	site.defaultFile = std::string("defaultFile ./www/demo/index.html;");
+	site.uploadFiles = std::string("uploadingFile true;");
+	site.CGI = std::string("CGI /path/of/cgi/CGI.php;");
+
+	data.site.push_back(site);
+
+	try
+	{
+		Config salut(data);
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
+	
 }
