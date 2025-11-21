@@ -5,11 +5,15 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <utility>
+#include "structParse.hpp"
+
+typedef std::vector<std::pair<std::string, unsigned int> > vecAddPort;
 
 struct serverData
 {
-	std::string								name;
-	std::pair<std::string, unsigned int>	addressPort;
+	std::string	name;
+	vecAddPort	addressPort;
 };
 
 struct site
@@ -37,7 +41,7 @@ class Config
 	~Config();
 
 	// GETTER FROM addressPort
-	std::vector<pair>	getAddressPort() const;
+//	std::vector<std::pair>	getAddressPort() const;
 
 	// GETTER
 	std::vector<unsigned int>	getErrorCode() const;
