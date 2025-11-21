@@ -1,11 +1,16 @@
-
 #include "../../includes/colors.hpp"
 #include "../../includes/structParse.hpp"
 #include <fstream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
+/**
+ * @brief Clear the tempStruct in addNewSite() (beacause it's a static variable)
+ *
+ * @param temp The struct to clear
+ */
 void clearStruct(siteParse *temp)
 {
 	temp->method.clear();
@@ -99,50 +104,61 @@ void addNewSite(std::string line, structParse *configStruct, bool *inSite)
 		throw(std::invalid_argument("invalid element at the line: " + line));
 }
 
-void addLine(std::string line, structParse *configStruct)
+/**
+ * @brief Hub function for choose which fct call and clean a least the line
+ *
+ * @param line the current line
+ * @param configStruct a pointer to the main struct
+ * @param inServer a boolean to know when we are in the server bracket or not
+ * @param cLine the number of the current line (for debug and error handling)
+ */
+void addLine(std::string line, structParse *configStruct, bool *inServer, unsigned int cLine)
 {
-	static bool inErrorPage = 0;
 	static bool inSite = 0;
+	std::stringstream ss;
 
 	rmWhiteSpaces(&line);
+	// TODO: Check si on est bien dans une balise server pour les arguments necessaire + check si bien balise fermante pour les sites + etc...
+	ss << cLine;
 	if (!line.compare(0, 6, "listen") || !line.compare(0, 8, "hostname"))
 		addVectString(line, configStruct);
 	else if (!line.compare(0, 6, "server"))
-		return;
+		*inServer = 1;
 	else if (!line.compare(0, 9, "errorPage"))
-		inErrorPage = 1;
-	else if (!line.compare(0, 4, "code") && inErrorPage) // a revoir
-		configStruct->errorCode = addElem(line, configStruct->errorCode);
-	else if (!line.compare(0, 4, "path") && inErrorPage) // a revoir
-		configStruct->errorPath = addElem(line, configStruct->errorPath);
-	else if (!line.compare(0, 1, "}") && inErrorPage)
-		inErrorPage = 0;
+		configStruct->ErrorPage.push_back(line);
 	else if (!line.compare(0, 7, "maxSize"))
 		configStruct->maxSize = addElem(line, configStruct->maxSize);
-	else if ((line.find(" {", 0) > 0) || inSite == 1) // create fct newSite
+	else if ((line.find(" {", 0) < line.size()) || inSite == 1) // TODO: Demander a Dana se que retourne find
 		addNewSite(line, configStruct, &inSite);
-	else if (!line.compare(0, 1, "{"))
-		return;
+	else if (line.compare(0, 2, " }") && *inServer == 1)
+		*inServer = 0;
 	else
-		throw(std::invalid_argument("Invalid input: " + line));
+		throw(std::invalid_argument("Invalid input at line " + ss.str() + ": " + line));
 }
 
 struct structParse createStruct(std::string configPath)
 {
-	structParse configStruct;
-	std::ifstream configFile;
-	std::string line;
+	structParse		configStruct;
+	std::ifstream	configFile;
+	std::string		line;
+	bool			inServer;
+	unsigned int	cLine;
 
 	configFile.open(configPath.c_str());
+	inServer = 0;
+	cLine = 0;
 	while (1)
 	{
 		std::getline(configFile, line, '\n');
 		if (line.empty())
 			break;
-		addLine(line, &configStruct);
+		addLine(line, &configStruct, &inServer, cLine);
+		cLine++;
 	}
 	configFile.close();
 	checkEmptyElem(&configStruct);
+	if (inServer)
+		throw (std::invalid_argument("Error, missing closing bracket '}' at the end of file"));
 	return (configStruct);
 }
 
@@ -170,8 +186,9 @@ int main(void)
 			std::cout << "		listen: " << structTest.vServer[i].addressPort[j] << std::endl;
 
 	}
-	std::cout << BOLD << "errorCode: " << RESET << structTest.errorCode << std::endl;
-	std::cout << BOLD << "errorPath: " << RESET << structTest.errorPath << std::endl;
+	std::cout << BLUE << "errorPage:" RESET << std::endl;
+	for (long unsigned int i = 0; i < structTest.ErrorPage.size(); i++)
+		std::cout << BOLD << "	" << i << RESET << ": " << structTest.ErrorPage[i] << std::endl;
 	std::cout << BOLD << "maxSize: " << RESET << structTest.maxSize << std::endl;
 	for (long unsigned int i = 0; i < structTest.site.size(); i++)
 	{
