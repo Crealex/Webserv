@@ -25,7 +25,7 @@ struct hostname
 
 struct structParse
 {
-	std::vector<hostname> hostname;
+	std::vector<hostname> vServer;
 	std::string errorCode;
 	std::string errorPath;
 	std::string maxSize;
