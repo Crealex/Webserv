@@ -32,7 +32,6 @@ void checkEmptyElem(struct structParse *configStruct)
 		throw(std::invalid_argument("missing maxSize!"));
 	for (long unsigned int i = 0; i < configStruct->vServer.size(); i++)
 	{
-	  std::cout << "in for boucle" << std::endl;
 		if (configStruct->vServer[i].addressPort.size() == 0)
 			configStruct->vServer[i].addressPort.push_back("listen localhost:4242 (default)");
 	}
@@ -40,7 +39,6 @@ void checkEmptyElem(struct structParse *configStruct)
 
 std::string addElem(std::string line, std::string elem)
 {
-	// std::cout << BLUE << "in addElem, line: " << line << RESET << std::endl;
 	if (!elem.empty())
 		throw std::invalid_argument(elem + " already exist!");
 	return (line);
@@ -50,7 +48,6 @@ void addVectString(std::string line, structParse *configStruct)
 {
 	static unsigned int iHostName = -1;
 
-	// std::cout << "in addvectString" << std::endl;
 	if (!line.compare(0, 6, "listen"))
 	{
 		if (configStruct->vServer.size() < iHostName)
@@ -60,7 +57,6 @@ void addVectString(std::string line, structParse *configStruct)
 	}
 	else if (!line.compare(0, 8, "hostname"))
 	{
-		// mettre une paire par default pour addressPort et l'excraser au cas ou une vrai paire est inscrite
 		iHostName++;
 		configStruct->vServer.push_back(hostname());
 		configStruct->vServer[iHostName].serverName = line;
@@ -109,7 +105,6 @@ void addLine(std::string line, structParse *configStruct)
 	static bool inSite = 0;
 
 	rmWhiteSpaces(&line);
-	// std::cout << BLUE << "test, line: " << BOLD << line << RESET << std::endl;
 	if (!line.compare(0, 6, "listen") || !line.compare(0, 8, "hostname"))
 		addVectString(line, configStruct);
 	else if (!line.compare(0, 6, "server"))
@@ -194,20 +189,3 @@ int main(void)
 
 // *** BACKUP ***
 
-// std::string addElemTab(std::string line, std::string elem, std::ifstream *fileConfig)
-//{
-//	std::string ret;
-//	if (!elem.empty())
-//		throw std::invalid_argument(elem + " already exist!");
-//	while (line.find("]"))
-//	{
-//		std::getline(*fileConfig, line, '\n');
-//		if (line.find("]"))
-//			break;
-//		if (ret.empty())
-//			ret = line;
-//		else
-//			ret += ", " + line;
-//	}
-//	return (ret);
-// }
