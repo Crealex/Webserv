@@ -47,10 +47,6 @@ static std::string getSiteName(std::string sName)
 
 static std::map<std::string, bool> createMethod(std::string str)
 {
-	// bool GET = false;
-	// bool POST = false;
-	// bool DELETE = false;
-
 	std::map<std::string, bool> method;
 	method.insert(std::make_pair(std::string("GET"), false));
 	method.insert(std::make_pair(std::string("POST"), false));
