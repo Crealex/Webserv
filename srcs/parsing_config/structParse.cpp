@@ -40,8 +40,6 @@ std::vector<std::string>	parseServer(structParse data)
 	{
 		temp = getInfoStruct(data.hostname);
 		result[i] = removeSemicolon(temp[1]);
-		result[i].compare("missing")
-			throw std::invalid_argument(RED "Invalid argument" RESET);
 	}
 	return (address);
 }

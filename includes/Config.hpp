@@ -6,11 +6,7 @@
 #include <map>
 #include <vector>
 
-struct pair
-{
-	std::string		p1;
-	unsigned int	p2;
-};
+typename std::map<std::string, std::pair<std::string, int>> mapServer;
 
 struct site
 {
@@ -26,12 +22,11 @@ struct site
 class Config
 {
   private:
-	std::map<std::string, pair>			addressPort;// port (maybe can be a array)
-	std::vector<std::string>			hostname;
-	std::vector<unsigned int>			errorCode;	// all the error codes
-	std::string							errorPath;	// Path of default error page (maybe needed error code)
-	unsigned int						maxSize;	// max size bodies request
-	std::map<std::string, site>			sites;		// key = site name, value = struct of element
+	mapServer					addressPort;	// port (maybe can be a array)
+	std::vector<unsigned int>	errorCode;		// all the error codes
+	std::string					errorPath;		// Path of default error page (maybe needed error code)
+	unsigned int				maxSize;		// max size bodies request
+	std::map<std::string, site>	sites;			// key = site name, value = struct of element
 
   public:
 	Config(structParse data);
