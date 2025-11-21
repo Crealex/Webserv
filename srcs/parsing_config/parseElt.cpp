@@ -216,7 +216,6 @@ void Config::siteParsing(siteParse site)
 	sites.insert(std::make_pair(siteName, siteStruct));
 }
 
-
 int main()
 {
 	structParse data;
