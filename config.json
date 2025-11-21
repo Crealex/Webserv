@@ -2,7 +2,7 @@
 	"server": {
 		"port": 4242,
 		"host": "localhost",
-		"error_page": {
+		"errorPage": {
 			"code": [
 				400,
 				401,
@@ -16,13 +16,18 @@
 			],
 			"path": "/error/"
 		},
-		"max_size": 1024,
+		"maxSize": 1024,
 		"demo": {
-			"protocol": "HTTP/1.1",
-			"list_directory": true,
-			"default_file": "/demo/index.html",
-			"uploading_file": true,
-			"root": "/www/"
+			"Methods": [
+				"GET",
+				"PUSH",
+				"DELETE"
+			],
+			"dirListing": true,
+			"defaultFile": "/demo/index.html",
+			"uploadFile": true,
+			"root": "/www/",
+			"CGI" : "/demo/cgi.moncul"
 		}
 	}
 }

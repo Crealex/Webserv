@@ -17,10 +17,16 @@ struct siteParse
 	std::string	CGI;
 };
 
+
+struct hostname
+{
+	std::string serverName;
+	std::vector<std::string> addressPort;
+};
+
 struct structParse
 {
-	std::string	address;
-	std::string	port;
+	std::vector<hostname> hostname;
 	std::string errorCode;
 	std::string errorPath;
 	std::string maxSize;
