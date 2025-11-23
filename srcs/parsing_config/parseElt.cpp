@@ -88,6 +88,7 @@ static std::vector<std::string> createRedirection(std::string str)
 	{
 		ret.push_back(line);
 	}
+
 	// debug
 	std::cout << BOLD << "Redirection contain: \n\t" << RESET << GREEN;
 	for (std::vector<std::string>::iterator it = ret.begin(); it != ret.end(); it++)
@@ -212,29 +213,29 @@ void Config::siteParsing(siteParse site)
 	sites.insert(std::make_pair(siteName, siteStruct));
 }
 
-int main()
-{
-	structParse data;
-	siteParse site;
+// int main()
+// {
+// 	structParse data;
+// 	siteParse site;
 
-	site.siteName = std::string("demo {");
-	site.method = std::string("methods GET POST DELETE;");
-	site.redirection = std::string("redirection www.localhost pipi;");
-	site.dirRoot = std::string("root /www/ caca;");
-	site.dirListing = std::string("listDirectory true;");
-	site.defaultFile = std::string("defaultFile ./www/demo/index.html;");
-	site.uploadFiles = std::string("uploadingFile true;");
-	site.CGI = std::string("CGI /path/of/cgi/CGI.php;");
+// 	site.siteName = std::string("demo {");
+// 	site.method = std::string("methods GET POST DELETE;");
+// 	site.redirection = std::string("redirection www.localhost pipi;");
+// 	site.dirRoot = std::string("root /www/;");
+// 	site.dirListing = std::string("listDirectory true;");
+// 	site.defaultFile = std::string("defaultFile www/demo/index.html;");
+// 	site.uploadFiles = std::string("uploadingFile true;");
+// 	site.CGI = std::string("CGI /path/of/cgi/CGI.php;");
 
-	data.site.push_back(site);
+// 	data.site.push_back(site);
 
-	try
-	{
-		Config salut(data);
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << RED << e.what() << '\n';
-	}
+// 	try
+// 	{
+// 		Config salut(data);
+// 	}
+// 	catch(const std::exception& e)
+// 	{
+// 		std::cerr << RED << e.what() << '\n';
+// 	}
 	
-}
+// }
