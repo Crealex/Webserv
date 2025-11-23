@@ -16,8 +16,8 @@ void rmWhiteSpaces(std::string *line)
 
 void checkEmptyElem(struct structParse configStruct)
 {
-	if (configStruct.address.empty())
-		throw(std::invalid_argument("missing address!"));
+	if (configStruct.maxSize.empty())
+		throw(std::invalid_argument("missing maxSize!"));
 }
 
 std::string addElem(std::string line, std::string elem)
@@ -30,45 +30,21 @@ std::string addElem(std::string line, std::string elem)
 
 void addVectString(std::string line, structParse *configStruct)
 {
-	static unsigned int iPort = 0;
-	static unsigned int iAdd = 0;
 	static unsigned int iHostName = 0;
 
 	// std::cout << "in addvectString" << std::endl;
-	if (!line.compare(0, 7, "address"))
+	if (!line.compare(0, 6, "listen"))
 	{
-		if (configStruct->port.size() <= iAdd)
-			configStruct->port.push_back("4242 (default)");
-		if (configStruct->hostname.size() <= iAdd)
-			configStruct->hostname.push_back("missing");
-		if (configStruct->address.size() <= iAdd)
-			configStruct->address.push_back(line);
-		else
-			configStruct->address[iAdd] = line;
-		iAdd++;
-		return;
-	} else if (!line.compare(0, 4, "port"))
-	{
-		if (configStruct->address.size() <= iPort)
-			configStruct->address.push_back("localhost (default)");
-		if (configStruct->hostname.size() <= iPort)
-			configStruct->hostname.push_back("missing");
-		if (configStruct->port.size() <= iPort)
-			configStruct->port.push_back(line);
-		else
-			configStruct->port[iPort] = line;
-		iPort++;
-		return;
-	} else if (!line.compare(0, 8, "hostname"))
-	{
-		if (configStruct->address.size() <= iHostName)
-			configStruct->address.push_back("localhost (default)");
-		if (configStruct->port.size() <= iHostName)
-			configStruct->port.push_back("4242 (default)");
 		if (configStruct->hostname.size() <= iHostName)
-			configStruct->hostname.push_back(line);
-		else
-			configStruct->hostname[iHostName] = line;
+			throw (std::invalid_argument("missing hostname berfore listen tag!"));
+		configStruct->hostname[iHostName].addressPort.push_back(line);
+	}
+	else if (!line.compare(0, 8, "hostname"))
+	{
+		//verif que celui d'avant possede bien au moins une balise listen sinon en rajouter par default
+		if (iHostName <= 0 && configStruct->hostname[iHostName - 1].addressPort.size() <= 0)
+			configStruct->hostname[iHostName - 1].addressPort.push_back("localhost:4242");
+		configStruct->hostname[iHostName].serverName = line;
 		iHostName++;
 		return;
 	}
@@ -185,18 +161,18 @@ int main(void)
 
 	std::cout << GREEN << "The struct:" << RESET << std::endl;
 	std::cout << BLUE << "all addres:" << RESET << std::endl;
-	for (int i = 0; i < structTest.address.size(); i++)
-		std::cout << BOLD << "	address " << i << ": " << RESET << structTest.address[i] << std::endl;
-	std::cout << BLUE << "All ports:" << RESET << std::endl;
-	for (int i = 0; i < structTest.port.size(); i++)
-		std::cout << BOLD << "	port " << i << ": "<< RESET << structTest.port[i] << std::endl;
 	std::cout << BLUE << "All hostnames:" << RESET << std::endl;
-	for (int i = 0; i < structTest.hostname.size(); i++)
-		std::cout << BOLD << "	hostname " << i << ": "<< RESET << structTest.hostname[i] << std::endl;
+	for (long unsigned int i = 0; i < structTest.hostname.size(); i++)
+	{
+		std::cout << BOLD << "	hostname " << i << ": "<< RESET << structTest.hostname[i].serverName << std::endl;
+		for (long unsigned int j = 0; j < structTest.hostname[i].addressPort.size(); j++)
+			std::cout << "		listen: " << structTest.hostname[i].addressPort[j] << std::endl;
+
+	}
 	std::cout << BOLD << "errorCode: " << RESET << structTest.errorCode << std::endl;
 	std::cout << BOLD << "errorPath: " << RESET << structTest.errorPath << std::endl;
 	std::cout << BOLD << "maxSize: " << RESET << structTest.maxSize << std::endl;
-	for (int i = 0; i < structTest.site.size(); i++)
+	for (long unsigned int i = 0; i < structTest.site.size(); i++)
 	{
 		std::cout << BOLD << "site " << i << ", siteName : " << RESET << structTest.site[i].siteName << std::endl;
 		std::cout << BOLD << "site " << i << ", methods : " << RESET << structTest.site[i].method << std::endl;
