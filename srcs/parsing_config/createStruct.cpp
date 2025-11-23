@@ -1,10 +1,27 @@
-
 #include "../../includes/colors.hpp"
 #include "../../includes/structParse.hpp"
 #include <fstream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
+
+/**
+ * @brief Clear the tempStruct in addNewSite() (beacause it's a static variable)
+ *
+ * @param temp The struct to clear
+ */
+void clearStruct(siteParse *temp)
+{
+	temp->method.clear();
+	temp->dirListing.clear();
+	temp->siteName.clear();
+	temp->CGI.clear();
+	temp->defaultFile.clear();
+	temp->uploadFiles.clear();
+	temp->dirRoot.clear();
+	temp->redirection.clear();
+}
 
 void rmWhiteSpaces(std::string *line)
 {
@@ -14,15 +31,19 @@ void rmWhiteSpaces(std::string *line)
 	}
 }
 
-void checkEmptyElem(struct structParse configStruct)
+void checkEmptyElem(struct structParse *configStruct)
 {
-	if (configStruct.maxSize.empty())
+	if (configStruct->maxSize.empty())
 		throw(std::invalid_argument("missing maxSize!"));
+	for (long unsigned int i = 0; i < configStruct->vServer.size(); i++)
+	{
+		if (configStruct->vServer[i].addressPort.size() == 0)
+			configStruct->vServer[i].addressPort.push_back("listen localhost:4242 (default)");
+	}
 }
 
 std::string addElem(std::string line, std::string elem)
 {
-	// std::cout << BLUE << "in addElem, line: " << line << RESET << std::endl;
 	if (!elem.empty())
 		throw std::invalid_argument(elem + " already exist!");
 	return (line);
@@ -30,25 +51,23 @@ std::string addElem(std::string line, std::string elem)
 
 void addVectString(std::string line, structParse *configStruct)
 {
-	static unsigned int iHostName = 0;
+	static unsigned int iHostName = -1;
 
-	// std::cout << "in addvectString" << std::endl;
 	if (!line.compare(0, 6, "listen"))
 	{
-		if (configStruct->hostname.size() <= iHostName)
+		if (configStruct->vServer.size() < iHostName)
 			throw (std::invalid_argument("missing hostname berfore listen tag!"));
-		configStruct->hostname[iHostName].addressPort.push_back(line);
+		configStruct->vServer[iHostName].addressPort.push_back(line);
+		return ;
 	}
 	else if (!line.compare(0, 8, "hostname"))
 	{
-		//verif que celui d'avant possede bien au moins une balise listen sinon en rajouter par default
-		if (iHostName <= 0 && configStruct->hostname[iHostName - 1].addressPort.size() <= 0)
-			configStruct->hostname[iHostName - 1].addressPort.push_back("localhost:4242");
-		configStruct->hostname[iHostName].serverName = line;
 		iHostName++;
+		configStruct->vServer.push_back(hostname());
+		configStruct->vServer[iHostName].serverName = line;
 		return;
 	}
-	throw(std::invalid_argument("Error with adding item in vector<std::string>"));
+	throw(std::invalid_argument("Error with adding item in vector<std::string>, line: " + line));
 }
 
 void addNewSite(std::string line, structParse *configStruct, bool *inSite)
@@ -61,7 +80,7 @@ void addNewSite(std::string line, structParse *configStruct, bool *inSite)
 		*inSite = 1;
 		return;
 	}
-	if (!line.compare(0, 8, "methods"))
+	if (!line.compare(0, 7, "methods"))
 		tempStruct.method = addElem(line, tempStruct.method);
 	else if (!line.compare(0, 11, "redirection"))
 		tempStruct.redirection = addElem(line, tempStruct.redirection);
@@ -77,70 +96,69 @@ void addNewSite(std::string line, structParse *configStruct, bool *inSite)
 		tempStruct.CGI = addElem(line, tempStruct.CGI);
 	else if (!line.compare(0, 1, "}"))
 	{
-		// std::cout << YELLOW << "	end of site" << RESET << std::endl;
 		*inSite = 0;
 		configStruct->site.push_back(tempStruct);
-		// std::cout << "test dirslisting in struct final: " << configStruct->site[0].dirListing << std::endl;
-		// std::cout << "size of struct siteParse: " << configStruct->site.size() << std::endl;
-		// std::cout << "--- PRINT TEMPSTRUCT ---" << std::endl;
-		// std::cout << BOLD << "siteName: " << RESET << tempStruct.siteName << std::endl;
-		// std::cout << BOLD << "protocol: " << RESET << tempStruct.method << std::endl;
-		// std::cout << BOLD << "redirection: " << RESET << tempStruct.redirection << std::endl;
-		// std::cout << BOLD << "root: " << RESET << tempStruct.dirRoot << std::endl;
-		// std::cout << BOLD << "dirListing: " << RESET << tempStruct.dirListing << std::endl;
-		// std::cout << BOLD << "defaultFile: " << RESET << tempStruct.defaultFile << std::endl;
-		// std::cout << BOLD << "uploadFiles: " << RESET << tempStruct.uploadFiles << std::endl;
-		// std::cout << BOLD << "CGI: " << RESET << tempStruct.CGI << std::endl;
-		// clear tempStruct?
-	} else
+		clearStruct(&tempStruct);
+	} 
+	else
 		throw(std::invalid_argument("invalid element at the line: " + line));
 }
 
-void addLine(std::string line, structParse *configStruct)
+/**
+ * @brief Hub function for choose which fct call and clean a least the line
+ *
+ * @param line the current line
+ * @param configStruct a pointer to the main struct
+ * @param inServer a boolean to know when we are in the server bracket or not
+ * @param cLine the number of the current line (for debug and error handling)
+ */
+void addLine(std::string line, structParse *configStruct, bool *inServer, unsigned int cLine)
 {
-	static bool inErrorPage = 0;
 	static bool inSite = 0;
+	std::stringstream ss;
 
 	rmWhiteSpaces(&line);
-	// std::cout << BLUE << "test, line: " << BOLD << line << RESET << std::endl;
-	if (!line.compare(0, 7, "address") || !line.compare(0, 4, "port") || !line.compare(0, 8, "hostname"))
+	// TODO: Check si on est bien dans une balise server pour les arguments necessaire + check si bien balise fermante pour les sites + etc...
+	ss << cLine;
+	if (!line.compare(0, 6, "listen") || !line.compare(0, 8, "hostname"))
 		addVectString(line, configStruct);
 	else if (!line.compare(0, 6, "server"))
-		return;
+		*inServer = 1;
 	else if (!line.compare(0, 9, "errorPage"))
-		inErrorPage = 1;
-	else if (!line.compare(0, 4, "code") && inErrorPage) // a revoir
-		configStruct->errorCode = addElem(line, configStruct->errorCode);
-	else if (!line.compare(0, 4, "path") && inErrorPage) // a revoir
-		configStruct->errorPath = addElem(line, configStruct->errorPath);
-	else if (!line.compare(0, 1, "}") && inErrorPage)
-		inErrorPage = 0;
+		configStruct->ErrorPage.push_back(line);
 	else if (!line.compare(0, 7, "maxSize"))
 		configStruct->maxSize = addElem(line, configStruct->maxSize);
-	else if ((line.find(" {", 0) > 0) || inSite == 1) // create fct newSite
+	else if ((line.find(" {", 0) < line.size()) || inSite == 1) // TODO: Demander a Dana se que retourne find
 		addNewSite(line, configStruct, &inSite);
-	else if (!line.compare(0, 1, "{"))
-		return;
+	else if (line.compare(0, 2, " }") && *inServer == 1)
+		*inServer = 0;
 	else
-		throw(std::invalid_argument("Invalid input: " + line));
+		throw(std::invalid_argument("Invalid input at line " + ss.str() + ": " + line));
 }
 
 struct structParse createStruct(std::string configPath)
 {
-	structParse configStruct;
-	std::ifstream configFile;
-	std::string line;
+	structParse		configStruct;
+	std::ifstream	configFile;
+	std::string		line;
+	bool			inServer;
+	unsigned int	cLine;
 
 	configFile.open(configPath.c_str());
+	inServer = 0;
+	cLine = 0;
 	while (1)
 	{
 		std::getline(configFile, line, '\n');
 		if (line.empty())
 			break;
-		addLine(line, &configStruct);
+		addLine(line, &configStruct, &inServer, cLine);
+		cLine++;
 	}
 	configFile.close();
-	checkEmptyElem(configStruct);
+	checkEmptyElem(&configStruct);
+	if (inServer)
+		throw (std::invalid_argument("Error, missing closing bracket '}' at the end of file"));
 	return (configStruct);
 }
 
@@ -160,47 +178,31 @@ int main(void)
 	}
 
 	std::cout << GREEN << "The struct:" << RESET << std::endl;
-	std::cout << BLUE << "all addres:" << RESET << std::endl;
 	std::cout << BLUE << "All hostnames:" << RESET << std::endl;
-	for (long unsigned int i = 0; i < structTest.hostname.size(); i++)
+	for (long unsigned int i = 0; i < structTest.vServer.size(); i++)
 	{
-		std::cout << BOLD << "	hostname " << i << ": "<< RESET << structTest.hostname[i].serverName << std::endl;
-		for (long unsigned int j = 0; j < structTest.hostname[i].addressPort.size(); j++)
-			std::cout << "		listen: " << structTest.hostname[i].addressPort[j] << std::endl;
+		std::cout << BOLD << "	hostname " << i << ": "<< RESET << structTest.vServer[i].serverName << std::endl;
+		for (long unsigned int j = 0; j < structTest.vServer[i].addressPort.size(); j++)
+			std::cout << "		listen: " << structTest.vServer[i].addressPort[j] << std::endl;
 
 	}
-	std::cout << BOLD << "errorCode: " << RESET << structTest.errorCode << std::endl;
-	std::cout << BOLD << "errorPath: " << RESET << structTest.errorPath << std::endl;
+	std::cout << BLUE << "errorPage:" RESET << std::endl;
+	for (long unsigned int i = 0; i < structTest.ErrorPage.size(); i++)
+		std::cout << BOLD << "	" << i << RESET << ": " << structTest.ErrorPage[i] << std::endl;
 	std::cout << BOLD << "maxSize: " << RESET << structTest.maxSize << std::endl;
 	for (long unsigned int i = 0; i < structTest.site.size(); i++)
 	{
-		std::cout << BOLD << "site " << i << ", siteName : " << RESET << structTest.site[i].siteName << std::endl;
-		std::cout << BOLD << "site " << i << ", methods : " << RESET << structTest.site[i].method << std::endl;
-		std::cout << BOLD << "site " << i << ", redirection : " << RESET << structTest.site[i].redirection << std::endl;
-		std::cout << BOLD << "site " << i << ", dirRoot : " << RESET << structTest.site[i].dirRoot << std::endl;
-		std::cout << BOLD << "site " << i << ", dirListing : " << RESET << structTest.site[i].dirListing << std::endl;
-		std::cout << BOLD << "site " << i << ", defaultFile : " << RESET << structTest.site[i].defaultFile << std::endl;
-		std::cout << BOLD << "site " << i << ", uploadFiles : " << RESET << structTest.site[i].uploadFiles << std::endl;
-		std::cout << BOLD << "site " << i << ", CGI : " << RESET << structTest.site[i].CGI << std::endl;
+		std::cout << BLUE << "site " << i << ": " << RESET << std::endl;
+		std::cout << BOLD << "	siteName : " << RESET << structTest.site[i].siteName << std::endl;
+		std::cout << BOLD << "	methods : " << RESET << structTest.site[i].method << std::endl;
+		std::cout << BOLD << "	redirection : " << RESET << structTest.site[i].redirection << std::endl;
+		std::cout << BOLD << "	dirRoot : " << RESET << structTest.site[i].dirRoot << std::endl;
+		std::cout << BOLD << "	dirListing : " << RESET << structTest.site[i].dirListing << std::endl;
+		std::cout << BOLD << "	defaultFile : " << RESET << structTest.site[i].defaultFile << std::endl;
+		std::cout << BOLD << "	uploadFiles : " << RESET << structTest.site[i].uploadFiles << std::endl;
+		std::cout << BOLD << "	CGI : " << RESET << structTest.site[i].CGI << std::endl;
 	}
 }
 
 // *** BACKUP ***
 
-// std::string addElemTab(std::string line, std::string elem, std::ifstream *fileConfig)
-//{
-//	std::string ret;
-//	if (!elem.empty())
-//		throw std::invalid_argument(elem + " already exist!");
-//	while (line.find("]"))
-//	{
-//		std::getline(*fileConfig, line, '\n');
-//		if (line.find("]"))
-//			break;
-//		if (ret.empty())
-//			ret = line;
-//		else
-//			ret += ", " + line;
-//	}
-//	return (ret);
-// }
