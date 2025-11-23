@@ -23,6 +23,11 @@ void clearStruct(siteParse *temp)
 	temp->redirection.clear();
 }
 
+/**
+ * @brief Remove the whites spaces before the line
+ *
+ * @param line The current line
+ */
 void rmWhiteSpaces(std::string *line)
 {
 	while (line->at(0) == '	' || line->at(0) == ' ')
@@ -31,6 +36,11 @@ void rmWhiteSpaces(std::string *line)
 	}
 }
 
+/**
+ * @brief Check if a mandatory element is missing and throw a error or put a default value
+ *
+ * @param configStruct The structure of the configartion file
+ */
 void checkEmptyElem(struct structParse *configStruct)
 {
 	if (configStruct->maxSize.empty())
@@ -70,7 +80,7 @@ void addVectString(std::string line, structParse *configStruct)
 	throw(std::invalid_argument("Error with adding item in vector<std::string>, line: " + line));
 }
 
-void addNewSite(std::string line, structParse *configStruct, bool *inSite)
+void addNewSite(std::string line, structParse *configStruct, bool *inSite, std::string cLine)
 {
 	static siteParse tempStruct;
 
@@ -101,7 +111,7 @@ void addNewSite(std::string line, structParse *configStruct, bool *inSite)
 		clearStruct(&tempStruct);
 	} 
 	else
-		throw(std::invalid_argument("invalid element at the line: " + line));
+		throw(std::invalid_argument("invalid element at the line " + cLine + ": " + line));
 }
 
 /**
@@ -117,8 +127,13 @@ void addLine(std::string line, structParse *configStruct, bool *inServer, unsign
 	static bool inSite = 0;
 	std::stringstream ss;
 
+	// TODO: Check si on est bien dans une balise server pour les arguments necessaire 
+	// check si bien balise fermante pour les sites
+	// check si il y a bien un mot avant une balise ouvrante
+	// check les elements indispensables dans les balises sites
 	rmWhiteSpaces(&line);
-	// TODO: Check si on est bien dans une balise server pour les arguments necessaire + check si bien balise fermante pour les sites + etc...
+	if (line.compare(0, 6, "server") && cLine == 0)
+		throw (std::invalid_argument("Error, missing server opening bracket at the begining of file 'server {'"));
 	ss << cLine;
 	if (!line.compare(0, 6, "listen") || !line.compare(0, 8, "hostname"))
 		addVectString(line, configStruct);
@@ -129,13 +144,19 @@ void addLine(std::string line, structParse *configStruct, bool *inServer, unsign
 	else if (!line.compare(0, 7, "maxSize"))
 		configStruct->maxSize = addElem(line, configStruct->maxSize);
 	else if ((line.find(" {", 0) < line.size()) || inSite == 1) // TODO: Demander a Dana se que retourne find
-		addNewSite(line, configStruct, &inSite);
+		addNewSite(line, configStruct, &inSite, ss.str());
 	else if (line.compare(0, 2, " }") && *inServer == 1)
 		*inServer = 0;
 	else
 		throw(std::invalid_argument("Invalid input at line " + ss.str() + ": " + line));
 }
 
+/**
+ * @brief Function to call for creating the struct for the config file 
+ *
+ * @param configPath The path of the config file 
+ * @return The sruct "structParse" with the good elements
+ */
 struct structParse createStruct(std::string configPath)
 {
 	structParse		configStruct;
@@ -178,6 +199,7 @@ int main(void)
 	}
 
 	std::cout << GREEN << "The struct:" << RESET << std::endl;
+	std::cout << BOLD << "maxSize: " << RESET << structTest.maxSize << std::endl;
 	std::cout << BLUE << "All hostnames:" << RESET << std::endl;
 	for (long unsigned int i = 0; i < structTest.vServer.size(); i++)
 	{
@@ -189,7 +211,6 @@ int main(void)
 	std::cout << BLUE << "errorPage:" RESET << std::endl;
 	for (long unsigned int i = 0; i < structTest.ErrorPage.size(); i++)
 		std::cout << BOLD << "	" << i << RESET << ": " << structTest.ErrorPage[i] << std::endl;
-	std::cout << BOLD << "maxSize: " << RESET << structTest.maxSize << std::endl;
 	for (long unsigned int i = 0; i < structTest.site.size(); i++)
 	{
 		std::cout << BLUE << "site " << i << ": " << RESET << std::endl;
