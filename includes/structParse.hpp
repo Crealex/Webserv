@@ -19,17 +19,16 @@ struct siteParse
 
 struct hostname
 {
-	std::string serverName;
-	std::vector<std::string> addressPort;
+	std::string					serverName;
+	std::vector<std::string>	addressPort;
 };
 
 struct structParse
 {
-	std::vector<hostname> vServer;
-	std::string errorCode;
-	std::string errorPath;
-	std::string maxSize;
-	std::vector<struct siteParse> site;
+	std::vector<hostname>		vServer;
+	std::vector<std::string>	ErrorPage;
+	std::string					maxSize;
+	std::vector<siteParse>		site;
 };
 
 #endif
