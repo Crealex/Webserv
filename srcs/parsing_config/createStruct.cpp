@@ -75,6 +75,13 @@ void checkEmptyElem(struct structParse *configStruct)
 	}
 }
 
+/**
+ * @brief add an element to configStruct and check if is a duplicate
+ *
+ * @param line the current line
+ * @param elem the current element
+ * @return a string to put in the configStruct
+ */
 std::string addElem(std::string line, std::string elem)
 {
 	if (!elem.empty())
