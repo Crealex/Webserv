@@ -66,11 +66,10 @@ void addVectString(std::string line, structParse *configStruct)
 	if (!line.compare(0, 6, "listen"))
 	{
 		if (configStruct->vServer.size() < iHostName)
-			throw (std::invalid_argument("missing hostname berfore listen tag!"));
+			throw(std::invalid_argument("missing hostname berfore listen tag!"));
 		configStruct->vServer[iHostName].addressPort.push_back(line);
-		return ;
-	}
-	else if (!line.compare(0, 8, "hostname"))
+		return;
+	} else if (!line.compare(0, 8, "hostname"))
 	{
 		iHostName++;
 		configStruct->vServer.push_back(hostname());
@@ -109,8 +108,7 @@ void addNewSite(std::string line, structParse *configStruct, bool *inSite, std::
 		*inSite = 0;
 		configStruct->site.push_back(tempStruct);
 		clearStruct(&tempStruct);
-	} 
-	else
+	} else
 		throw(std::invalid_argument("invalid element at the line " + cLine + ": " + line));
 }
 
@@ -127,43 +125,43 @@ void addLine(std::string line, structParse *configStruct, bool *inServer, unsign
 	static bool inSite = 0;
 	std::stringstream ss;
 
-	// TODO: Check si on est bien dans une balise server pour les arguments necessaire 
-	// check si bien balise fermante pour les sites
-	// check si il y a bien un mot avant une balise ouvrante
-	// check les elements indispensables dans les balises sites
+	// TODO:	[x] Check si on est bien dans une balise server pour les arguments necessaire
+	//			[ ] check si bien balise fermante pour les sites
+	//			[ ] check si il y a bien un mot avant une balise ouvrante
+	//			[ ] check les elements indispensables dans les balises sites (voir avec les autres)
 	rmWhiteSpaces(&line);
 	if (line.compare(0, 6, "server") && cLine == 0)
-		throw (std::invalid_argument("Error, missing server opening bracket at the begining of file 'server {'"));
+		throw(std::invalid_argument("Error, missing server opening bracket at the begining of file 'server {'"));
 	ss << cLine;
-	if (!line.compare(0, 6, "listen") || !line.compare(0, 8, "hostname"))
+	if ((!line.compare(0, 6, "listen") || !line.compare(0, 8, "hostname")) && *inServer)
 		addVectString(line, configStruct);
 	else if (!line.compare(0, 6, "server"))
 		*inServer = 1;
-	else if (!line.compare(0, 9, "errorPage"))
+	else if (!line.compare(0, 9, "errorPage") && *inServer)
 		configStruct->ErrorPage.push_back(line);
-	else if (!line.compare(0, 7, "maxSize"))
+	else if (!line.compare(0, 7, "maxSize") && *inServer)
 		configStruct->maxSize = addElem(line, configStruct->maxSize);
-	else if ((line.find(" {", 0) < line.size()) || inSite == 1) // TODO: Demander a Dana se que retourne find
+	else if (((line.find(" {", 0) < line.size()) || inSite == 1) && *inServer) // TODO: Demander a Dana se que retourne find en cas de non trouvage
 		addNewSite(line, configStruct, &inSite, ss.str());
-	else if (line.compare(0, 2, " }") && *inServer == 1)
+	else if (line.compare(0, 2, " }") && *inServer)
 		*inServer = 0;
 	else
 		throw(std::invalid_argument("Invalid input at line " + ss.str() + ": " + line));
 }
 
 /**
- * @brief Function to call for creating the struct for the config file 
+ * @brief Function to call for creating the struct for the config file
  *
- * @param configPath The path of the config file 
+ * @param configPath The path of the config file
  * @return The sruct "structParse" with the good elements
  */
 struct structParse createStruct(std::string configPath)
 {
-	structParse		configStruct;
-	std::ifstream	configFile;
-	std::string		line;
-	bool			inServer;
-	unsigned int	cLine;
+	structParse configStruct;
+	std::ifstream configFile;
+	std::string line;
+	bool inServer;
+	unsigned int cLine;
 
 	configFile.open(configPath.c_str());
 	inServer = 0;
@@ -179,7 +177,7 @@ struct structParse createStruct(std::string configPath)
 	configFile.close();
 	checkEmptyElem(&configStruct);
 	if (inServer)
-		throw (std::invalid_argument("Error, missing closing bracket '}' at the end of file"));
+		throw(std::invalid_argument("Error, missing closing bracket '}' at the end of file"));
 	return (configStruct);
 }
 
@@ -203,10 +201,9 @@ int main(void)
 	std::cout << BLUE << "All hostnames:" << RESET << std::endl;
 	for (long unsigned int i = 0; i < structTest.vServer.size(); i++)
 	{
-		std::cout << BOLD << "	hostname " << i << ": "<< RESET << structTest.vServer[i].serverName << std::endl;
+		std::cout << BOLD << "	hostname " << i << ": " << RESET << structTest.vServer[i].serverName << std::endl;
 		for (long unsigned int j = 0; j < structTest.vServer[i].addressPort.size(); j++)
 			std::cout << "		listen: " << structTest.vServer[i].addressPort[j] << std::endl;
-
 	}
 	std::cout << BLUE << "errorPage:" RESET << std::endl;
 	for (long unsigned int i = 0; i < structTest.ErrorPage.size(); i++)
@@ -226,4 +223,3 @@ int main(void)
 }
 
 // *** BACKUP ***
-
