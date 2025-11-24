@@ -20,23 +20,17 @@ Config::~Config()
 }
 
 
-// GETTER FROM addressPort
 
-std::vector<pair> Config::getAddressPort() const
+// GETTER
+
+std::vector<serverData> Config::getAddressPort() const
 {
 	return (this->addressPort);
 }
 
-// GETTER
-
-std::vector<unsigned int>	Config::getErrorCode() const
+std::vector<errorData>	Config::getErrorPage() const
 {
-	return (this->errorCode);
-}
-
-std::string Config::getErrorPath() const
-{
-	return (this->errorPath);
+	return (this->errorPage);
 }
 
 unsigned int Config::getMaxSize() const
@@ -91,4 +85,7 @@ void	Config::parseElt(structParse data)
 	{
 		siteParsing((*it));
 	}
+	this->addressPort = parseServer(data.vServer);
+	this->errorPage = parseError(data.ErrorPage);
+	this->maxSize = parseMaxSize(data.maxSize);
 }
