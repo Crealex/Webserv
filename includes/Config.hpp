@@ -18,8 +18,9 @@ struct serverData
 
 struct errorData
 {
-
-}
+	std::vector<unsigned int>	code;
+	std::string 				path;
+};
 
 struct site
 {
