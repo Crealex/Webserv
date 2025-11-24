@@ -16,6 +16,11 @@ struct serverData
 	vecAddPort	addressPort;
 };
 
+struct errorData
+{
+
+}
+
 struct site
 {
 	std::map<std::string, bool>	method;	 		// List of accepted methods for the route (Not sure of name and variabel type)
@@ -31,8 +36,7 @@ class Config
 {
   private:
 	std::vector<serverData>		addressPort;	// port (maybe can be a array)
-	std::vector<unsigned int>	errorCode;		// all the error codes
-	std::string					errorPath;		// Path of default error page (maybe needed error code)
+	std::vector<errorData>		errorCode;		// all the error codes
 	unsigned int				maxSize;		// max size bodies request
 	std::map<std::string, site>	sites;			// key = site name, value = struct of element
 
