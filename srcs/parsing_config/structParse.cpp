@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <exception>
+#include <dirent.h>
 
 /**
  * @brief verify if there's only one semicolon at the end and remove it
@@ -125,6 +126,7 @@ std::vector<errorData>	parseError(std::vector<std::string> data)
 	std::string					pathError;
 	std::vector<std::string>	infos;
 	unsigned int				nbError;
+	DIR							dir;
 
 	nbError = data.size();
 	for (unsigned int i = 0; i < nbError; i++)
@@ -133,6 +135,10 @@ std::vector<errorData>	parseError(std::vector<std::string> data)
 		if (infos.size() < 3)
 			throw std::invalid_argument(RED "Invalid argument : error path" RESET);
 		tempData.path = removeSemicolon(infos[infos.size() - 1]);
+		dir = opendir(tempData.path.c_str);
+		if (!dir)
+			throw std::invalid_argument(RED "Invalid argument : error path" RESET);
+		closedir(dir);
 		tempData.code = getCode(infos);
 		result.push_back(tempData);
 	}
