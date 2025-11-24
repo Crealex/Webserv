@@ -44,11 +44,34 @@ void rmWhiteSpaces(std::string *line)
 void checkEmptyElem(struct structParse *configStruct)
 {
 	if (configStruct->maxSize.empty())
-		throw(std::invalid_argument("missing maxSize!"));
+		throw(std::invalid_argument("Error, missing maxSize!"));
 	for (long unsigned int i = 0; i < configStruct->vServer.size(); i++)
 	{
 		if (configStruct->vServer[i].addressPort.size() == 0)
 			configStruct->vServer[i].addressPort.push_back("listen localhost:4242 (default)");
+	}
+	if (configStruct->site.size() == 0)
+		throw (std::invalid_argument("Error, missing site!"));
+	for (long unsigned int i = 0; i < configStruct->site.size(); i++) 
+	{
+		std::stringstream ss;
+		ss << i;
+		if (configStruct->site[i].siteName.empty())
+			throw (std::invalid_argument("Error, missing siteName for the site no " + ss.str()));
+		if (configStruct->site[i].CGI.empty())
+			throw (std::invalid_argument("Error, missing CGI for the site no " + ss.str()));
+		if (configStruct->site[i].dirRoot.empty())
+			throw (std::invalid_argument("Error, missing root for the site no " + ss.str()));
+		if (configStruct->site[i].method.empty())
+			throw (std::invalid_argument("Error, missing methods for the site no " + ss.str()));
+		if (configStruct->site[i].redirection.empty())
+			throw (std::invalid_argument("Error, missing redirection for the site no " + ss.str()));
+		if (configStruct->site[i].defaultFile.empty())
+			throw (std::invalid_argument("Error, missing defaultFile for the site no " + ss.str()));
+		if (configStruct->site[i].dirListing.empty())
+			configStruct->site[i].dirListing = "listDirectory false (default)";
+		if (configStruct->site[i].uploadFiles.empty())
+			configStruct->site[i].uploadFiles = "uploadingFile false (default)";
 	}
 }
 
@@ -69,6 +92,7 @@ void addVectString(std::string line, structParse *configStruct)
 			throw(std::invalid_argument("missing hostname berfore listen tag!"));
 		configStruct->vServer[iHostName].addressPort.push_back(line);
 		return;
+	
 	} else if (!line.compare(0, 8, "hostname"))
 	{
 		iHostName++;
@@ -128,7 +152,9 @@ void addLine(std::string line, structParse *configStruct, bool *inServer, unsign
 	// TODO:	[x] Check si on est bien dans une balise server pour les arguments necessaire
 	//			[ ] check si bien balise fermante pour les sites
 	//			[ ] check si il y a bien un mot avant une balise ouvrante
-	//			[ ] check les elements indispensables dans les balises sites (voir avec les autres)
+	//			[x] check les elements indispensables dans les balises sites (throw une erreur sauf pour les doublons)
+	//			[ ] verif doublon hostname et nom de site
+	//			[ ] verif doublon attributs site
 	rmWhiteSpaces(&line);
 	if (line.compare(0, 6, "server") && cLine == 0)
 		throw(std::invalid_argument("Error, missing server opening bracket at the begining of file 'server {'"));
@@ -141,7 +167,7 @@ void addLine(std::string line, structParse *configStruct, bool *inServer, unsign
 		configStruct->ErrorPage.push_back(line);
 	else if (!line.compare(0, 7, "maxSize") && *inServer)
 		configStruct->maxSize = addElem(line, configStruct->maxSize);
-	else if (((line.find(" {", 0) < line.size()) || inSite == 1) && *inServer) // TODO: Demander a Dana se que retourne find en cas de non trouvage
+	else if (((line.find(" {", 0) < line.size()) || inSite == 1) && *inServer)
 		addNewSite(line, configStruct, &inSite, ss.str());
 	else if (line.compare(0, 2, " }") && *inServer)
 		*inServer = 0;
