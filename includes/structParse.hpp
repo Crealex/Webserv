@@ -5,6 +5,9 @@
 #include <iostream>
 #include <vector>
 
+struct serverData;
+struct errorData;
+
 struct siteParse
 {
 	std::string	siteName;
@@ -30,5 +33,11 @@ struct structParse
 	std::string					maxSize;
 	std::vector<siteParse>		site;
 };
+
+
+
+std::vector<serverData>	parseServer(std::vector<hostname> data);
+std::vector<errorData>	parseError(std::vector<std::string> data);
+unsigned int	parseMaxSize(std::string data);
 
 #endif
