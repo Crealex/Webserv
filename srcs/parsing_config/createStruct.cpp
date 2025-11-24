@@ -117,6 +117,9 @@ void addNewSite(std::string line, structParse *configStruct, bool *inSite, std::
 	if (*inSite == 0)
 	{
 		tempStruct.siteName = line.substr(0, line.find(':') - 1);
+		std::cout << "lenght site name of line " << line << ": " << tempStruct.siteName.length() << std::endl;
+		if (tempStruct.siteName.length() <= 2)
+			throw (std::invalid_argument("Error, needed a siteName before the open bracket '{'"));
 		*inSite = 1;
 		return;
 	}
@@ -158,7 +161,7 @@ void addLine(std::string line, structParse *configStruct, bool *inServer, unsign
 
 	// TODO:	[x] Check si on est bien dans une balise server pour les arguments necessaire
 	//			[ ] check si bien balise fermante pour les sites
-	//			[ ] check si il y a bien un mot avant une balise ouvrante
+	//			[x] check si il y a bien un mot avant une balise ouvrante
 	//			[x] check les elements indispensables dans les balises sites (throw une erreur sauf pour les doublons)
 	//			[ ] verif doublon hostname et nom de site
 	//			[ ] verif doublon attributs site
@@ -174,7 +177,7 @@ void addLine(std::string line, structParse *configStruct, bool *inServer, unsign
 		configStruct->ErrorPage.push_back(line);
 	else if (!line.compare(0, 7, "maxSize") && *inServer)
 		configStruct->maxSize = addElem(line, configStruct->maxSize);
-	else if (((line.find(" {", 0) < line.size()) || inSite == 1) && *inServer)
+	else if (((line.find("{", 0) <= line.size()) || inSite == 1) && *inServer)
 		addNewSite(line, configStruct, &inSite, ss.str());
 	else if (line.compare(0, 2, " }") && *inServer)
 		*inServer = 0;
@@ -216,42 +219,42 @@ struct structParse createStruct(std::string configPath)
 
 // *** MAIN DE TEST ***
 
-//int main(void)
-//{
-//	struct structParse structTest;
-//
-//	try
-//	{
-//		structTest = createStruct("../../test.conf");
-//	} catch (const std::exception &e)
-//	{
-//		std::cerr << RED << e.what() << RESET << std::endl;
-//		return (1);
-//	}
-//
-//	std::cout << GREEN << "The struct:" << RESET << std::endl;
-//	std::cout << BOLD << "maxSize: " << RESET << structTest.maxSize << std::endl;
-//	std::cout << BLUE << "All hostnames:" << RESET << std::endl;
-//	for (long unsigned int i = 0; i < structTest.vServer.size(); i++)
-//	{
-//		std::cout << BOLD << "	hostname " << i << ": " << RESET << structTest.vServer[i].serverName << std::endl;
-//		for (long unsigned int j = 0; j < structTest.vServer[i].addressPort.size(); j++)
-//			std::cout << "		listen: " << structTest.vServer[i].addressPort[j] << std::endl;
-//	}
-//	std::cout << BLUE << "errorPage:" RESET << std::endl;
-//	for (long unsigned int i = 0; i < structTest.ErrorPage.size(); i++)
-//		std::cout << BOLD << "	" << i << RESET << ": " << structTest.ErrorPage[i] << std::endl;
-//	for (long unsigned int i = 0; i < structTest.site.size(); i++)
-//	{
-//		std::cout << BLUE << "site " << i << ": " << RESET << std::endl;
-//		std::cout << BOLD << "	siteName : " << RESET << structTest.site[i].siteName << std::endl;
-//		std::cout << BOLD << "	methods : " << RESET << structTest.site[i].method << std::endl;
-//		std::cout << BOLD << "	redirection : " << RESET << structTest.site[i].redirection << std::endl;
-//		std::cout << BOLD << "	dirRoot : " << RESET << structTest.site[i].dirRoot << std::endl;
-//		std::cout << BOLD << "	dirListing : " << RESET << structTest.site[i].dirListing << std::endl;
-//		std::cout << BOLD << "	defaultFile : " << RESET << structTest.site[i].defaultFile << std::endl;
-//		std::cout << BOLD << "	uploadFiles : " << RESET << structTest.site[i].uploadFiles << std::endl;
-//		std::cout << BOLD << "	CGI : " << RESET << structTest.site[i].CGI << std::endl;
-//	}
-//}
+int main(void)
+{
+	struct structParse structTest;
+
+	try
+	{
+		structTest = createStruct("../../test.conf");
+	} catch (const std::exception &e)
+	{
+		std::cerr << RED << e.what() << RESET << std::endl;
+		return (1);
+	}
+
+	std::cout << GREEN << "The struct:" << RESET << std::endl;
+	std::cout << BOLD << "maxSize: " << RESET << structTest.maxSize << std::endl;
+	std::cout << BLUE << "All hostnames:" << RESET << std::endl;
+	for (long unsigned int i = 0; i < structTest.vServer.size(); i++)
+	{
+		std::cout << BOLD << "	hostname " << i << ": " << RESET << structTest.vServer[i].serverName << std::endl;
+		for (long unsigned int j = 0; j < structTest.vServer[i].addressPort.size(); j++)
+			std::cout << "		listen: " << structTest.vServer[i].addressPort[j] << std::endl;
+	}
+	std::cout << BLUE << "errorPage:" RESET << std::endl;
+	for (long unsigned int i = 0; i < structTest.ErrorPage.size(); i++)
+		std::cout << BOLD << "	" << i << RESET << ": " << structTest.ErrorPage[i] << std::endl;
+	for (long unsigned int i = 0; i < structTest.site.size(); i++)
+	{
+		std::cout << BLUE << "site " << i << ": " << RESET << std::endl;
+		std::cout << BOLD << "	siteName : " << RESET << structTest.site[i].siteName << std::endl;
+		std::cout << BOLD << "	methods : " << RESET << structTest.site[i].method << std::endl;
+		std::cout << BOLD << "	redirection : " << RESET << structTest.site[i].redirection << std::endl;
+		std::cout << BOLD << "	dirRoot : " << RESET << structTest.site[i].dirRoot << std::endl;
+		std::cout << BOLD << "	dirListing : " << RESET << structTest.site[i].dirListing << std::endl;
+		std::cout << BOLD << "	defaultFile : " << RESET << structTest.site[i].defaultFile << std::endl;
+		std::cout << BOLD << "	uploadFiles : " << RESET << structTest.site[i].uploadFiles << std::endl;
+		std::cout << BOLD << "	CGI : " << RESET << structTest.site[i].CGI << std::endl;
+	}
+}
 
