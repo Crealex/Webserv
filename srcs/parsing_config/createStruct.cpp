@@ -23,6 +23,13 @@ void clearStruct(siteParse *temp)
 	temp->redirection.clear();
 }
 
+bool isFull(siteParse temp)
+{
+	if (temp.siteName.empty() || temp.CGI.empty() || temp.defaultFile.empty() || temp.uploadFiles.empty() || temp.dirListing.empty() || temp.dirRoot.empty() || temp.method.empty() || temp.redirection.empty())
+		return false;
+	return true;
+}
+
 /**
  * @brief Remove the whites spaces before the line
  *
@@ -102,6 +109,9 @@ void addVectString(std::string line, structParse *configStruct)
 	
 	} else if (!line.compare(0, 8, "hostname"))
 	{
+		for (unsigned int i = 0; i < configStruct->vServer.size(); i++)
+			if (line == configStruct->vServer[i].serverName)
+				throw (std::invalid_argument("Error, " + line + " already exist"));
 		iHostName++;
 		configStruct->vServer.push_back(hostname());
 		configStruct->vServer[iHostName].serverName = line;
@@ -114,10 +124,15 @@ void addNewSite(std::string line, structParse *configStruct, bool *inSite, std::
 {
 	static siteParse tempStruct;
 
+	std::cout << "line: " << line << std::endl;
 	if (*inSite == 0)
 	{
-		tempStruct.siteName = line.substr(0, line.find(':') - 1);
-		std::cout << "lenght site name of line " << line << ": " << tempStruct.siteName.length() << std::endl;
+		for (unsigned int i = 0; i < configStruct->site.size(); i++)
+		{
+			if (line == configStruct->site[i].siteName)
+				throw (std::invalid_argument("Error, at line " + cLine + ", site name already exist"));
+		}
+		tempStruct.siteName = line;
 		if (tempStruct.siteName.length() <= 2)
 			throw (std::invalid_argument("Error, needed a siteName before the open bracket '{'"));
 		*inSite = 1;
@@ -142,7 +157,10 @@ void addNewSite(std::string line, structParse *configStruct, bool *inSite, std::
 		*inSite = 0;
 		configStruct->site.push_back(tempStruct);
 		clearStruct(&tempStruct);
-	} else
+	} 
+	else if (isFull(tempStruct))
+		throw (std::invalid_argument("Error, needed to close the site segment with '}'"));
+	else
 		throw(std::invalid_argument("invalid element at the line " + cLine + ": " + line));
 }
 
@@ -160,15 +178,16 @@ void addLine(std::string line, structParse *configStruct, bool *inServer, unsign
 	std::stringstream ss;
 
 	// TODO:	[x] Check si on est bien dans une balise server pour les arguments necessaire
-	//			[ ] check si bien balise fermante pour les sites
+	//			[x] check si bien balise fermante pour les sites
 	//			[x] check si il y a bien un mot avant une balise ouvrante
 	//			[x] check les elements indispensables dans les balises sites (throw une erreur sauf pour les doublons)
-	//			[ ] verif doublon hostname et nom de site
-	//			[ ] verif doublon attributs site
+	//			[x] verif doublon hostname et nom de site
+	//			[x] verif doublon attributs site
+	ss << cLine;
 	rmWhiteSpaces(&line);
+	std::cout << "line in addLine: " << line << std::endl;
 	if (line.compare(0, 6, "server") && cLine == 0)
 		throw(std::invalid_argument("Error, missing server opening bracket at the begining of file 'server {'"));
-	ss << cLine;
 	if ((!line.compare(0, 6, "listen") || !line.compare(0, 8, "hostname")) && *inServer)
 		addVectString(line, configStruct);
 	else if (!line.compare(0, 6, "server"))
@@ -177,10 +196,12 @@ void addLine(std::string line, structParse *configStruct, bool *inServer, unsign
 		configStruct->ErrorPage.push_back(line);
 	else if (!line.compare(0, 7, "maxSize") && *inServer)
 		configStruct->maxSize = addElem(line, configStruct->maxSize);
-	else if (((line.find("{", 0) <= line.size()) || inSite == 1) && *inServer)
+	else if (((line.find(" {", 0) <= line.size()) || inSite == 1) && *inServer)
 		addNewSite(line, configStruct, &inSite, ss.str());
-	else if (line.compare(0, 2, " }") && *inServer)
+	else if (!line.compare(0, 1, "}") && *inServer)
 		*inServer = 0;
+	else if (line.find("{", 0) <= line.size())
+		throw (std::invalid_argument("Error, needed a space and a name before '{' at line " + ss.str()));
 	else
 		throw(std::invalid_argument("Invalid input at line " + ss.str() + ": " + line));
 }
@@ -204,7 +225,7 @@ struct structParse createStruct(std::string configPath)
 	cLine = 0;
 	while (1)
 	{
-		std::getline(configFile, line, '\n');
+		std::getline(configFile, line);
 		if (line.empty())
 			break;
 		addLine(line, &configStruct, &inServer, cLine);
