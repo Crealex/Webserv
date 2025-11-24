@@ -1,10 +1,13 @@
 
 #include "../includes/Config.hpp"
 #include "../includes/colors.hpp"
+#include "../includes/structParse.hpp"
 #include <exception>
 #include <stdexcept>
 
-Config::Config(std::string path)
+// Constructor & Destructor
+
+Config::Config(structParse data)
 {
 	// parsing config file
 	std::cout << GREEN << "Default Config constructor called" << RESET << std::endl;
@@ -74,4 +77,11 @@ bool	Config::getUploadFiles(std::string siteName) const
 std::string	Config::getCGI(std::string siteName) const
 {
 	return (this->sites.at(siteName).CGI);
+}
+
+// Private methods
+
+void	Config::parseElt(struct structParse)
+{
+	// this->errorPath = parseErrorPath();
 }
