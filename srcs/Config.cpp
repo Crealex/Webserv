@@ -1,8 +1,11 @@
 #include "../includes/structParse.hpp"
 #include "../includes/Config.hpp"
 #include "../includes/colors.hpp"
+#include "../includes/structParse.hpp"
 #include <exception>
 #include <stdexcept>
+
+// Constructor & Destructor
 
 Config::Config(structParse data)
 {

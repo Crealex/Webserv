@@ -17,7 +17,6 @@ struct siteParse
 	std::string	CGI;
 };
 
-
 struct hostname
 {
 	std::string					serverName;
@@ -31,6 +30,5 @@ struct structParse
 	std::string					maxSize;
 	std::vector<siteParse>		site;
 };
-
 
 #endif
