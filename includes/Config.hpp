@@ -41,6 +41,9 @@ class Config
 	unsigned int				maxSize;		// max size bodies request
 	std::map<std::string, site>	sites;			// key = site name, value = struct of element
 
+	void 	siteParsing(struct siteParse site);
+	void	parseElt(struct structParse);
+
   public:
 	Config(structParse data);
 	~Config();
