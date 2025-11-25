@@ -33,7 +33,7 @@ static std::vector<std::string>	getValue(std::string data)
 	std::stringstream			ss(data);
 	std::vector<std::string>	infos;
 
-	for (int i = 0; ss >> temp; i++)
+	while (ss >> temp)
 		infos.push_back(temp);
 	return (infos);
 }
@@ -108,7 +108,7 @@ std::vector<unsigned int>	getCode(std::vector<std::string> data)
 	sizeData = data.size();
 	for (unsigned int i = 1; i < sizeData - 1; i++)
 	{
-		std::stringstream			ss;
+		std::stringstream	ss;
 		ss << data[i];
 		ss >> temp;
 		if (temp < 100 || temp > 599)
@@ -148,13 +148,16 @@ unsigned int	parseMaxSize(std::string data)
 {
 	std::vector<std::string>	infos;
 	std::stringstream			ss;
+	std::string					temp;
 	unsigned int				result;
 
 
 	infos = getValue(data);
 	if (infos.size() != 2)
 		throw std::invalid_argument(RED "Error : missing or multiple max size" RESET);
-	ss << removeSemicolon(infos[1]);
+	temp = removeSemicolon(infos[1]);
+	if (temp.size() > 10 || temp.compare("4294967295") > 0)
+		std::cout << ""
 	ss >> result;
 	return (result);
 }
