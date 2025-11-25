@@ -157,7 +157,7 @@ unsigned int	parseMaxSize(std::string data)
 		throw std::invalid_argument(RED "Error : missing or multiple max size" RESET);
 	temp = removeSemicolon(infos[1]);
 	if (temp.size() > 10 || temp.compare("4294967295") > 0)
-		std::cout << ""
+		std::cout << "Value too high for max size, max size set at 4294967295" << std::endl;
 	ss >> result;
 	return (result);
 }
