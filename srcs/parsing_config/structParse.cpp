@@ -1,7 +1,3 @@
-t #ifndef STRUCPARSE_CPP
-
-#define STRUCPARSE_CPP
-
 #include "../../includes/Config.hpp"
 #include "../../includes/structParse.hpp"
 #include "../../includes/colors.hpp"
@@ -162,5 +158,3 @@ unsigned int	parseMaxSize(std::string data)
 	ss >> result;
 	return (result);
 }
-
-#endif
