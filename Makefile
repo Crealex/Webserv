@@ -58,8 +58,8 @@ re: fclean all
 
 display_ascii:
 	@echo "$(BOLD)$(GREEN)"
-	@if [ -f ../ascii_art.txt ]; then \
-		cat ../ascii_art.txt; \
+	@if [ -f ascii_art.txt ]; then \
+		cat ascii_art.txt; \
 	fi
 	@echo "$(END)"
 	@echo "${BOLD}${L_PURPLE} ✨CPP-Module09-ex00✨ ${GREEN}is ready 🎉 ${END}"

@@ -7,8 +7,10 @@
 
 // Constructor & Destructor
 
-Config::Config(structParse data)
+Config::Config(std::string pathConfig)
 {
+	structParse data;
+	data = createStruct(pathConfig);
 	parseElt(data);
 
 	std::cout << GREEN << "Default Config constructor called" << RESET << std::endl;

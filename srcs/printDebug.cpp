@@ -17,7 +17,7 @@ void	printConfigStruct(structParse config)
 	}
 	std::cout << BLUE << "errorPage:" RESET << std::endl;
 	for (long unsigned int i = 0; i < config.ErrorPage.size(); i++)
-		std::cout << BOLD << "	" << i << RESET << ": " << config.ErrorPage[i] << std::endl;
+std::cout << BOLD << "	" << i << RESET << ": " << config.ErrorPage[i] << std::endl;
 	for (long unsigned int i = 0; i < config.site.size(); i++)
 	{
 		std::cout << BLUE << "site " << i << ": " << RESET << std::endl;
@@ -39,6 +39,31 @@ void printConfigClass(Config conf)
 	std::cout << BLUE << "All hostnames:" << RESET << std::endl;
 	for (unsigned int i = 0; i < conf.getAddressPort().size(); i++)
 	{
-
+		std::cout << BOLD << "	hostname " << i << ": " << RESET << conf.getAddressPort()[i].name << std::endl;
+		for (unsigned int j; j < conf.getAddressPort()[i].addressPort.size(); j++) 
+			std::cout << BOLD << "		listen:" << conf.getAddressPort()[i].addressPort[j].first << ":" << conf.getAddressPort()[i].addressPort[j].second << std::endl;
+	}
+	std::cout << BLUE << "ErrorPage:" << RESET << std::endl;
+	for (unsigned int i = 0; i < conf.getErrorPage().size(); i++)
+	{
+		std::cout << BOLD << "	code:" << RESET;
+		for (unsigned int j = 0; j < conf.getErrorPage()[i].code.size(); j++)
+			std::cout << conf.getErrorPage()[i].code[j];
+		std::cout << std::endl;
+		std::cout << BOLD << "	path:" << RESET << conf.getErrorPage()[i].path << std::endl;
+	}
+	for (unsigned int i = 0; i < conf.getSitesName().size(); i++)
+	{
+		std::cout << BLUE << "site " << i << ": " << RESET << std::endl;
+		std::cout << BOLD << "	siteName : " << RESET << conf.getSitesName()[i] << std::endl;
+		std::cout << BOLD << "	methods : " << RESET << std::endl;
+		std::cout << BLUE << "	redirection : " << RESET << std::endl;
+		for (unsigned int j = 0; j < conf.getRedirection(conf.getSitesName()[i]).size(); j++)
+			std::cout << BOLD << "		" << RESET << conf.getRedirection(conf.getSitesName()[i])[j] << std::endl;
+		std::cout << BOLD << "	dirRoot : " << RESET << conf.getDirRoot(conf.getSitesName()[i]) << std::endl;
+		std::cout << BOLD << "	dirListing : " << RESET << conf.getDirListing(conf.getSitesName()[i]) << std::endl;
+		std::cout << BOLD << "	defaultFile : " << RESET << conf.getDefaultFile(conf.getSitesName()[i]) << std::endl;
+		std::cout << BOLD << "	uploadFiles : " << RESET << conf.getUploadFiles(conf.getSitesName()[i]) << std::endl;
+		std::cout << BOLD << "	CGI : " << RESET << conf.getCGI(conf.getSitesName()[i]) << std::endl;
 	}
 }

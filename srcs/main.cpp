@@ -1,5 +1,6 @@
 #include <iostream>
 #include "../includes/colors.hpp"
+#include "../includes/Config.hpp"
 
 int main (void) 
 {

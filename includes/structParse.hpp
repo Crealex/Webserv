@@ -39,5 +39,6 @@ struct structParse
 std::vector<serverData>	parseServer(std::vector<hostname> data);
 std::vector<errorData>	parseError(std::vector<std::string> data);
 unsigned int	parseMaxSize(std::string data);
+struct structParse createStruct(std::string configPath);
 
 #endif

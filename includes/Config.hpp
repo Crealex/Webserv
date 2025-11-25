@@ -46,7 +46,7 @@ class Config
 	void	parseElt(struct structParse);
 
   public:
-	Config(structParse data);
+	Config(std::string pathConfig);
 	~Config();
 
 	
