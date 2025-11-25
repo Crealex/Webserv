@@ -3,6 +3,7 @@
 #define STRUCPARSE_CPP
 
 #include "../../includes/Config.hpp"
+#include "../../includes/structParse.hpp"
 #include "../../includes/colors.hpp"
 #include <sstream>
 #include <fstream>

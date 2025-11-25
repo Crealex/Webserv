@@ -2,11 +2,7 @@
 
 #define CONFIG_HPP
 
-#include <iostream>
-#include <map>
-#include <vector>
-#include <utility>
-#include "structParse.hpp"
+#include "includes.hpp"
 
 typedef std::vector<std::pair<std::string, unsigned int> > vecAddPort;
 

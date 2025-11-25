@@ -1,9 +1,6 @@
 #include "../includes/structParse.hpp"
 #include "../includes/Config.hpp"
 #include "../includes/colors.hpp"
-//#include "../srcs/parsing_config/structParse.cpp"
-#include <exception>
-#include <stdexcept>
 
 // Constructor & Destructor
 

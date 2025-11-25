@@ -2,8 +2,7 @@
 
 #define STRUCT_PARSE_HPP
 
-#include <iostream>
-#include <vector>
+#include "includes.hpp"
 
 struct serverData;
 struct errorData;
