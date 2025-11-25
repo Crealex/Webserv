@@ -1,22 +1,34 @@
 #include "../includes/structParse.hpp"
 #include "../includes/Config.hpp"
 #include "../includes/colors.hpp"
-//#include "../srcs/parsing_config/structParse.cpp"
+#include "../includes/printDebug.hpp"
 #include <exception>
-#include <stdexcept>
 
 // Constructor & Destructor
 
-Config::Config(structParse data)
+Config::Config(std::string pathConfig)
 {
+	structParse data;
+
+	try 
+	{
+		std::cout << "in create" << std::endl;
+		data = createStruct(pathConfig);
+		printConfigStruct(data);
+	}
+	catch (std::exception &e)
+	{
+		std::cerr << RED << "in createStruct: " << e.what() << RESET << std::endl;
+		return ;
+	}
 	parseElt(data);
 
-	std::cout << GREEN << "Default Config constructor called" << RESET << std::endl;
+	//std::cout << GREEN << "Default Config constructor called" << RESET << std::endl;
 }
 
 Config::~Config()
 {
-	std::cout << RED << "Destructor called" << RESET << std::endl;
+	//std::cout << RED << "Destructor called" << RESET << std::endl;
 }
 
 
@@ -36,6 +48,11 @@ std::vector<errorData>	Config::getErrorPage() const
 unsigned int Config::getMaxSize() const
 {
 	return (this->maxSize);
+}
+
+std::vector<std::string>	Config::getSitesName() const
+{
+	return (this->sitesName);
 }
 
 // GETTER FROM struct site

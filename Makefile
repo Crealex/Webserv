@@ -1,5 +1,5 @@
 NAME	= webServ
-SRCS	= $(addprefix srcs/, Config.cpp main.cpp) 
+SRCS	= $(addprefix srcs/, Config.cpp main.cpp printDebug.cpp) 
 PARSING	= $(addprefix srcs/parsing_config/, createStruct.cpp parseElt.cpp structParse.cpp)
 OBJS	= ${SRCS:%.cpp=${OBJDIR}/%.o}
 OBJPARS	= ${PARSING:%.cpp=${OBJDIR}/%.o}
@@ -58,8 +58,8 @@ re: fclean all
 
 display_ascii:
 	@echo "$(BOLD)$(GREEN)"
-	@if [ -f ../ascii_art.txt ]; then \
-		cat ../ascii_art.txt; \
+	@if [ -f ascii_art.txt ]; then \
+		cat ascii_art.txt; \
 	fi
 	@echo "$(END)"
 	@echo "${BOLD}${L_PURPLE} ✨CPP-Module09-ex00✨ ${GREEN}is ready 🎉 ${END}"

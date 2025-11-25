@@ -1,10 +1,8 @@
-#ifndef STRUCPARSE_CPP
-
-#define STRUCPARSE_CPP
-
 #include "../../includes/Config.hpp"
+#include "../../includes/structParse.hpp"
 #include "../../includes/colors.hpp"
 #include <sstream>
+#include <fstream>
 
 /**
  * @brief verify if there's only one semicolon at the end and remove it
@@ -19,7 +17,7 @@ static std::string	removeSemicolon(std::string str)
 
 	indexSemicolon = str.rfind(';');
 	if (indexSemicolon == std::string::npos || indexSemicolon != str.size() - 1)
-		throw std::invalid_argument(RED "Invalid argument : semi colon" RESET);
+		throw std::invalid_argument(RED "Error : missing or multiple semicolon" RESET);
 	result = str.substr(0, str.size() - 1);
 	return (result);
 }
@@ -61,15 +59,15 @@ static vecAddPort	parseAddressPort(std::vector<std::string> data)
 		std::stringstream	ss;
 		infos = getValue(data[i]);
 		if (infos.size() != 2)
-			throw std::invalid_argument(RED "Invalid argument : address port" RESET);
+			throw std::invalid_argument(RED "Error : missing or multiple address / port" RESET);
 		temp = removeSemicolon(infos[1]);
 		colon = temp.find(':');
 		if (colon == std::string::npos || colon != temp.rfind(':'))
-			throw std::invalid_argument(RED "Invalid argument : address port 1" RESET);
+			throw std::invalid_argument(RED "Error : missing or multiple colon for address / port" RESET);
 		ss << temp.substr(colon + 1, temp.size() - colon - 1);
 		ss >> port;
 		if (port > 65535)
-			throw std::invalid_argument(RED "Invalid argument : name server" RESET);
+			throw std::invalid_argument(RED "Error : invalid port value" RESET);
 		result.push_back(std::make_pair(temp.substr(0, colon), port));
 	}
 	return (result);
@@ -93,7 +91,7 @@ std::vector<serverData>	parseServer(std::vector<hostname> data)
 	{
 		infos = getValue(data[i].serverName);
 		if (infos.size() != 2)
-			throw std::invalid_argument(RED "Invalid argument : name server" RESET);
+			throw std::invalid_argument(RED "Error : invalid hsotname" RESET);
 		tempData.name = removeSemicolon(infos[1]);
 		tempData.addressPort = parseAddressPort(data[i].addressPort);
 		result.push_back(tempData);
@@ -114,7 +112,7 @@ std::vector<unsigned int>	getCode(std::vector<std::string> data)
 		ss << data[i];
 		ss >> temp;
 		if (temp < 100 || temp > 599)
-			throw std::invalid_argument(RED "Invalid argument : name server" RESET);
+			throw std::invalid_argument(RED "Error : invalid code error" RESET);
 		result.push_back(temp);
 	}
 	return (result);
@@ -127,14 +125,19 @@ std::vector<errorData>	parseError(std::vector<std::string> data)
 	std::string					pathError;
 	std::vector<std::string>	infos;
 	unsigned int				nbError;
+	std::fstream				file;
 
 	nbError = data.size();
 	for (unsigned int i = 0; i < nbError; i++)
 	{
 		infos = getValue(data[i]);
 		if (infos.size() < 3)
-			throw std::invalid_argument(RED "Invalid argument : error path" RESET);
+			throw std::invalid_argument(RED "Error : missing path or code for error pages" RESET);
 		tempData.path = removeSemicolon(infos[infos.size() - 1]);
+		file.open(tempData.path.c_str(), std::ios::in);
+		if (!file.is_open())
+			throw std::invalid_argument(RED "Error : invalid path for error pages" RESET);
+		file.close();
 		tempData.code = getCode(infos);
 		result.push_back(tempData);
 	}
@@ -150,10 +153,8 @@ unsigned int	parseMaxSize(std::string data)
 
 	infos = getValue(data);
 	if (infos.size() != 2)
-		throw std::invalid_argument(RED "Invalid argument : max size" RESET);
+		throw std::invalid_argument(RED "Error : missing or multiple max size" RESET);
 	ss << removeSemicolon(infos[1]);
 	ss >> result;
 	return (result);
 }
-
-#endif

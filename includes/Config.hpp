@@ -2,11 +2,7 @@
 
 #define CONFIG_HPP
 
-#include <iostream>
-#include <map>
-#include <vector>
-#include <utility>
-#include "structParse.hpp"
+#include "includes.hpp"
 
 typedef std::vector<std::pair<std::string, unsigned int> > vecAddPort;
 
@@ -39,13 +35,14 @@ class Config
 	std::vector<serverData>		addressPort;	// port (maybe can be a array)
 	std::vector<errorData>		errorPage;		// all the error codes
 	unsigned int				maxSize;		// max size bodies request
+	std::vector<std::string>	sitesName;
 	std::map<std::string, site>	sites;			// key = site name, value = struct of element
 
 	void 	siteParsing(struct siteParse site);
 	void	parseElt(struct structParse);
 
   public:
-	Config(structParse data);
+	Config(std::string pathConfig);
 	~Config();
 
 	
@@ -53,6 +50,7 @@ class Config
 	std::vector<serverData>		getAddressPort() const;
 	std::vector<errorData>		getErrorPage() const;
 	unsigned int				getMaxSize() const;
+	std::vector<std::string>	getSitesName() const;
 
 	// GETTER FROM struct site
 	std::map<std::string, bool>	getMethod(std::string siteName) const;

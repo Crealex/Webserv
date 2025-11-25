@@ -1,4 +1,3 @@
-#include <iostream>
 #include <sstream>
 #include <fstream>
 #include "../../includes/colors.hpp"
@@ -59,7 +58,7 @@ static std::string getSiteName(std::string sName)
 	ss >> str;
 
 	// debug
-	std::cout << GREEN << "siteName = " << str << RESET << std::endl;
+	//std::cout << GREEN << "siteName = " << str << RESET << std::endl;
 
 	return str;
 }
@@ -99,8 +98,8 @@ static std::map<std::string, bool> createMethod(std::string str)
 	}
 
 	// debug
-	std::cout << BOLD << "Method :\n\t" << RESET;
-	std::cout << GREEN << std::boolalpha << "Get: " << method.at("GET") << "\n\tPOST: " << method.at("POST") << "\n\tDELETE: " << method.at("DELETE") << RESET << std::endl;
+	//std::cout << BOLD << "Method :\n\t" << RESET;
+	//std::cout << GREEN << std::boolalpha << "Get: " << method.at("GET") << "\n\tPOST: " << method.at("POST") << "\n\tDELETE: " << method.at("DELETE") << RESET << std::endl;
 
 	return method;
 }
@@ -127,12 +126,12 @@ static std::vector<std::string> createRedirection(std::string str)
 	}
 
 	// debug
-	std::cout << BOLD << "Redirection contain: \n\t" << RESET << GREEN;
-	for (std::vector<std::string>::iterator it = ret.begin(); it != ret.end(); it++)
-	{
-		std::cout << *it << " - ";
-	}
-	std::cout << RESET << std::endl;
+	//std::cout << BOLD << "Redirection contain: \n\t" << RESET << GREEN;
+	//for (std::vector<std::string>::iterator it = ret.begin(); it != ret.end(); it++)
+	//{
+	//	std::cout << *it << " - ";
+	//}
+	//std::cout << RESET << std::endl;
 
 	return ret;
 }
@@ -148,8 +147,8 @@ static std::string returnRoot(std::string str)
 	ss >> ret;
 	
 	// debug
-	std::cout << BOLD << "Second element of " << str << " is\n\t";
-	std::cout << RESET << GREEN << str << " return -> " << ret << RESET << std::endl;
+	//std::cout << BOLD << "Second element of " << str << " is\n\t";
+	//std::cout << RESET << GREEN << str << " return -> " << ret << RESET << std::endl;
 	
 	return ret;
 }
@@ -179,8 +178,8 @@ static std::string returnDefaultFile(std::string str)
 	}
 
 	// debug
-	std::cout << BOLD << "Second element of " << str << " is\n\t";
-	std::cout << RESET << GREEN << str << " return -> " << ret << RESET << std::endl;
+	//std::cout << BOLD << "Second element of " << str << " is\n\t";
+	//std::cout << RESET << GREEN << str << " return -> " << ret << RESET << std::endl;
 	
 	return ret;
 }
@@ -252,8 +251,8 @@ static std::string returnCGI(std::string str)
 	}
 
 	// debug
-	std::cout << BOLD << "Second element of " << str << " is\n\t";
-	std::cout << RESET << GREEN << str << " return -> " << ret << RESET << std::endl;
+	//std::cout << BOLD << "Second element of " << str << " is\n\t";
+	//std::cout << RESET << GREEN << str << " return -> " << ret << RESET << std::endl;
 	
 	return ret;
 }
@@ -286,7 +285,8 @@ void Config::siteParsing(siteParse site)
 	std::string siteName = getSiteName(site.siteName);
 	struct site siteStruct = createStructSite(site);
 
-	sites.insert(std::make_pair(siteName, siteStruct));
+	this->sitesName.push_back(siteName);
+	this->sites.insert(std::make_pair(siteName, siteStruct));
 }
 
 // int main()

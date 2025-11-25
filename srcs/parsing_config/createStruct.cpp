@@ -2,9 +2,6 @@
 #include "../../includes/structParse.hpp"
 #include <fstream>
 #include <sstream>
-#include <stdexcept>
-#include <string>
-#include <vector>
 
 /**
  * @brief Clear the tempStruct in addNewSite() (beacause it's a static variable)
@@ -51,7 +48,7 @@ void rmWhiteSpaces(std::string *line)
 void checkEmptyElem(struct structParse *configStruct)
 {
 	if (configStruct->maxSize.empty())
-		throw(std::invalid_argument("Error, missing maxSize!"));
+		throw(std::invalid_argument("Error, missing maxSize"));
 	for (long unsigned int i = 0; i < configStruct->vServer.size(); i++)
 	{
 		if (configStruct->vServer[i].addressPort.size() == 0)
@@ -124,7 +121,6 @@ void addNewSite(std::string line, structParse *configStruct, bool *inSite, std::
 {
 	static siteParse tempStruct;
 
-	std::cout << "line: " << line << std::endl;
 	if (*inSite == 0)
 	{
 		for (unsigned int i = 0; i < configStruct->site.size(); i++)
@@ -185,7 +181,6 @@ void addLine(std::string line, structParse *configStruct, bool *inServer, unsign
 	//			[x] verif doublon attributs site
 	ss << cLine;
 	rmWhiteSpaces(&line);
-	std::cout << "line in addLine: " << line << std::endl;
 	if (line.compare(0, 6, "server") && cLine == 0)
 		throw(std::invalid_argument("Error, missing server opening bracket at the begining of file 'server {'"));
 	if ((!line.compare(0, 6, "listen") || !line.compare(0, 8, "hostname")) && *inServer)
