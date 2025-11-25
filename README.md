@@ -39,6 +39,22 @@ Definir si besoin de seulement une personne pour valider la pull request ou si i
 
 Avant d'utilser les commandes `gh` il faut faire `gh login` pour se log à son compte github (c'est pas très compliqué promis)
 
+### Creer une issue sur github
+
+
+- **Soit avec la commande:** `gh issue create --title "My new issue" --body "Here are more details."`
+- Soit directement avec l'interface graphique de github (voir le liens dans liens utiles)
+
+#### Brief minimum
+
+Il serait bien de definir un minimum d'information a mettre dans chaque issues comme par exemple:
+- La personne concernee par le probleme
+- l'entree qui a creer le probleme
+- une description breve mais clair du probleme
+- si possible le partie sur code concernee
+- etc..
+
 ### Liens utiles
 
-- [https://docs.github.com/fr/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request?tool=cli]
+- **Pull request:** [https://docs.github.com/fr/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request?tool=cli]
+- **Issues**: [https://docs.github.com/fr/issues/tracking-your-work-with-issues/using-issues/creating-an-issue]
