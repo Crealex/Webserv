@@ -70,8 +70,6 @@ void checkEmptyElem(struct structParse *configStruct)
 			throw (std::invalid_argument("Error, missing root for the site no " + ss.str()));
 		if (configStruct->site[i].method.empty())
 			throw (std::invalid_argument("Error, missing methods for the site no " + ss.str()));
-		if (configStruct->site[i].redirection.empty())
-			throw (std::invalid_argument("Error, missing redirection for the site no " + ss.str()));
 		if (configStruct->site[i].defaultFile.empty())
 			throw (std::invalid_argument("Error, missing defaultFile for the site no " + ss.str()));
 		if (configStruct->site[i].dirListing.empty())
@@ -175,12 +173,6 @@ void addLine(std::string line, structParse *configStruct, bool *inServer, unsign
 	static bool inSite = 0;
 	std::stringstream ss;
 
-	// TODO:	[x] Check si on est bien dans une balise server pour les arguments necessaire
-	//			[x] check si bien balise fermante pour les sites
-	//			[x] check si il y a bien un mot avant une balise ouvrante
-	//			[x] check les elements indispensables dans les balises sites (throw une erreur sauf pour les doublons)
-	//			[x] verif doublon hostname et nom de site
-	//			[x] verif doublon attributs site
 	ss << cLine;
 	rmWhiteSpaces(&line);
 	if (line.compare(0, 6, "server") && cLine == 0)
