@@ -39,6 +39,8 @@ void rmWhiteSpaces(std::string *line)
 	while (line->at(0) == '	' || line->at(0) == ' ')
 	{
 		line->erase(0, 1);
+		if (line->empty())
+			throw (std::invalid_argument("Error, empty line after removing whites spaces"));
 	}
 }
 
@@ -174,8 +176,12 @@ void addLine(std::string line, structParse *configStruct, bool *inServer, unsign
 	std::stringstream ss;
 
 	ss << cLine;
+	if (line.empty())
+		throw (std::invalid_argument("Error, empty line at line " + ss.str()));
 	rmWhiteSpaces(&line);
-	if (line.compare(0, 6, "server") && cLine == 0)
+	if (!*inServer && cLine != 1)
+		throw (std::invalid_argument("Error, no elements after the end bracket '}' is permise"));
+	if (line.compare(0, 6, "server") && cLine == 1)
 		throw(std::invalid_argument("Error, missing server opening bracket at the begining of file 'server {'"));
 	if ((!line.compare(0, 6, "listen") || !line.compare(0, 8, "hostname")) && *inServer)
 		addVectString(line, configStruct);
@@ -217,8 +223,11 @@ struct structParse createStruct(std::string configPath)
 	while (1)
 	{
 		std::getline(configFile, line);
-		if (line.empty())
+		if (line == "\0")
 			break;
+		if (line.empty())
+			throw (std::invalid_argument("Error, empty line in the file" ));
+
 		addLine(line, &configStruct, &inServer, cLine);
 		cLine++;
 	}
