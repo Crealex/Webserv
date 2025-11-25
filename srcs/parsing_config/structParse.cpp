@@ -1,4 +1,4 @@
-#ifndef STRUCPARSE_CPP
+t #ifndef STRUCPARSE_CPP
 
 #define STRUCPARSE_CPP
 
@@ -127,7 +127,7 @@ std::vector<errorData>	parseError(std::vector<std::string> data)
 	std::vector<errorData>		result;
 	std::string					pathError;
 	std::vector<std::string>	infos;
-	unsigned int				nbError
+	unsigned int				nbError;
 	std::fstream				file;
 
 	nbError = data.size();
