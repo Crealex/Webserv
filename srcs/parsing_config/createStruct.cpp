@@ -222,7 +222,7 @@ struct structParse createStruct(std::string configPath)
 
 	configFile.open(configPath.c_str());
 	inServer = 0;
-	cLine = 0;
+	cLine = 1;
 	while (1)
 	{
 		std::getline(configFile, line);
