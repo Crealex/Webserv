@@ -38,6 +38,35 @@ static std::vector<std::string>	getValue(std::string data)
 	return (infos);
 }
 
+static unsigned int	checkDigitValue(std::string str, bool isMaxSize)
+{
+	unsigned int		res;
+	unsigned int		firstDigitNotZero;
+	std::string			allDigitsNotZero;
+	std::string			temp;
+	std::stringstream	ss;
+
+	allDigitsNotZero = "123456789";
+	if (str.find('-') != std::string::npos)
+		throw std::invalid_argument(RED "Error : invalid digital value, value is negative" RESET);
+	firstDigitNotZero = str.find_first_of(allDigitsNotZero.c_str(), 0);
+	if (firstDigitNotZero == std::string::npos)
+		return (0);
+	else if (firstDigitNotZero > 0)
+		temp = str.substr(firstDigitNotZero, str.size() - firstDigitNotZero);
+	else
+		temp = str;
+	if (temp.size() > 10 || (temp.size() == 10 && temp.compare("4294967295") > 0))
+	{
+		temp = "4294967295";
+		if (isMaxSize)
+			std::cout << GREEN << "Max size value too high : max size set to 4294967295" << RESET << std::endl;
+	}
+	ss << temp;
+	ss >> res;
+	return (res);
+}
+
 /**
  * @brief parsing for the addres and the port
  * 
@@ -56,19 +85,16 @@ static vecAddPort	parseAddressPort(std::vector<std::string> data)
 	size = data.size();
 	for (int i = 0; i < size; i++)
 	{
-		std::stringstream	ss;
-		infos = getValue(data[i]);
+		infos = getValue(removeSemicolon(data[i]));
 		if (infos.size() != 2)
 			throw std::invalid_argument(RED "Error : missing or multiple address / port" RESET);
-		temp = removeSemicolon(infos[1]);
-		colon = temp.find(':');
-		if (colon == std::string::npos || colon != temp.rfind(':'))
+		colon = infos[1].find(':');
+		if (colon == std::string::npos || colon != infos[1].rfind(':'))
 			throw std::invalid_argument(RED "Error : missing or multiple colon for address / port" RESET);
-		ss << temp.substr(colon + 1, temp.size() - colon - 1);
-		ss >> port;
+		port = checkDigitValue(infos[1].substr(colon + 1, temp.size() - colon - 1), false);
 		if (port > 65535)
 			throw std::invalid_argument(RED "Error : invalid port value" RESET);
-		result.push_back(std::make_pair(temp.substr(0, colon), port));
+		result.push_back(std::make_pair(infos[1].substr(0, colon), port));
 	}
 	return (result);
 }
@@ -89,31 +115,60 @@ std::vector<serverData>	parseServer(std::vector<hostname> data)
 	nbServer = data.size();
 	for (int i = 0; i < nbServer; i++)
 	{
-		infos = getValue(data[i].serverName);
+		infos = getValue(removeSemicolon(data[i].serverName));
 		if (infos.size() != 2)
-			throw std::invalid_argument(RED "Error : invalid hsotname" RESET);
-		tempData.name = removeSemicolon(infos[1]);
+			throw std::invalid_argument(RED "Error : invalid hostname" RESET);
+		tempData.name = infos[1];
 		tempData.addressPort = parseAddressPort(data[i].addressPort);
 		result.push_back(tempData);
 	}
 	return (result);
 }
 
-std::vector<unsigned int>	getCode(std::vector<std::string> data)
+static void	checkDuplicateCode(std::vector<errorData> globalRes, unsigned int toCheck, std::string actualPath, bool &duplicateOk)
+{
+	unsigned int	nbCodeInVec;
+	unsigned int	sizeData;
+
+	sizeData = globalRes.size();
+	for (unsigned int i = 0; i < sizeData; i++)
+	{
+		nbCodeInVec = globalRes[i].code.size();
+		for (unsigned int j = 0; j < nbCodeInVec; j++)
+		{
+			if (toCheck == globalRes[i].code[j])
+			{
+				if (globalRes[i].path.compare(actualPath) != 0)
+					throw std::invalid_argument(RED "Error : code with multiple error page" RESET);
+				else
+					duplicateOk = true;
+			}
+		}
+	}
+}
+
+std::vector<unsigned int>	getCode(std::vector<std::string> data, std::string actualPath, std::vector<errorData> globalRes)
 {
 	unsigned int				sizeData;
 	unsigned int				temp;
+	bool						duplicate;
 	std::vector<unsigned int>	result;
 
 	sizeData = data.size();
 	for (unsigned int i = 1; i < sizeData - 1; i++)
 	{
-		std::stringstream	ss;
-		ss << data[i];
-		ss >> temp;
+		duplicate = false;
+		temp = checkDigitValue(data[i], false);
 		if (temp < 100 || temp > 599)
 			throw std::invalid_argument(RED "Error : invalid code error" RESET);
-		result.push_back(temp);
+		checkDuplicateCode(globalRes, temp, actualPath, duplicate);
+		for (unsigned int i = 0; i < result.size(); i++)
+		{
+			if (temp == result[i])
+				duplicate = true;
+		}
+		if (!duplicate)
+			result.push_back(temp);
 	}
 	return (result);
 }
@@ -130,15 +185,15 @@ std::vector<errorData>	parseError(std::vector<std::string> data)
 	nbError = data.size();
 	for (unsigned int i = 0; i < nbError; i++)
 	{
-		infos = getValue(data[i]);
+		infos = getValue(removeSemicolon(data[i]));
 		if (infos.size() < 3)
 			throw std::invalid_argument(RED "Error : missing path or code for error pages" RESET);
-		tempData.path = removeSemicolon(infos[infos.size() - 1]);
+		tempData.path = infos[infos.size() - 1];
 		file.open(tempData.path.c_str(), std::ios::in);
 		if (!file.is_open())
 			throw std::invalid_argument(RED "Error : invalid path for error pages" RESET);
 		file.close();
-		tempData.code = getCode(infos);
+		tempData.code = getCode(infos, tempData.path, result);
 		result.push_back(tempData);
 	}
 	return (result);
@@ -147,17 +202,13 @@ std::vector<errorData>	parseError(std::vector<std::string> data)
 unsigned int	parseMaxSize(std::string data)
 {
 	std::vector<std::string>	infos;
-	std::stringstream			ss;
 	std::string					temp;
 	unsigned int				result;
 
 
-	infos = getValue(data);
+	infos = getValue(removeSemicolon(data));
 	if (infos.size() != 2)
 		throw std::invalid_argument(RED "Error : missing or multiple max size" RESET);
-	temp = removeSemicolon(infos[1]);
-	if (temp.size() > 10 || temp.compare("4294967295") > 0)
-		std::cout << "Value too high for max size, max size set at 4294967295" << std::endl;
-	ss >> result;
+	result = checkDigitValue(infos[1], true);
 	return (result);
 }
