@@ -38,6 +38,11 @@ unsigned int Config::getMaxSize() const
 	return (this->maxSize);
 }
 
+std::vector<std::string>	Config::getSitesName() const
+{
+	return (this->sitesName);
+}
+
 // GETTER FROM struct site
 
 std::map<std::string, bool>	Config::getMethod(std::string siteName) const
