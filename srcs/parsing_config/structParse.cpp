@@ -1,9 +1,10 @@
+#ifndef STRUCPARSE_CPP
+
+#define STRUCPARSE_CPP
+
 #include "../../includes/Config.hpp"
 #include "../../includes/colors.hpp"
 #include <sstream>
-#include <string>
-#include <exception>
-#include <dirent.h>
 
 /**
  * @brief verify if there's only one semicolon at the end and remove it
@@ -159,3 +160,5 @@ unsigned int	parseMaxSize(std::string data)
 	ss >> result;
 	return (result);
 }
+
+#endif

@@ -171,7 +171,7 @@ static std::string returnDefaultFile(std::string str)
 	ss >> ret;
 	ss >> ret;
 	
-	std::ifstream stream(ret);
+	std::ifstream stream(ret.c_str());
 	if (!stream.is_open())
 	{
 		std::string error("Error: invalid variable in line:\n\t");
