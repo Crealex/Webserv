@@ -3,6 +3,7 @@
 #define STRUCPARSE_CPP
 
 #include "../../includes/Config.hpp"
+#include "../../includes/structParse.hpp"
 #include "../../includes/colors.hpp"
 #include <sstream>
 #include <fstream>
@@ -127,7 +128,7 @@ std::vector<errorData>	parseError(std::vector<std::string> data)
 	std::vector<errorData>		result;
 	std::string					pathError;
 	std::vector<std::string>	infos;
-	unsigned int				nbError
+	unsigned int				nbError;
 	std::fstream				file;
 
 	nbError = data.size();
@@ -137,10 +138,10 @@ std::vector<errorData>	parseError(std::vector<std::string> data)
 		if (infos.size() < 3)
 			throw std::invalid_argument(RED "Invalid argument : error path" RESET);
 		tempData.path = removeSemicolon(infos[infos.size() - 1]);
-		file = open(tempData.path.c_str, std::ios::in);
+		file.open(tempData.path.c_str(), std::ios::in);
 		if (!file.is_open())
 			throw std::invalid_argument(RED "Invalid argument : error path" RESET);
-		close(file);
+		file.close();
 		tempData.code = getCode(infos);
 		result.push_back(tempData);
 	}
