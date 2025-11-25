@@ -1,7 +1,9 @@
 #include "../../includes/colors.hpp"
 #include "../../includes/structParse.hpp"
+#include <exception>
 #include <fstream>
 #include <sstream>
+#include <stdexcept>
 
 /**
  * @brief Clear the tempStruct in addNewSite() (beacause it's a static variable)
@@ -216,6 +218,8 @@ struct structParse createStruct(std::string configPath)
 	unsigned int cLine;
 
 	configFile.open(configPath.c_str());
+	if (!configFile.is_open())
+		throw std::invalid_argument("Error, invalid path for the config file");
 	inServer = 0;
 	cLine = 1;
 	while (1)

@@ -9,7 +9,7 @@ int main (void)
 {
 	try 
 	{
-		Config configTest("./good.conf");
+		Config configTest("../../good.conf");
 		printConfigClass(configTest);
 	} catch (std::exception &e) 
 	{
