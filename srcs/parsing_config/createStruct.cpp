@@ -181,8 +181,6 @@ void addLine(std::string line, structParse *configStruct, bool *inServer, unsign
 	//			[x] verif doublon attributs site
 	ss << cLine;
 	rmWhiteSpaces(&line);
-	std::cout << "line in addLine:" << line << std::endl;
-	std::cout << "line in addLine: " << line << std::endl;
 	if (line.compare(0, 6, "server") && cLine == 0)
 		throw(std::invalid_argument("Error, missing server opening bracket at the begining of file 'server {'"));
 	if ((!line.compare(0, 6, "listen") || !line.compare(0, 8, "hostname")) && *inServer)
