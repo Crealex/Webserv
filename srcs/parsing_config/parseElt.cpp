@@ -286,7 +286,8 @@ void Config::siteParsing(siteParse site)
 	std::string siteName = getSiteName(site.siteName);
 	struct site siteStruct = createStructSite(site);
 
-	sites.insert(std::make_pair(siteName, siteStruct));
+	this->sitesName.push_back(siteName);
+	this->sites.insert(std::make_pair(siteName, siteStruct));
 }
 
 // int main()

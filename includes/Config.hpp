@@ -39,6 +39,7 @@ class Config
 	std::vector<serverData>		addressPort;	// port (maybe can be a array)
 	std::vector<errorData>		errorPage;		// all the error codes
 	unsigned int				maxSize;		// max size bodies request
+	std::vector<std::string>	sitesName;
 	std::map<std::string, site>	sites;			// key = site name, value = struct of element
 
 	void 	siteParsing(struct siteParse site);
@@ -53,6 +54,7 @@ class Config
 	std::vector<serverData>		getAddressPort() const;
 	std::vector<errorData>		getErrorPage() const;
 	unsigned int				getMaxSize() const;
+	std::vector<std::string>	getSitesName() const;
 
 	// GETTER FROM struct site
 	std::map<std::string, bool>	getMethod(std::string siteName) const;
