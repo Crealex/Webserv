@@ -1,12 +1,16 @@
-
+#include "../includes/structParse.hpp"
 #include "../includes/Config.hpp"
 #include "../includes/colors.hpp"
+//#include "../srcs/parsing_config/structParse.cpp"
 #include <exception>
 #include <stdexcept>
 
-Config::Config(std::string path)
+// Constructor & Destructor
+
+Config::Config(structParse data)
 {
-	// parsing config file
+	parseElt(data);
+
 	std::cout << GREEN << "Default Config constructor called" << RESET << std::endl;
 }
 
@@ -15,23 +19,18 @@ Config::~Config()
 	std::cout << RED << "Destructor called" << RESET << std::endl;
 }
 
-// GETTER FROM addressPort
 
-std::vector<struct pair> Config::getAddressPort() const
+
+// GETTER
+
+std::vector<serverData> Config::getAddressPort() const
 {
 	return (this->addressPort);
 }
 
-// GETTER
-
-std::vector<unsigned int>	Config::getErrorCode() const
+std::vector<errorData>	Config::getErrorPage() const
 {
-	return (this->errorCode);
-}
-
-std::string Config::getErrorPath() const
-{
-	return (this->errorPath);
+	return (this->errorPage);
 }
 
 unsigned int Config::getMaxSize() const
@@ -74,4 +73,19 @@ bool	Config::getUploadFiles(std::string siteName) const
 std::string	Config::getCGI(std::string siteName) const
 {
 	return (this->sites.at(siteName).CGI);
+}
+
+void	Config::parseElt(structParse data)
+{
+	// this->errorPath = parseErrorPath();
+
+	for (std::vector<siteParse>::iterator it = data.site.begin();
+		it != data.site.end();
+		it++)
+	{
+		siteParsing((*it));
+	}
+	this->addressPort = parseServer(data.vServer);
+	this->errorPage = parseError(data.ErrorPage);
+	this->maxSize = parseMaxSize(data.maxSize);
 }

@@ -5,6 +5,9 @@
 #include <iostream>
 #include <vector>
 
+struct serverData;
+struct errorData;
+
 struct siteParse
 {
 	std::string	siteName;
@@ -17,15 +20,24 @@ struct siteParse
 	std::string	CGI;
 };
 
-struct structParse
+struct hostname
 {
-	std::string	address;
-	std::string	port;
-	std::string errorCode;
-	std::string errorPath;
-	std::string maxSize;
-	std::vector<struct siteParse> site;
+	std::string					serverName;
+	std::vector<std::string>	addressPort;
 };
 
+struct structParse
+{
+	std::vector<hostname>		vServer;
+	std::vector<std::string>	ErrorPage;
+	std::string					maxSize;
+	std::vector<siteParse>		site;
+};
+
+
+
+std::vector<serverData>	parseServer(std::vector<hostname> data);
+std::vector<errorData>	parseError(std::vector<std::string> data);
+unsigned int	parseMaxSize(std::string data);
 
 #endif
