@@ -40,7 +40,7 @@ void printConfigClass(Config conf)
 	for (unsigned int i = 0; i < conf.getAddressPort().size(); i++)
 	{
 		std::cout << BOLD << "	hostname " << i << ": " << RESET << conf.getAddressPort()[i].name << std::endl;
-		for (unsigned int j; j < conf.getAddressPort()[i].addressPort.size(); j++) 
+		for (unsigned int j = 0; j < conf.getAddressPort()[i].addressPort.size(); j++) 
 			std::cout << BOLD << "		listen:" << conf.getAddressPort()[i].addressPort[j].first << ":" << conf.getAddressPort()[i].addressPort[j].second << std::endl;
 	}
 	std::cout << BLUE << "ErrorPage:" << RESET << std::endl;
@@ -56,7 +56,14 @@ void printConfigClass(Config conf)
 	{
 		std::cout << BLUE << "site " << i << ": " << RESET << std::endl;
 		std::cout << BOLD << "	siteName : " << RESET << conf.getSitesName()[i] << std::endl;
-		std::cout << BOLD << "	methods : " << RESET << std::endl;
+		std::cout << BOLD << "	methods : " << RESET;
+		if (conf.getMethod(conf.getSitesName()[i]).at("GET"))
+			std::cout << BOLD << "GET " << RESET;
+		if (conf.getMethod(conf.getSitesName()[i]).at("POST"))
+			std::cout << BOLD << "POST " << RESET;
+		if (conf.getMethod(conf.getSitesName()[i]).at("DELETE"))
+			std::cout << BOLD << "DELETE" << RESET;
+		std::cout << std::endl;
 		std::cout << BLUE << "	redirection : " << RESET << std::endl;
 		for (unsigned int j = 0; j < conf.getRedirection(conf.getSitesName()[i]).size(); j++)
 			std::cout << BOLD << "		" << RESET << conf.getRedirection(conf.getSitesName()[i])[j] << std::endl;
