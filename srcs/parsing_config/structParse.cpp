@@ -5,6 +5,7 @@
 #include "../../includes/Config.hpp"
 #include "../../includes/colors.hpp"
 #include <sstream>
+#include <fstream>
 
 /**
  * @brief verify if there's only one semicolon at the end and remove it
@@ -126,7 +127,8 @@ std::vector<errorData>	parseError(std::vector<std::string> data)
 	std::vector<errorData>		result;
 	std::string					pathError;
 	std::vector<std::string>	infos;
-	unsigned int				nbError;
+	unsigned int				nbError
+	std::fstream				file;
 
 	nbError = data.size();
 	for (unsigned int i = 0; i < nbError; i++)
@@ -135,6 +137,10 @@ std::vector<errorData>	parseError(std::vector<std::string> data)
 		if (infos.size() < 3)
 			throw std::invalid_argument(RED "Invalid argument : error path" RESET);
 		tempData.path = removeSemicolon(infos[infos.size() - 1]);
+		file = open(tempData.path.c_str, std::ios::in);
+		if (!file.is_open())
+			throw std::invalid_argument(RED "Invalid argument : error path" RESET);
+		close(file);
 		tempData.code = getCode(infos);
 		result.push_back(tempData);
 	}
