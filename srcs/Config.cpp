@@ -1,19 +1,33 @@
 #include "../includes/structParse.hpp"
 #include "../includes/Config.hpp"
 #include "../includes/colors.hpp"
+#include "../includes/printDebug.hpp"
+#include <exception>
 
 // Constructor & Destructor
 
-Config::Config(structParse data)
+Config::Config(std::string pathConfig)
 {
+	structParse data;
+
+	try 
+	{
+		std::cout << "in create" << std::endl;
+		data = createStruct(pathConfig);
+		printConfigStruct(data);
+	}
+	catch (std::exception &e)
+	{
+		std::cerr << RED << "in createStruct: " << e.what() << RESET << std::endl;
+	}
 	parseElt(data);
 
-	std::cout << GREEN << "Default Config constructor called" << RESET << std::endl;
+	//std::cout << GREEN << "Default Config constructor called" << RESET << std::endl;
 }
 
 Config::~Config()
 {
-	std::cout << RED << "Destructor called" << RESET << std::endl;
+	//std::cout << RED << "Destructor called" << RESET << std::endl;
 }
 
 
