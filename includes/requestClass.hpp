@@ -1,9 +1,9 @@
-#ifndef REQUEST_CLASS_HPP
+#ifndef METHODS_CLASS_HPP
 
-# define REQUEST_CLASS_HPP
+# define METHODS_CLASS_HPP
 # include "includes.hpp"
 
-class Request {
+class Methods {
 private:
 	std::string		_method;
 	std::string		_location;
@@ -15,11 +15,11 @@ private:
 	std::string		_ContentType;
 	unsigned int	_ContentLength;
 	std::string		_body;
-	Request();
+	Methods();
 public:
 	virtual const std::string createResponse() = 0;
 
 	
 };
-#endif // !REQUEST_CLASS_HPP
+#endif
 
