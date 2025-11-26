@@ -57,7 +57,7 @@ re: fclean all
 .PHONY: all clean fclean re display_ascii
 
 display_ascii:
-	@echo "$(BOLD)$(GREEN)"
+	@echo "$(BOLD)$(BLACK)"
 	@if [ -f ascii_art.txt ]; then \
 		cat ascii_art.txt; \
 	fi
