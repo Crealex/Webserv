@@ -76,7 +76,7 @@ static unsigned int	checkDigitValue(std::string str, bool isMaxSize)
 static vecAddPort	parseAddressPort(std::vector<std::string> data)
 {
 	vecAddPort					result;
-	std::string					temp;
+	std::string					address;
 	int							size;
 	size_t						colon;
 	unsigned int				port;
@@ -91,10 +91,17 @@ static vecAddPort	parseAddressPort(std::vector<std::string> data)
 		colon = infos[1].find(':');
 		if (colon == std::string::npos || colon != infos[1].rfind(':'))
 			throw std::invalid_argument(RED "Error : missing or multiple colon for address / port" RESET);
-		port = checkDigitValue(infos[1].substr(colon + 1, temp.size() - colon - 1), false);
+		if (colon == 0)
+			address = "localhost";
+		else
+			address = infos[1].substr(0, colon);
+		if (colon == infos[1].size() - 1)
+			port = 4242;
+		else
+			port = checkDigitValue(infos[1].substr(colon + 1, infos[1].size() - colon - 1), false);
 		if (port > 65535)
 			throw std::invalid_argument(RED "Error : invalid port value" RESET);
-		result.push_back(std::make_pair(infos[1].substr(0, colon), port));
+		result.push_back(std::make_pair(address, port));
 	}
 	return (result);
 }
