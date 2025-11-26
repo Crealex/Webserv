@@ -19,6 +19,7 @@ Config::Config(std::string pathConfig)
 	catch (std::exception &e)
 	{
 		std::cerr << RED << "in createStruct: " << e.what() << RESET << std::endl;
+		return ;
 	}
 	parseElt(data);
 

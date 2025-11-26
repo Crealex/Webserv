@@ -91,7 +91,7 @@ std::vector<serverData>	parseServer(std::vector<hostname> data)
 	{
 		infos = getValue(data[i].serverName);
 		if (infos.size() != 2)
-			throw std::invalid_argument(RED "Error : invalid hsotname" RESET);
+			throw std::invalid_argument(RED "Error : invalid hostname" RESET);
 		tempData.name = removeSemicolon(infos[1]);
 		tempData.addressPort = parseAddressPort(data[i].addressPort);
 		result.push_back(tempData);
