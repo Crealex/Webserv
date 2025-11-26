@@ -22,6 +22,12 @@ void clearStruct(siteParse *temp)
 	temp->redirection.clear();
 }
 
+/**
+ * @brief check if all site attributs is full
+ *
+ * @param temp a copy of siteParse
+ * @return
+ */
 bool isFull(siteParse temp)
 {
 	if (temp.siteName.empty() || temp.CGI.empty() || temp.defaultFile.empty() || temp.uploadFiles.empty() || temp.dirListing.empty() || temp.dirRoot.empty() || temp.method.empty() || temp.redirection.empty())
@@ -40,7 +46,7 @@ void rmWhiteSpaces(std::string *line)
 	{
 		line->erase(0, 1);
 		if (line->empty())
-			throw (std::invalid_argument("Error, empty line after removing whites spaces"));
+			throw(std::invalid_argument("Error, empty line after removing whites spaces"));
 	}
 }
 
@@ -59,21 +65,21 @@ void checkEmptyElem(struct structParse *configStruct)
 			configStruct->vServer[i].addressPort.push_back("listen localhost:4242 (default)");
 	}
 	if (configStruct->site.size() == 0)
-		throw (std::invalid_argument("Error, missing site!"));
-	for (long unsigned int i = 0; i < configStruct->site.size(); i++) 
+		throw(std::invalid_argument("Error, missing site!"));
+	for (long unsigned int i = 0; i < configStruct->site.size(); i++)
 	{
 		std::stringstream ss;
 		ss << i;
 		if (configStruct->site[i].siteName.empty())
-			throw (std::invalid_argument("Error, missing siteName for the site no " + ss.str()));
+			throw(std::invalid_argument("Error, missing siteName for the site no " + ss.str()));
 		if (configStruct->site[i].CGI.empty())
-			throw (std::invalid_argument("Error, missing CGI for the site no " + ss.str()));
+			throw(std::invalid_argument("Error, missing CGI for the site no " + ss.str()));
 		if (configStruct->site[i].dirRoot.empty())
-			throw (std::invalid_argument("Error, missing root for the site no " + ss.str()));
+			throw(std::invalid_argument("Error, missing root for the site no " + ss.str()));
 		if (configStruct->site[i].method.empty())
-			throw (std::invalid_argument("Error, missing methods for the site no " + ss.str()));
+			throw(std::invalid_argument("Error, missing methods for the site no " + ss.str()));
 		if (configStruct->site[i].defaultFile.empty())
-			throw (std::invalid_argument("Error, missing defaultFile for the site no " + ss.str()));
+			throw(std::invalid_argument("Error, missing defaultFile for the site no " + ss.str()));
 		if (configStruct->site[i].dirListing.empty())
 			configStruct->site[i].dirListing = "listDirectory false (default)";
 		if (configStruct->site[i].uploadFiles.empty())
@@ -95,6 +101,12 @@ std::string addElem(std::string line, std::string elem)
 	return (line);
 }
 
+/**
+ * @brief Add element in the struct hostname (named vServer)
+ *
+ * @param line: The current line
+ * @param configStruct: A pointer to the main structParse
+ */
 void addVectString(std::string line, structParse *configStruct)
 {
 	static unsigned int iHostName = -1;
@@ -105,12 +117,12 @@ void addVectString(std::string line, structParse *configStruct)
 			throw(std::invalid_argument("missing hostname berfore listen tag!"));
 		configStruct->vServer[iHostName].addressPort.push_back(line);
 		return;
-	
+
 	} else if (!line.compare(0, 8, "hostname"))
 	{
 		for (unsigned int i = 0; i < configStruct->vServer.size(); i++)
 			if (line == configStruct->vServer[i].serverName)
-				throw (std::invalid_argument("Error, " + line + " already exist"));
+				throw(std::invalid_argument("Error, " + line + " already exist"));
 		iHostName++;
 		configStruct->vServer.push_back(hostname());
 		configStruct->vServer[iHostName].serverName = line;
@@ -119,6 +131,14 @@ void addVectString(std::string line, structParse *configStruct)
 	throw(std::invalid_argument("Error with adding item in vector<std::string>, line: " + line));
 }
 
+/**
+ * @brief Add all attributs of a site
+ *
+ * @param line: The current line
+ * @param configStruct A pointer to the main structParse
+ * @param inSite: A boolean to now if we are in the site bracket or not
+ * @param cLine: The number of the current line
+ */
 void addNewSite(std::string line, structParse *configStruct, bool *inSite, std::string cLine)
 {
 	static siteParse tempStruct;
@@ -128,11 +148,11 @@ void addNewSite(std::string line, structParse *configStruct, bool *inSite, std::
 		for (unsigned int i = 0; i < configStruct->site.size(); i++)
 		{
 			if (line == configStruct->site[i].siteName)
-				throw (std::invalid_argument("Error, at line " + cLine + ", site name already exist"));
+				throw(std::invalid_argument("Error, at line " + cLine + ", site name already exist"));
 		}
 		tempStruct.siteName = line;
 		if (tempStruct.siteName.length() <= 2)
-			throw (std::invalid_argument("Error, needed a siteName before the open bracket '{'"));
+			throw(std::invalid_argument("Error, needed a siteName before the open bracket '{'"));
 		*inSite = 1;
 		return;
 	}
@@ -155,9 +175,8 @@ void addNewSite(std::string line, structParse *configStruct, bool *inSite, std::
 		*inSite = 0;
 		configStruct->site.push_back(tempStruct);
 		clearStruct(&tempStruct);
-	} 
-	else if (isFull(tempStruct))
-		throw (std::invalid_argument("Error, needed to close the site segment with '}'"));
+	} else if (isFull(tempStruct))
+		throw(std::invalid_argument("Error, needed to close the site segment with '}'"));
 	else
 		throw(std::invalid_argument("invalid element at the line " + cLine + ": " + line));
 }
@@ -177,10 +196,10 @@ void addLine(std::string line, structParse *configStruct, bool *inServer, unsign
 
 	ss << cLine;
 	if (line.empty())
-		throw (std::invalid_argument("Error, empty line at line " + ss.str()));
+		throw(std::invalid_argument("Error, empty line at line " + ss.str()));
 	rmWhiteSpaces(&line);
 	if (!*inServer && cLine != 1)
-		throw (std::invalid_argument("Error, no elements after the end bracket '}' is permise"));
+		throw(std::invalid_argument("Error, no elements after the end bracket '}' is permise"));
 	if (line.compare(0, 6, "server") && cLine == 1)
 		throw(std::invalid_argument("Error, missing server opening bracket at the begining of file 'server {'"));
 	if ((!line.compare(0, 6, "listen") || !line.compare(0, 8, "hostname")) && *inServer)
@@ -196,7 +215,7 @@ void addLine(std::string line, structParse *configStruct, bool *inServer, unsign
 	else if (!line.compare(0, 1, "}") && *inServer)
 		*inServer = 0;
 	else if (line.find("{", 0) <= line.size())
-		throw (std::invalid_argument("Error, needed a space and a name before '{' at line " + ss.str()));
+		throw(std::invalid_argument("Error, needed a space and a name before '{' at line " + ss.str()));
 	else
 		throw(std::invalid_argument("Invalid input at line " + ss.str() + ": " + line));
 }
@@ -226,7 +245,7 @@ struct structParse createStruct(std::string configPath)
 		if (line == "\0")
 			break;
 		if (line.empty())
-			throw (std::invalid_argument("Error, empty line in the file" ));
+			throw(std::invalid_argument("Error, empty line in the file"));
 
 		addLine(line, &configStruct, &inServer, cLine);
 		cLine++;
@@ -237,45 +256,3 @@ struct structParse createStruct(std::string configPath)
 		throw(std::invalid_argument("Error, missing closing bracket '}' at the end of file"));
 	return (configStruct);
 }
-
-// *** MAIN DE TEST ***
-
-//int main(void)
-//{
-//	struct structParse structTest;
-//
-//	try
-//	{
-//		structTest = createStruct("../../test.conf");
-//	} catch (const std::exception &e)
-//	{
-//		std::cerr << RED << e.what() << RESET << std::endl;
-//		return (1);
-//	}
-//
-//	std::cout << GREEN << "The struct:" << RESET << std::endl;
-//	std::cout << BOLD << "maxSize: " << RESET << structTest.maxSize << std::endl;
-//	std::cout << BLUE << "All hostnames:" << RESET << std::endl;
-//	for (long unsigned int i = 0; i < structTest.vServer.size(); i++)
-//	{
-//		std::cout << BOLD << "	hostname " << i << ": " << RESET << structTest.vServer[i].serverName << std::endl;
-//		for (long unsigned int j = 0; j < structTest.vServer[i].addressPort.size(); j++)
-//			std::cout << "		listen: " << structTest.vServer[i].addressPort[j] << std::endl;
-//	}
-//	std::cout << BLUE << "errorPage:" RESET << std::endl;
-//	for (long unsigned int i = 0; i < structTest.ErrorPage.size(); i++)
-//		std::cout << BOLD << "	" << i << RESET << ": " << structTest.ErrorPage[i] << std::endl;
-//	for (long unsigned int i = 0; i < structTest.site.size(); i++)
-//	{
-//		std::cout << BLUE << "site " << i << ": " << RESET << std::endl;
-//		std::cout << BOLD << "	siteName : " << RESET << structTest.site[i].siteName << std::endl;
-//		std::cout << BOLD << "	methods : " << RESET << structTest.site[i].method << std::endl;
-//		std::cout << BOLD << "	redirection : " << RESET << structTest.site[i].redirection << std::endl;
-//		std::cout << BOLD << "	dirRoot : " << RESET << structTest.site[i].dirRoot << std::endl;
-//		std::cout << BOLD << "	dirListing : " << RESET << structTest.site[i].dirListing << std::endl;
-//		std::cout << BOLD << "	defaultFile : " << RESET << structTest.site[i].defaultFile << std::endl;
-//		std::cout << BOLD << "	uploadFiles : " << RESET << structTest.site[i].uploadFiles << std::endl;
-//		std::cout << BOLD << "	CGI : " << RESET << structTest.site[i].CGI << std::endl;
-//	}
-//}
-
