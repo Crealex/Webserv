@@ -1,8 +1,8 @@
 #ifndef GET_HPP
-
 # define GET_HPP
+
 # include "../includes.hpp"
-#include "methodsClass.hpp"
+# include "methodsClass.hpp"
 
 struct request;
 

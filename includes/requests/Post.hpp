@@ -1,10 +1,7 @@
 #ifndef POST_HPP
-
 # define POST_HPP
 
-
-#include "methodsClass.hpp"
-# define POST_HPP
+# include "methodsClass.hpp"
 # include "../includes.hpp"
 
 struct request;

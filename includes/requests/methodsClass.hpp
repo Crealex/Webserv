@@ -1,6 +1,6 @@
 #ifndef METHODS_CLASS_HPP
-
 # define METHODS_CLASS_HPP
+
 # include "../includes.hpp"
 
 class Methods {
