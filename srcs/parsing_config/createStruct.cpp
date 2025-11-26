@@ -1,7 +1,9 @@
 #include "../../includes/colors.hpp"
 #include "../../includes/structParse.hpp"
+#include <exception>
 #include <fstream>
 #include <sstream>
+#include <stdexcept>
 
 /**
  * @brief Clear the tempStruct in addNewSite() (beacause it's a static variable)
@@ -37,6 +39,8 @@ void rmWhiteSpaces(std::string *line)
 	while (line->at(0) == '	' || line->at(0) == ' ')
 	{
 		line->erase(0, 1);
+		if (line->empty())
+			throw (std::invalid_argument("Error, empty line after removing whites spaces"));
 	}
 }
 
@@ -68,8 +72,6 @@ void checkEmptyElem(struct structParse *configStruct)
 			throw (std::invalid_argument("Error, missing root for the site no " + ss.str()));
 		if (configStruct->site[i].method.empty())
 			throw (std::invalid_argument("Error, missing methods for the site no " + ss.str()));
-		if (configStruct->site[i].redirection.empty())
-			throw (std::invalid_argument("Error, missing redirection for the site no " + ss.str()));
 		if (configStruct->site[i].defaultFile.empty())
 			throw (std::invalid_argument("Error, missing defaultFile for the site no " + ss.str()));
 		if (configStruct->site[i].dirListing.empty())
@@ -173,15 +175,13 @@ void addLine(std::string line, structParse *configStruct, bool *inServer, unsign
 	static bool inSite = 0;
 	std::stringstream ss;
 
-	// TODO:	[x] Check si on est bien dans une balise server pour les arguments necessaire
-	//			[x] check si bien balise fermante pour les sites
-	//			[x] check si il y a bien un mot avant une balise ouvrante
-	//			[x] check les elements indispensables dans les balises sites (throw une erreur sauf pour les doublons)
-	//			[x] verif doublon hostname et nom de site
-	//			[x] verif doublon attributs site
 	ss << cLine;
+	if (line.empty())
+		throw (std::invalid_argument("Error, empty line at line " + ss.str()));
 	rmWhiteSpaces(&line);
-	if (line.compare(0, 6, "server") && cLine == 0)
+	if (!*inServer && cLine != 1)
+		throw (std::invalid_argument("Error, no elements after the end bracket '}' is permise"));
+	if (line.compare(0, 6, "server") && cLine == 1)
 		throw(std::invalid_argument("Error, missing server opening bracket at the begining of file 'server {'"));
 	if ((!line.compare(0, 6, "listen") || !line.compare(0, 8, "hostname")) && *inServer)
 		addVectString(line, configStruct);
@@ -216,13 +216,18 @@ struct structParse createStruct(std::string configPath)
 	unsigned int cLine;
 
 	configFile.open(configPath.c_str());
+	if (!configFile.is_open())
+		throw std::invalid_argument("Error, invalid path for the config file");
 	inServer = 0;
-	cLine = 0;
+	cLine = 1;
 	while (1)
 	{
 		std::getline(configFile, line);
-		if (line.empty())
+		if (line == "\0")
 			break;
+		if (line.empty())
+			throw (std::invalid_argument("Error, empty line in the file" ));
+
 		addLine(line, &configStruct, &inServer, cLine);
 		cLine++;
 	}
