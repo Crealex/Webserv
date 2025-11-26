@@ -127,9 +127,16 @@ static std::vector<std::string> createRedirection(std::string str)
 	ss >> line;
 
 	std::vector<std::string> ret;
+	int i = 0;
 	while (ss >> line)
 	{
+		i = 1;
 		ret.push_back(line);
+	}
+	if (i == 0)
+	{
+		std::string error("Error: no Redirection on line:\n\t");
+		throw std::invalid_argument(error + str);
 	}
 
 	// debug
@@ -145,8 +152,8 @@ static std::vector<std::string> createRedirection(std::string str)
 
 static std::string returnRoot(std::string str)
 {
-	twoElement(str);
 	removeSemiColon(str);
+	twoElement(str);
 	std::stringstream ss(str);
 	std::string ret;
 
@@ -169,8 +176,8 @@ static std::string returnRoot(std::string str)
  */
 static std::string returnDefaultFile(std::string str)
 {
-	twoElement(str);
 	removeSemiColon(str);
+	twoElement(str);
 	std::stringstream ss(str);
 	std::string ret;
 
@@ -201,8 +208,8 @@ static std::string returnDefaultFile(std::string str)
  */
 static bool returnBool(std::string str)
 {
-	twoElement(str);
 	removeSemiColon(str);
+	twoElement(str);
 
 	if (str.find("true") != std::string::npos)
 		return true;
@@ -241,8 +248,8 @@ static bool endsWith(const std::string& fullString, const std::string& ending)
  */
 static std::string returnCGI(std::string str)
 {
-	twoElement(str);
 	removeSemiColon(str);
+	twoElement(str);
 	std::stringstream ss(str);
 	std::string ret;
 
