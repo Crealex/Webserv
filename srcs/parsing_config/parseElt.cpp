@@ -83,9 +83,11 @@ static std::map<std::string, bool> createMethod(std::string str)
 	removeSemiColon(str);
 	std::stringstream ss(str);
 	std::string word;
+	int i = 0;
 	ss >> word;
 	while (ss >> word)
 	{
+		i = 1;
 		try
 		{
 			method.at(word) = true;
@@ -95,6 +97,11 @@ static std::map<std::string, bool> createMethod(std::string str)
 			std::string error("Error: invalid variable in line:\n\t");
 			throw std::invalid_argument(error + str);
 		}
+	}
+	if (i == 0)
+	{
+		std::string error("Error: no method are specified in line:\n\t");
+		throw std::invalid_argument(error + str);
 	}
 
 	// debug
