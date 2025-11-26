@@ -2,21 +2,17 @@
 
 # define POST_HPP
 
-
 #include "methodsClass.hpp"
-# define POST_HPP
 # include "../includes.hpp"
-
-struct request;
 
 class Post: public Methods
 {
     private:
-		std::string	_contentType;
-		std::string	_contentLength;
-		std::string _body;
+		std::string		_contentType;
+		unsigned int	_contentLength;
+		std::string		_body;
     public:
-	Post(request requ); // maybe mettre la struct de kilian en argument?
+	Post(Request requ);
 	const std::string	createResponse();
 };
 
