@@ -53,6 +53,7 @@ static void twoElement(std::string str)
  */
 static std::string getSiteName(std::string sName)
 {
+	twoElement(sName);
 	std::stringstream ss(sName);
 	std::string str;
 	ss >> str;
