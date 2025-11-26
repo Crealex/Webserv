@@ -256,11 +256,16 @@ static std::string returnCGI(std::string str)
 	ss >> ret;
 	ss >> ret;
 	
+	if (access(ret.c_str(), F_OK) == -1)
+	{
+		std::string error("Error: invalid file path:\n\t");
+		throw std::invalid_argument(error + str);
+	}
 	if (!endsWith(str, std::string(".php")) &&
 		!endsWith(str, std::string(".py")) &&
 		!endsWith(str, std::string(".sh")))
 	{
-		std::string error("Error: invalid codec file on line:\n\t");
+		std::string error("Error: invalid extension file on line:\n\t");
 		throw std::invalid_argument(error + str);
 	}
 
