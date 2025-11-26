@@ -3,7 +3,7 @@
 #include "../../includes/colors.hpp"
 
 
-Post::Post(request requ)
+Post::Post(Request requ)
 {
     std::cout << GREEN << "Default Post constructor called" << RESET << std::endl;
 }

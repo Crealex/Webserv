@@ -4,7 +4,7 @@
 # include "../includes.hpp"
 #include "methodsClass.hpp"
 
-struct request;
+struct Request;
 
 class Delete: public Methods
 {

@@ -18,6 +18,6 @@ struct Request
 	std::string		_ContentType;
 	unsigned int	_ContentLength;
 	std::string		_body;
-}
+};
 
 #endif
