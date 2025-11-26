@@ -12,8 +12,8 @@
  */
 static std::string	removeSemicolon(std::string str)
 {
-	unsigned int		indexSemicolon;
-	std::string			result;
+	size_t		indexSemicolon;
+	std::string	result;
 
 	indexSemicolon = str.rfind(';');
 	if (indexSemicolon == std::string::npos || indexSemicolon != str.size() - 1)
@@ -41,7 +41,7 @@ static std::vector<std::string>	getValue(std::string data)
 static unsigned int	checkDigitValue(std::string str, bool isMaxSize)
 {
 	unsigned int		res;
-	unsigned int		firstDigitNotZero;
+	size_t				firstDigitNotZero;
 	std::string			allDigitsNotZero;
 	std::string			temp;
 	std::stringstream	ss;
@@ -78,7 +78,7 @@ static vecAddPort	parseAddressPort(std::vector<std::string> data)
 	vecAddPort					result;
 	std::string					temp;
 	int							size;
-	unsigned int				colon;
+	size_t						colon;
 	unsigned int				port;
 	std::vector<std::string>	infos;
 
