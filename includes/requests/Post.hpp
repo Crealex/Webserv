@@ -5,16 +5,14 @@
 #include "methodsClass.hpp"
 # include "../includes.hpp"
 
-struct Request;
-
 class Post: public Methods
 {
     private:
-		std::string	_contentType;
-		std::string	_contentLength;
-		std::string _body;
+		std::string		_contentType;
+		unsigned int	_contentLength;
+		std::string		_body;
     public:
-	Post(Request requ); // maybe mettre la struct de kilian en argument?
+	Post(Request requ);
 	const std::string	createResponse();
 };
 

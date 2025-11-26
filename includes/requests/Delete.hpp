@@ -4,14 +4,12 @@
 # include "../includes.hpp"
 #include "methodsClass.hpp"
 
-struct Request;
-
 class Delete: public Methods
 {
     private:
 		
     public:
-        Delete(request requ); 
+        Delete(Request requ); 
 		const std::string createResponse();
 };
 #endif // !DELETE_HPP

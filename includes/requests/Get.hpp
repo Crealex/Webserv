@@ -4,8 +4,6 @@
 # include "../includes.hpp"
 #include "methodsClass.hpp"
 
-struct Request;
-
 class Get: public Methods
 {
     private:
@@ -14,6 +12,6 @@ class Get: public Methods
 
     public:
         Get(Request requ);
-		const std::string	createResponse(); // meme reflexion que pour post
+		const std::string	createResponse();
 };
 #endif // !GET_HPP
