@@ -1,10 +1,10 @@
 #ifndef METHODS_CLASS_HPP
 
 # define METHODS_CLASS_HPP
-# include "includes.hpp"
+# include "../includes.hpp"
 
 class Methods {
-private:
+protected:
 	std::string		_method;
 	std::string		_location;
 	std::string		_protocol;

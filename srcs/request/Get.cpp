@@ -1,4 +1,4 @@
-#include "../../includes/Get.hpp"
+#include "../../includes/requests/Get.hpp"
 #include "../../includes/colors.hpp"
 
 Get::Get(request requ)

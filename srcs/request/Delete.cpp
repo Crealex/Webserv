@@ -1,5 +1,5 @@
 
-#include "../../includes/Delete.hpp"
+#include "../../includes/requests/Delete.hpp"
 #include "../../includes/colors.hpp"
 
 Delete::Delete(request requ)

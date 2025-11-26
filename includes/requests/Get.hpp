@@ -1,11 +1,12 @@
 #ifndef GET_HPP
 
 # define GET_HPP
-# include "includes.hpp"
+# include "../includes.hpp"
+#include "methodsClass.hpp"
 
 struct request;
 
-class Get
+class Get: public Methods
 {
     private:
 		std::string	_userAgent;

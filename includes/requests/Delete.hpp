@@ -1,11 +1,12 @@
 #ifndef DELETE_HPP
 
 # define DELETE_HPP
-# include "includes.hpp"
+# include "../includes.hpp"
+#include "methodsClass.hpp"
 
 struct request;
 
-class Delete
+class Delete: public Methods
 {
     private:
 		

@@ -3,15 +3,15 @@
 # define POST_HPP
 
 
+#include "methodsClass.hpp"
 # define POST_HPP
-# include "includes.hpp"
+# include "../includes.hpp"
 
 struct request;
 
-class Post
+class Post: public Methods
 {
     private:
-		
 		std::string	_contentType;
 		std::string	_contentLength;
 		std::string _body;
