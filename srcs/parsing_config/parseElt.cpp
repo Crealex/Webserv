@@ -53,6 +53,7 @@ static void twoElement(std::string str)
  */
 static std::string getSiteName(std::string sName)
 {
+	twoElement(sName);
 	std::stringstream ss(sName);
 	std::string str;
 	ss >> str;
@@ -83,9 +84,11 @@ static std::map<std::string, bool> createMethod(std::string str)
 	removeSemiColon(str);
 	std::stringstream ss(str);
 	std::string word;
+	int i = 0;
 	ss >> word;
 	while (ss >> word)
 	{
+		i = 1;
 		try
 		{
 			method.at(word) = true;
@@ -95,6 +98,11 @@ static std::map<std::string, bool> createMethod(std::string str)
 			std::string error("Error: invalid variable in line:\n\t");
 			throw std::invalid_argument(error + str);
 		}
+	}
+	if (i == 0)
+	{
+		std::string error("Error: no method are specified in line:\n\t");
+		throw std::invalid_argument(error + str);
 	}
 
 	// debug
@@ -120,9 +128,16 @@ static std::vector<std::string> createRedirection(std::string str)
 	ss >> line;
 
 	std::vector<std::string> ret;
+	int i = 0;
 	while (ss >> line)
 	{
+		i = 1;
 		ret.push_back(line);
+	}
+	if (i == 0)
+	{
+		std::string error("Error: no Redirection on line:\n\t");
+		throw std::invalid_argument(error + str);
 	}
 
 	// debug
@@ -138,13 +153,19 @@ static std::vector<std::string> createRedirection(std::string str)
 
 static std::string returnRoot(std::string str)
 {
-	twoElement(str);
 	removeSemiColon(str);
+	twoElement(str);
 	std::stringstream ss(str);
 	std::string ret;
 
 	ss >> ret;
 	ss >> ret;
+
+	if (access(ret.c_str(), F_OK) == -1)
+	{
+		std::string error("Error: could not open RootDir:\n\t");
+		throw std::invalid_argument(error + str);
+	}
 	
 	// debug
 	//std::cout << BOLD << "Second element of " << str << " is\n\t";
@@ -162,8 +183,8 @@ static std::string returnRoot(std::string str)
  */
 static std::string returnDefaultFile(std::string str)
 {
-	twoElement(str);
 	removeSemiColon(str);
+	twoElement(str);
 	std::stringstream ss(str);
 	std::string ret;
 
@@ -194,8 +215,8 @@ static std::string returnDefaultFile(std::string str)
  */
 static bool returnBool(std::string str)
 {
-	twoElement(str);
 	removeSemiColon(str);
+	twoElement(str);
 
 	if (str.find("true") != std::string::npos)
 		return true;
@@ -234,19 +255,24 @@ static bool endsWith(const std::string& fullString, const std::string& ending)
  */
 static std::string returnCGI(std::string str)
 {
-	twoElement(str);
 	removeSemiColon(str);
+	twoElement(str);
 	std::stringstream ss(str);
 	std::string ret;
 
 	ss >> ret;
 	ss >> ret;
 	
+	if (access(ret.c_str(), F_OK) == -1)
+	{
+		std::string error("Error: invalid file path:\n\t");
+		throw std::invalid_argument(error + str);
+	}
 	if (!endsWith(str, std::string(".php")) &&
 		!endsWith(str, std::string(".py")) &&
 		!endsWith(str, std::string(".sh")))
 	{
-		std::string error("Error: invalid codec file on line:\n\t");
+		std::string error("Error: invalid extension file on line:\n\t");
 		throw std::invalid_argument(error + str);
 	}
 

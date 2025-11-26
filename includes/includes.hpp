@@ -9,5 +9,7 @@
 #include <utility>
 #include <exception>
 #include <stdexcept>
+#include <unistd.h>
+#include <dirent.h>
 
 #endif
