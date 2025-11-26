@@ -160,6 +160,12 @@ static std::string returnRoot(std::string str)
 
 	ss >> ret;
 	ss >> ret;
+
+	if (access(ret.c_str(), F_OK) == -1)
+	{
+		std::string error("Error: could not open RootDir:\n\t");
+		throw std::invalid_argument(error + str);
+	}
 	
 	// debug
 	//std::cout << BOLD << "Second element of " << str << " is\n\t";
