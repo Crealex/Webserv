@@ -4,7 +4,7 @@
 # include "methodsClass.hpp"
 # include "../includes.hpp"
 
-struct request;
+struct Request;
 
 class Post: public Methods
 {
@@ -13,7 +13,7 @@ class Post: public Methods
 		std::string	_contentLength;
 		std::string _body;
     public:
-	Post(request requ); // maybe mettre la struct de kilian en argument?
+	Post(Request requ); // maybe mettre la struct de kilian en argument?
 	const std::string	createResponse();
 };
 
