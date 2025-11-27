@@ -51,27 +51,14 @@ static bool addContentType(std::string *resp, std::string accept, std::string fi
 //	Date: Fri, 21 Jun 2024 14:18:33 GMT
 static bool addDate(std::string *resp)
 {
-	std::tm time;
-	std::string date;
+	char buff[100];
+	tm *time;
+	time_t tt;
 
-	mktime(&time);
-	// TODO: Mater les fonctions pour formater la date sans devoir le faire a la main
-	switch (time.tm_wday)
-	{
-		case 0:
-			date.append("Mon");
-		case 1:
-			date.append("Tue");
-		case 2:
-			date.append("Wen");
-	}
-	time.tm_mday; // day of month
-	time.tm_mon; // month
-	time.tm_year; // year - 1900
-	time.tm_hour; // hour 
-	time.tm_min; // minutes
-	time.tm_sec; // seconds
-	time.tm_zone; // timezone (pas sur, sinon rajouter a la main GMT)
+	std::time(&tt);
+	time = std::localtime(&tt);
+	std::strftime(buff, 100, "Date: %a, %d %b %Y %X GMT\n", time);
+	resp->append(buff);
 	return (true);
 }
 
@@ -128,20 +115,17 @@ const std::string Get::createResponse()
 
 // *** TEST MAIN ***
 
-//int main(void)
-//{
-//	std::string file = "trdy/sdcs/dsc.css";
-//	std::cout << "test with " << file << ": " << findMimeType(file) << std::endl;
-//	file = "caca.boudin.js";
-//	std::cout << "test with " << file << ": " << findMimeType(file) << std::endl;
-//	file = "pipou.avif";
-//	std::cout << "test with " << file << ": " << findMimeType(file) << std::endl;
-//	file = "caca/bite/trou/n.mp4";
-//	std::cout << "test with " << file << ": " << findMimeType(file) << std::endl;
-//	file = "je/sais/pas.caca";
-//	std::cout << "test with " << file << ": " << findMimeType(file) << std::endl;
-//}
+int main(void)
+{
+	char buff[100];
+	tm *time;
+	time_t tt;
 
+	std::time(&tt);
+	time = std::localtime(&tt);
+	std::strftime(buff, 100, "Date: %a, %d %b %Y %X GMT", time);
+	std::cout << buff << std::endl;
+}
 
 //*** RESPONSE EXAMPLE ***
 //	HTTP/1.1 200 OK
