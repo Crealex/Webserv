@@ -8,6 +8,8 @@ Get::Get(Request requ): Methods(requ), _accept(requ._accept), _userAgent(requ._u
     std::cout << GREEN << "Default Get constructor called" << RESET << std::endl;
 }
 
+// *** Create response
+
 static std::string sendError(unsigned int code)
 {
 	(void)code;
