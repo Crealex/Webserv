@@ -4,6 +4,7 @@
 #include "../../includes/requests/MimeTypes.hpp"
 #include <ctime>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <sys/stat.h>
 
@@ -65,7 +66,7 @@ static bool addDate(std::string *resp)
 //	Last-Modified: Thu, 17 Oct 2019 07:18:26 GMT
 static bool addLastModif(std::string *resp, std::string pathTarget)
 {
-	struct stat buff;
+	struct stat	buff;
 
 	stat(pathTarget.c_str(), &buff);
 	return (true);
@@ -74,8 +75,12 @@ static bool addLastModif(std::string *resp, std::string pathTarget)
 //	Content-Length: 1234
 static bool addContentLenght(std::string *resp, std::string file)
 {
-	unsigned int size;
+	unsigned int		size;
+	std::stringstream	ss;
+
 	size = file.size();
+	ss << size;
+	resp->append("Content-Lenght: " + ss.str() + "\n");
 	return (true);
 }
 
