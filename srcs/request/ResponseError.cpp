@@ -12,6 +12,8 @@ const std::string ResponseError::createResponse()
 {
 	std::string resp;
 
+	
+	addStartLine(&resp, this->_protocol, this->_code); // INFO: Exemple
 	return (resp);
 }
 
