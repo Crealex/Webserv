@@ -20,7 +20,7 @@ class Methods {
 
 // addLineToResp.cpp
 
-bool	addStartLine(std::string *resp, std::string protocol, unsigned int code);
+bool	addStartLine(std::string *resp, std::string protocol, unsigned int code, std::string mess);
 bool	addContentType(std::string *resp, std::string accept, std::string file);
 bool	addDate(std::string *resp);
 bool	addLastModif(std::string *resp, std::string pathTarget);

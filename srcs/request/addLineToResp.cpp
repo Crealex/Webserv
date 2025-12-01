@@ -7,13 +7,15 @@
 #include <sys/stat.h>
 
 
+// TODO: Checker les retours des toutes les fonctions appelée pour bien gerer les erreurs
+
 //	HTTP/1.1 200 OK
-bool addStartLine(std::string *resp, std::string protocol, unsigned int code)
+bool addStartLine(std::string *resp, std::string protocol, unsigned int code, std::string mess)
 {
 	std::stringstream ss;
 
 	ss << code;
-	resp->insert(0, protocol + " " + ss.str() + " " + "OK\n"); // TODO: Voir comment mettre des messages personnalisé
+	resp->insert(0, protocol + " " + ss.str() + " " + mess + "\n"); // TODO: Voir comment mettre des messages personnalisé
 	
 
 	return (true);
@@ -62,7 +64,8 @@ bool addLastModif(std::string *resp, std::string pathTarget)
 	time_t tt;
 	std::string dateString;
 
-	stat(pathTarget.c_str(), &buff);
+	 if (stat(pathTarget.c_str(), &buff))
+		return (false);
 	tt = buff.st_mtim.tv_sec;
 	time = std::localtime(&tt);
 	std::strftime(date, 100, "%a, %d %b %Y %X GMT\n", time);

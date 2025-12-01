@@ -1,9 +1,11 @@
 #include "../../includes/requests/Get.hpp"
 #include "../../includes/colors.hpp"
 #include "../../includes/requests/Request.hpp"
+#include <exception>
 #include <fstream>
 #include <string>
 #include <sys/stat.h>
+#include "../../includes/requests/ResponseError.hpp"
 
 Get::Get(Request requ): Methods(requ), _accept(requ._accept), _userAgent(requ._userAgent)
 {
@@ -25,25 +27,30 @@ const std::string Get::createResponse()
 	std::ifstream	target;
 	std::string		file;
 	struct stat		fileData;
+	Request			dataError;
 	
-	//TODO: Add string message for addStartLine
+	dataError._protocol = this->_protocol;
+	dataError._host = this->_host;
+	dataError._accept = this->_accept;
+	dataError._location = this->_location;
+	dataError._userAgent = this->_userAgent;
 	target.open(this->_host + this->_location);
 	if (!target.is_open())
-		return (sendError(666));
+		throw ResponseError(404, "Not found", dataError);
 	stat((this->_host + this->_location).c_str(), &fileData);
 	std::getline(target, file, '\0');
-	if (!addContentType(&resp, this->_accept, this->_location)) // maked, need to test
-		return (sendError(666));
+	if (!addContentType(&resp, this->_accept, this->_location))
+		throw ResponseError(404, "Not found", dataError);
 	if (!addDate(&resp))
-		return (sendError(666));
+		throw ResponseError(500, "Internal server error", dataError);
 	if (!addLastModif(&resp, this->_host + this->_location))
-		return (sendError(666));
+		throw ResponseError(500, "Internal server error", dataError);
 	if (!addContentLenght(&resp, file))
-		return (sendError(666));
+		throw ResponseError(500, "Internal server error", dataError);
 	if (!addBody(&resp, file))
-		return (sendError(666));
-	if (!addStartLine(&resp, this->_protocol, 200))
-		return (sendError(666));
+		throw ResponseError(500, "Internal server error", dataError);
+	if (!addStartLine(&resp, this->_protocol, 200, "OK"))
+		throw ResponseError(500, "Internal server error", dataError);
 
 	return (resp);
 }
@@ -60,9 +67,21 @@ int main(void)
 	requ._location = "/demo/index.html";
 	requ._protocol = "HTTP/1.1";
 	requ._userAgent = "Firefox";
-	Get		resp(requ);
-	std::cout << "resp: " << std::endl;
-	std::cout << resp.createResponse() << std::endl;
+	try 
+	{
+		Get		resp(requ);
+		std::cout << "resp: " << std::endl;
+		std::cout << resp.createResponse() << std::endl;
+
+	}
+	catch (ResponseError &e)
+	{
+		std::cout << e.createResponse() << std::endl;
+	}
+	catch (std::exception &e)
+	{
+		std::cout << e.what() << std::endl;
+	}
 
 }
 
