@@ -33,6 +33,12 @@ static std::string findMimeType(std::string file)
 //	HTTP/1.1 200 OK
 static bool addStartLine(std::string *resp, std::string protocol, unsigned int code)
 {
+	std::stringstream ss;
+
+	ss << code;
+	resp->insert(0, protocol + " " + ss.str() + " " + "OK\n"); // TODO: Voir comment mettre des messages personnalisé
+	
+
 	return (true);
 }
 
@@ -67,8 +73,17 @@ static bool addDate(std::string *resp)
 static bool addLastModif(std::string *resp, std::string pathTarget)
 {
 	struct stat	buff;
+	char date[100];
+	tm *time;
+	time_t tt;
+	std::string dateString;
 
 	stat(pathTarget.c_str(), &buff);
+	tt = buff.st_mtim.tv_sec;
+	time = std::localtime(&tt);
+	std::strftime(date, 100, "%a, %d %b %Y %X GMT\n", time);
+	dateString = date;
+	resp->append("Last-Modified: " + dateString);
 	return (true);
 }
 
@@ -88,6 +103,7 @@ static bool addContentLenght(std::string *resp, std::string file)
 //	<!-- Contenu HTML -->
 static bool addBody(std::string *resp, std::string file)
 {
+	resp->append("\n" + file);
 	return (true);
 }
 
@@ -107,6 +123,8 @@ const std::string Get::createResponse()
 		return (sendError(666));
 	if (!addDate(&resp))
 		return (sendError(666));
+	if (!addLastModif(&resp, this->_host + this->_location))
+		return (sendError(666));
 	if (!addContentLenght(&resp, file))
 		return (sendError(666));
 	if (!addBody(&resp, file))
@@ -122,14 +140,17 @@ const std::string Get::createResponse()
 
 int main(void)
 {
-	char buff[100];
-	tm *time;
-	time_t tt;
+	Request requ;
 
-	std::time(&tt);
-	time = std::localtime(&tt);
-	std::strftime(buff, 100, "Date: %a, %d %b %Y %X GMT", time);
-	std::cout << buff << std::endl;
+	requ._accept = "text/html";
+	requ._host = "../../www";
+	requ._location = "/demo/index.html";
+	requ._protocol = "HTTP/1.1";
+	requ._userAgent = "Firefox";
+	Get		resp(requ);
+	std::cout << "resp: " << std::endl;
+	std::cout << resp.createResponse() << std::endl;
+
 }
 
 //*** RESPONSE EXAMPLE ***
