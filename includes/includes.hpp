@@ -12,4 +12,6 @@
 #include <unistd.h>
 #include <dirent.h>
 
+#include "colors.hpp"
+
 #endif

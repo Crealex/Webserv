@@ -3,6 +3,7 @@
 #include "../includes/printDebug.hpp"
 #include "../includes/includes.hpp"
 
+
 int main (int argc, char **argv) 
 {
 	if (argc > 2)
@@ -14,6 +15,7 @@ int main (int argc, char **argv)
 	{
 		Config configTest(argv[1]);
 		printConfigClass(configTest);
+
 	} catch (std::exception &e) 
 	{
 		std::cout << RED << e.what() << RESET << std::endl;
