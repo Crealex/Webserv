@@ -1,11 +1,12 @@
 
- 
+
 #include "../../includes/includes.hpp"
-#include <sstream>
 #include "../../includes/requests/MimeTypes.hpp"
 #include <ctime>
+#include <exception>
+#include <fstream>
+#include <sstream>
 #include <sys/stat.h>
-
 
 // TODO: Checker les retours des toutes les fonctions appelée pour bien gerer les erreurs
 
@@ -16,7 +17,6 @@ bool addStartLine(std::string *resp, std::string protocol, unsigned int code, st
 
 	ss << code;
 	resp->insert(0, protocol + " " + ss.str() + " " + mess + "\n"); // TODO: Voir comment mettre des messages personnalisé
-	
 
 	return (true);
 }
@@ -24,7 +24,7 @@ bool addStartLine(std::string *resp, std::string protocol, unsigned int code, st
 std::string findMimeType(std::string file)
 {
 	std::string extension;
-	
+
 	extension = file.substr(file.find_last_of(".") + 1, file.length());
 	return MimeTypes::getType(extension);
 }
@@ -58,13 +58,13 @@ bool addDate(std::string *resp)
 //	Last-Modified: Thu, 17 Oct 2019 07:18:26 GMT
 bool addLastModif(std::string *resp, std::string pathTarget)
 {
-	struct stat	buff;
+	struct stat buff;
 	char date[100];
 	tm *time;
 	time_t tt;
 	std::string dateString;
 
-	 if (stat(pathTarget.c_str(), &buff))
+	if (stat(pathTarget.c_str(), &buff))
 		return (false);
 	tt = buff.st_mtim.tv_sec;
 	time = std::localtime(&tt);
@@ -77,15 +77,14 @@ bool addLastModif(std::string *resp, std::string pathTarget)
 //	Content-Length: 1234
 bool addContentLenght(std::string *resp, std::string file)
 {
-	unsigned int		size;
-	std::stringstream	ss;
+	unsigned int size;
+	std::stringstream ss;
 
 	size = file.size();
 	ss << size;
 	resp->append("Content-Lenght: " + ss.str() + "\n");
 	return (true);
 }
-
 
 //	<!doctype html>
 //	<!-- Contenu HTML -->
@@ -94,3 +93,16 @@ bool addBody(std::string *resp, std::string file)
 	resp->append("\n" + file);
 	return (true);
 }
+
+bool addLocation(std::string *resp, std::string host, std::string location)
+{
+	try
+	{
+		resp->append("Location: " + host + location);
+	} catch (std::exception &e)
+	{
+		return (false);
+	}
+	return (true);
+}
+

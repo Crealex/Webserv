@@ -32,7 +32,7 @@ const std::string Post::createResponse()
 		throw(ResponseError(400, "Heeeeu jsp", dataError));
 	if (addStartLine(&resp, this->_protocol, 201, "Created"))
 		throw(ResponseError(400, "Heeeeu jsp", dataError));
-	if (!addBody(&resp, newfile))
+	if (!addBody(&resp, this->_body))
 		throw(ResponseError(400, "Heeeeu jsp", dataError));
 
 	return (resp);

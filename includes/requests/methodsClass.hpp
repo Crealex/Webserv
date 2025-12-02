@@ -26,6 +26,7 @@ bool	addDate(std::string *resp);
 bool	addLastModif(std::string *resp, std::string pathTarget);
 bool	addContentLenght(std::string *resp, std::string file);
 bool	addBody(std::string *resp, std::string file);
+bool	addLocation(std::string *resp, std::string host, std::string location);
 
 #endif
 
