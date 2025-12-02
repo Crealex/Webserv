@@ -50,6 +50,8 @@ Request createRequest(char* buffer)
 	setHeader(line, ret);
 	while (std::getline(iss, line))
 	{
+		if (line.empty())
+			break ;
 		std::stringstream ss(line);
 		std::string word;
 		ss >> word;
@@ -73,9 +75,11 @@ Request createRequest(char* buffer)
 	}
 
 	std::string body;
-	std::getline(iss, body, '\0');
-	ret._body = body;
-
+	while (std::getline(iss, body))
+	{
+		body += '\n';
+		ret._body += body;
+	}
 	return ret;
 }
 
