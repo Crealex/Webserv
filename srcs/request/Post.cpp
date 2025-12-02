@@ -4,11 +4,10 @@
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseError.hpp"
 #include <fstream>
-Post::Post(Request requ): Methods(requ), _body(requ._body), _contentLength(requ._ContentLength), _contentType(requ._ContentType)
+Post::Post(Request requ) : Methods(requ), _body(requ._body), _contentLength(requ._ContentLength), _contentType(requ._ContentType)
 {
-    std::cout << GREEN << "Default Post constructor called" << RESET << std::endl;
+	std::cout << GREEN << "Default Post constructor called" << RESET << std::endl;
 }
-
 
 static bool addContentToFile(std::string body, std::ofstream *newFile)
 {
@@ -24,26 +23,25 @@ const std::string Post::createResponse()
 
 	newFile.open(this->_host + this->_location);
 	if (!newFile.is_open())
-		throw (ResponseError(400, "Heeeeu jsp", dataError));
-	if (!addHost(&resp, this->_host))
-		throw (ResponseError(400, "Heeeeu jsp", dataError));
+		throw(ResponseError(400, "Heeeeu jsp", dataError));
+	if (!addContentType(&resp, this->_contentType, this->_contentType))
+		throw(ResponseError(400, "Heeeeuu jsp", dataError));
 	if (!addContentToFile(this->_body, &newFile)) // need some test
-		throw (ResponseError(400, "Heeeeu jsp", dataError));
+		throw(ResponseError(400, "Heeeeu jsp", dataError));
 	if (!addLocation(&resp, this->_host, this->_location))
-		throw (ResponseError(400, "Heeeeu jsp", dataError));
+		throw(ResponseError(400, "Heeeeu jsp", dataError));
 	if (addStartLine(&resp, this->_protocol, 201, "Created"))
-		throw (ResponseError(400, "Heeeeu jsp", dataError));
+		throw(ResponseError(400, "Heeeeu jsp", dataError));
 	if (!addBody(&resp, newfile))
-		throw (ResponseError(400, "Heeeeu jsp", dataError));
+		throw(ResponseError(400, "Heeeeu jsp", dataError));
 
 	return (resp);
 }
 
-
 // Example response:
-//HTTP/1.1 201 Created
-//Content-Type: application/json
-//Location: http://example.com/users/123
+// HTTP/1.1 201 Created
+// Content-Type: application/json
+// Location: http://example.com/users/123
 //
 //{
 //  "message": "New user created",
