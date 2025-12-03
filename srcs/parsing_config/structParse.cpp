@@ -172,11 +172,11 @@ static std::string	checkAddress(std::string addressPort, size_t colon)
  * @brief parsing for the addres and the port
  * 
  * @param data strings of the address:port
- * @return vecAddPort vect of pair address and port
+ * @return std::vector<addPort_t> vect of pair address and port
  */
-static vecAddPort	parseAddressPort(std::vector<std::string> data)
+static std::vector<addPort_t>	parseAddressPort(std::vector<std::string> data)
 {
-	vecAddPort					result;
+	std::vector<addPort_t>		result;
 	std::string					address;
 	int							size;
 	unsigned int				port;

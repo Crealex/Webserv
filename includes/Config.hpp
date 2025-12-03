@@ -4,12 +4,12 @@
 
 #include "includes.hpp"
 
-typedef std::vector<std::pair<std::string, unsigned int> > vecAddPort;
+typedef std::pair<std::string, unsigned int> addPort_t;
 
 struct serverData
 {
 	std::string	name;
-	vecAddPort	addressPort;
+	std::vector<addPort_t>	addressPort;
 };
 
 struct errorData
