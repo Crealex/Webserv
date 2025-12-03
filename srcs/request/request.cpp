@@ -3,27 +3,33 @@
 static void setHeader(std::string line, Request& req)
 {
 	std::stringstream ss(line);
-	std::string word;
+	std::string method;
+	std::string location;
+	std::string protocol;
 
-	ss >> word;
-	if (word != "GET" &&
-		word != "POST" &&
-		word != "DELETE")
+	ss >> method;
+	if (method != "GET" &&
+		method != "POST" &&
+		method != "DELETE")
 	{
 		// do something with error
 	}
-	req._method = word;
+	req._method = method;
 
-	ss >> word;
-	req._location = word;
-
-	ss >> word;
-	if (word != "HTTP/1.1" &&
-		word != "HTTP/1.0")
+	ss >> location;
+	if (access(location.c_str(), F_OK) != 0)
 	{
 		// do something with error
 	}
-	req._protocol = word;
+	req._location = location;
+
+	ss >> protocol;
+	if (protocol != "HTTP/1.1" &&
+		protocol != "HTTP/1.0")
+	{
+		// do something with error
+	}
+	req._protocol = protocol;
 }
 
 static std::map<std::string, std::string*> createMap(Request &req)
@@ -46,7 +52,7 @@ Request createRequest(char* buffer)
 	std::string line;
 
 
-	iss >> line;
+	std::getline(iss, line);
 	setHeader(line, ret);
 	while (std::getline(iss, line))
 	{
@@ -80,8 +86,42 @@ Request createRequest(char* buffer)
 		body += '\n';
 		ret._body += body;
 	}
+	if (ret._host.empty() || access(ret._host.c_str(), F_OK) != 0)
+	{
+		// do something with error
+	}
+
 	return ret;
 }
+
+// int main()
+// {
+// 	// test GET
+// 	// std::string str = "GET /contact HTTP/1.1\nHost: exemple.fr\nUser-Agent: curl/8.6.0\nAccept: */*";
+
+// 	// test POST 1
+// 	// std::string str = "POST /test HTTP/1.1\nHost: exemple.fr\nContent-Type: application/x-www-form-urlencoded\nContent-Length: 27\n\nfield1=value1&field2=value2";
+
+// 	// test POST 2 (si qqun arrive a le faire marcher ?)
+// 	// std::string str = "POST /test HTTP/1.1\nHost: exemple.fr\nContent-Type: multipart/form-data;boundary="delimiter12345"\n\n--delimiter12345\nContent-Disposition: form-data; name="field1"\n\nvalue1\n--delimiter12345\nContent-Disposition: form-data; name="field2"; filename="exemple.txt"\n\nvalue2\n--delimiter12345--";
+
+// 	// test DELETE
+// 	std::string str = "DELETE /fichier.html HTTP/1.1\nHost: example.com";
+
+// 	Request req;
+
+// 	req = createRequest((char *)str.c_str());
+
+// 	std::cout << "method = " << req._method
+// 		<< "\nlocation = " << req._location
+// 		<< "\nprotocol = " << req._protocol
+// 		<< "\nhost = " << req._host
+// 		<< "\nuserAgent = " << req._userAgent
+// 		<< "\naccept = " << req._accept
+// 		<< "\ncontent type = " << req._ContentType
+// 		<< "\ncontent length = " << req._ContentLength
+// 		<< "\nbody = " << req._body << std::endl;
+// }
 
 // static Get* createGet(char* buffer)
 // {
