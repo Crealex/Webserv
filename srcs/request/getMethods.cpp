@@ -1,21 +1,6 @@
 #include "../../includes/requests/Request.hpp"
 #include "request.cpp"
 
-static Get* createGet(Request req)
-{
-	
-}
-
-static Post* createPost(Request req)
-{
-	
-}
-
-static Delete* createDelete(Request req)
-{
-
-}
-
 Methods* createMethod(char *buffer)
 {
 	Methods* ret;
@@ -23,12 +8,11 @@ Methods* createMethod(char *buffer)
 	Request req = createRequest(buffer);
 
 	if (req._method == "GET")
-		return createGet(req);
+		return new Get(req);
 	else if (req._method == "POST")
-		return createPost(req);
+		return new Post(req);
 	else if (req._method == "DELETE")
-		return createDelete(req);
+		return new Delete(req);
 	// else
 	//	throw wrong method error
-
 }
