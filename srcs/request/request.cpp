@@ -86,6 +86,7 @@ Request createRequest(char* buffer)
 		body += '\n';
 		ret._body += body;
 	}
+	// need to check content type
 	if (ret._host.empty() || access(ret._host.c_str(), F_OK) != 0)
 	{
 		// do something with error
