@@ -5,14 +5,14 @@
 #include "../../includes/requests/ResponseError.hpp"
 #include <exception>
 #include <fstream>
-Post::Post(Request requ) : Methods(requ), _body(requ._body), _contentLength(requ._ContentLength), _contentType(requ._ContentType)
+Post::Post(Request requ) : Methods(requ), _contentType(requ._ContentType), _contentLength(requ._ContentLength), _body(requ._body)
 {
 	std::cout << GREEN << "Default Post constructor called" << RESET << std::endl;
 }
 
 static bool addContentToFile(std::string body, std::ofstream *newFile)
 {
-	//newFile->write(body.c_str(), body.size());
+	// newFile->write(body.c_str(), body.size());
 	*newFile << body;
 	return (true);
 }
@@ -23,8 +23,11 @@ const std::string Post::createResponse()
 	std::string resp;
 	std::ofstream newFile;
 	Request dataError;
+	std::string path;
 
-	newFile.open(this->_host + this->_location, std::ios::app);
+	(void)_contentLength;
+	path = this->_host + this->_location;
+	newFile.open(path.c_str(), std::ios::app);
 	if (!newFile.is_open())
 		throw(ResponseError(401, "Heeeeu jsp", dataError));
 	if (!addContentType(&resp, this->_contentType))
@@ -56,7 +59,7 @@ const std::string Post::createResponse()
 //  }
 //}
 //
-int main ()
+int main()
 {
 	Request requ;
 	requ._protocol = "HTTP/1.1";
@@ -65,12 +68,14 @@ int main ()
 	requ._ContentType = "text/txt";
 	requ._body = "Je suis un test et j'ai conscience de ma condition de simple test, je suis ok avec ça.";
 	Post test(requ);
-	try {
-	test.createResponse();
-	} catch (ResponseError &e) {
+	try
+	{
+		test.createResponse();
+	} catch (ResponseError &e)
+	{
 		std::cerr << RED << e.createResponse() << std::endl;
-	}
-	catch (std::exception &e) {
+	} catch (std::exception &e)
+	{
 		std::cout << e.what() << std::endl;
 		return (1);
 	}
