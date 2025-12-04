@@ -4,10 +4,12 @@
 #include "../../includes/requests/MimeTypes.hpp"
 #include <ctime>
 #include <exception>
-#include <fstream>
+#include <fstream>https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/501
 #include <sstream>
 #include <sys/stat.h>
 
+
+// INFO: All prototypes are in methodClass.hpp
 
 //	HTTP/1.1 200 OK
 bool addStartLine(std::string *resp, std::string protocol, unsigned int code, std::string mess)
