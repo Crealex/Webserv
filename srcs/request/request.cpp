@@ -1,4 +1,31 @@
 #include "../../includes/requests/Request.hpp"
+#include "../../includes/requests/ResponseError.hpp"
+
+std::vector<std::string> acceptedType()
+{
+	std::vector<std::string> v;
+
+	v.push_back("text/html");
+	v.push_back("text/css");
+	v.push_back("image/png");
+	v.push_back("video/mp4");
+	v.push_back("text/markdown");
+	v.push_back("application/json");
+	v.push_back("text/javascript");
+	v.push_back("audio/mpeg");
+	v.push_back("image/jpeg");
+	v.push_back("text/csv");
+	v.push_back("image/gif");
+	v.push_back("audio/wav");
+	v.push_back("application/zip");
+	v.push_back("application/pdf");
+	v.push_back("image/vnd.microsoft.icon");
+	v.push_back("application/octet-stream");
+	v.push_back("video/x-msvideo");
+	v.push_back("image/avif");
+
+	return v;
+}
 
 static void setHeader(std::string line, Request& req)
 {
@@ -12,23 +39,20 @@ static void setHeader(std::string line, Request& req)
 		method != "POST" &&
 		method != "DELETE")
 	{
-		// do something with error
+		throw ResponseError(501, "Error: Not implemented method", req);
 	}
 	req._method = method;
 
 	ss >> location;
-	if (access(location.c_str(), F_OK) != 0)
-	{
-		// do something with error
-	}
 	req._location = location;
-
+	
 	ss >> protocol;
 	if (protocol != "HTTP/1.1" &&
 		protocol != "HTTP/1.0")
 	{
-		// do something with error
+		throw ResponseError(505, "Error: HTTP version not supported", req);
 	}
+
 	req._protocol = protocol;
 }
 
@@ -76,7 +100,7 @@ Request createRequest(char* buffer)
 		}
 		catch(...)
 		{
-			// do something with error
+			throw ResponseError(411, "error test", ret);
 		}
 	}
 
@@ -86,11 +110,27 @@ Request createRequest(char* buffer)
 		body += '\n';
 		ret._body += body;
 	}
-	// need to check content type
+	
+	std::string verif = ret._ContentType;
+	std::vector<std::string> v = acceptedType();
+	for (std::vector<std::string>::iterator it = v.begin();
+		it != v.end(); it++)
+	{
+		if (verif == *it)
+			break ;
+		if (it + 1 == v.end())
+		{
+			throw ResponseError(415, "Error: Unsupported Media Type", ret);
+		}
+	}
+
 	if (ret._host.empty() || access(ret._host.c_str(), F_OK) != 0)
 	{
-		// do something with error
+		throw ResponseError(400, "Error: Host cannot be accessed", ret);
 	}
+
+	if (ret._method == "POST" && ret._ContentLength == 0)
+			throw ResponseError(411, "Error: Content length isnt specified", ret);
 
 	return ret;
 }
