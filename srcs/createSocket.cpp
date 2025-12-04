@@ -3,7 +3,7 @@
 #include "../includes/Socket.hpp"
 #include <arpa/inet.h>
 
-void	printSocketListen(std::vector<Socket> sockets)
+static void	printSocketListen(std::vector<Socket> sockets)
 {
 	if (sockets.size() == 0)
 		return ;
@@ -12,7 +12,10 @@ void	printSocketListen(std::vector<Socket> sockets)
 		for (std::vector<SocketData>::iterator it2 = it1->getSockData().begin(); it2 != it1->getSockData().end(); it2++)
 		{
 			char	str[INET_ADDRSTRLEN];
-			inet_ntop(AF_INET, (struct sockaddr_in *)&(it2->getSockadd().sin_addr), str, INET_ADDRSTRLEN);
+			struct sockaddr_in sa;
+			sa = it2->getSockadd();
+			inet_ntop(AF_INET, &(sa.sin_addr), str, INET_ADDRSTRLEN);
+			std::cout << "Pooooooooooort : " << it2->getSockadd().sin_port << std::endl;
 			std::cout << "Listening on " << str << ":" << ntohs(it2->getSockadd().sin_port) << std::endl;
 		}
 	}
@@ -33,11 +36,22 @@ void	createSocket(Config conf)
 	}
 	if (sockets.size() == 0)
 		createSocket(conf);
+	std::cout << &(sockets[0].getSockData()[0]) << std::endl;
+	std::cout << sockets[0].getSockData()[0].getFdServer() << "     " << sockets.begin()->getSockData()[0].getFdServer() << std::endl;
 	for (std::vector<Socket>::iterator itSock = sockets.begin(); itSock != sockets.end(); itSock++)
 	{
+		std::cout << &(itSock->getSockData()[0]);
+		std::cout << itSock->getSockData()[0].getSockadd().sin_port << std::endl;
 		for (std::vector<SocketData>::iterator itSD = itSock->getSockData().begin(); itSD != itSock->getSockData().end(); itSD++)
 		{
-			checkFail = bind(itSD->getFdServer(), (struct sockaddr *)&(itSD->getSockadd()), sizeof(sockaddr_in));
+			std::cout << &itSD << std::endl;
+			std::cout << itSock->getSockData()[0].getSockadd().sin_port << std::endl;
+			std::cout << (*itSD).getSockadd().sin_port << std::endl;
+			std::cout << itSock->getSockData()[0].getFdServer() << std::endl;
+			std::cout << itSD->getFdServer() << std::endl;
+			sockaddr_in	temp;
+			temp = itSD->getSockadd();
+			checkFail = bind(itSD->getFdServer(), (struct sockaddr *)&(temp), sizeof(sockaddr_in));
 			if (checkFail < 0)
 				itSock->getSockData().erase(itSD);
 			checkFail = listen(itSD->getFdServer(), 2);
@@ -46,4 +60,5 @@ void	createSocket(Config conf)
 			
 		}
 	}
+	printSocketListen(sockets);
 }

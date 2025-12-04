@@ -11,12 +11,17 @@ Socket::~Socket()
 }
 
 // GETTERS
-std::string	Socket::getHostname() const
+std::string const	&Socket::getHostname() const
 {
 	return (this->_hostname);
 }
 
-std::vector<SocketData>	Socket::getSockData() const
+std::vector<SocketData>	Socket::getSockData()
+{
+	return (this->_sockData);
+}
+
+std::vector<SocketData> const	&Socket::getSockData() const
 {
 	return (this->_sockData);
 }

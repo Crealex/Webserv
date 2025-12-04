@@ -15,8 +15,9 @@ class Socket
 		Socket(serverData data);
 		~Socket();
 
-		std::string				getHostname() const;
-		std::vector<SocketData>	getSockData() const;
+		std::string	const				&getHostname() const;
+		std::vector<SocketData>			getSockData();
+		std::vector<SocketData> const	&getSockData() const;
 
 		void	setFdClient();
 };

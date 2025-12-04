@@ -19,9 +19,9 @@ class SocketData
 		SocketData(addPort_t);
 		~SocketData();
 
-		sockaddr_in	getSockadd() const;
-		int			getFdServer() const;
-		int			getFdClient() const;
+		sockaddr_in	const	&getSockadd() const;
+		int	const			&getFdServer() const;
+		int	const			&getFdClient() const;
 };
 
 #endif

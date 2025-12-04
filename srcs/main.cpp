@@ -2,6 +2,7 @@
 #include "../includes/Config.hpp"
 #include "../includes/printDebug.hpp"
 #include "../includes/includes.hpp"
+#include "../includes/includeSocket.hpp"
 
 
 int main (int argc, char **argv) 
@@ -15,7 +16,7 @@ int main (int argc, char **argv)
 	{
 		Config configTest(argv[1]);
 		printConfigClass(configTest);
-
+		createSocket(configTest);
 	} catch (std::exception &e) 
 	{
 		std::cout << RED << e.what() << RESET << std::endl;

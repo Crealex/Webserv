@@ -36,17 +36,17 @@ static uint32_t ipToUint(std::string s)
 }
 
 //GETTERS
-sockaddr_in	SocketData::getSockadd() const
+sockaddr_in const	&SocketData::getSockadd() const
 {
 	return (this->_sockadd);
 }
 
-int	SocketData::getFdServer() const
+int const	&SocketData::getFdServer() const
 {
 	return (this->_fdServer);
 }
 
-int	SocketData::getFdClient() const
+int const	&SocketData::getFdClient() const
 {
 	return (this->_fdClient);
 }
@@ -58,6 +58,7 @@ void	SocketData::assignmentSocket(addPort_t addPort)
 
 	this->_sockadd.sin_family = AF_INET;
 	this->_sockadd.sin_port = htons(addPort.second);
+	std::cout << "port : " << this->_sockadd.sin_port << std::endl;
 	this->_sockadd.sin_addr.s_addr = ipToUint(addPort.first);
 	socketFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (socketFd != -1)
