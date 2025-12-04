@@ -12,7 +12,7 @@ void	printSocketListen(std::vector<Socket> sockets)
 		for (std::vector<SocketData>::iterator it2 = it1->getSockData().begin(); it2 != it1->getSockData().end(); it2++)
 		{
 			char	str[INET_ADDRSTRLEN];
-			inet_ntop(AF_INET, &(it2->getSockadd().sin_addr.s_addr), str, INET_ADDRSTRLEN);
+			inet_ntop(AF_INET, (struct sockaddr_in *)&(it2->getSockadd().sin_addr), str, INET_ADDRSTRLEN);
 			std::cout << "Listening on " << str << ":" << ntohs(it2->getSockadd().sin_port) << std::endl;
 		}
 	}
