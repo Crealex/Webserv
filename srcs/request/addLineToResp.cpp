@@ -8,7 +8,6 @@
 #include <sstream>
 #include <sys/stat.h>
 
-// TODO: Checker les retours des toutes les fonctions appelée pour bien gerer les erreurs
 
 //	HTTP/1.1 200 OK
 bool addStartLine(std::string *resp, std::string protocol, unsigned int code, std::string mess)
@@ -16,7 +15,11 @@ bool addStartLine(std::string *resp, std::string protocol, unsigned int code, st
 	std::stringstream ss;
 
 	ss << code;
-	resp->insert(0, protocol + " " + ss.str() + " " + mess + "\n"); // TODO: Voir comment mettre des messages personnalisé
+	try {
+		resp->insert(0, protocol + " " + ss.str() + " " + mess + "\n"); // TODO: Voir comment mettre des messages personnalisé
+	} catch (std::exception) {
+		return (false);
+	}
 
 	return (true);
 }
@@ -38,6 +41,17 @@ bool addContentType(std::string *resp, std::string accept, std::string file)
 		return (false);
 
 	resp->append("Content-Type: " + contentType + "\n");
+	return (true);
+}
+
+// For post.cpp
+bool addContentType(std::string *resp, std::string type)
+{
+	try {
+		resp->append("Content-Type: " + type);	
+	} catch (std::exception &e) {
+		return (false);
+	}
 	return (true);
 }
 
@@ -67,10 +81,15 @@ bool addLastModif(std::string *resp, std::string pathTarget)
 	if (stat(pathTarget.c_str(), &buff))
 		return (false);
 	tt = buff.st_mtim.tv_sec;
-	time = std::localtime(&tt);
-	std::strftime(date, 100, "%a, %d %b %Y %X GMT\n", time);
-	dateString = date;
-	resp->append("Last-Modified: " + dateString);
+	try {
+		time = std::localtime(&tt);
+		std::strftime(date, 100, "%a, %d %b %Y %X GMT\n", time);
+		dateString = date;
+		resp->append("Last-Modified: " + dateString);
+	}
+	catch (std::exception &e){
+		return (false);
+}
 	return (true);
 }
 
@@ -82,7 +101,11 @@ bool addContentLenght(std::string *resp, std::string file)
 
 	size = file.size();
 	ss << size;
-	resp->append("Content-Lenght: " + ss.str() + "\n");
+	try {
+		resp->append("Content-Lenght: " + ss.str() + "\n");
+	} catch (std::exception) {
+		return (false);
+	}
 	return (true);
 }
 

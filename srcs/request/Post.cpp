@@ -3,6 +3,7 @@
 #include "../../includes/colors.hpp"
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseError.hpp"
+#include <exception>
 #include <fstream>
 Post::Post(Request requ) : Methods(requ), _body(requ._body), _contentLength(requ._ContentLength), _contentType(requ._ContentType)
 {
@@ -11,29 +12,31 @@ Post::Post(Request requ) : Methods(requ), _body(requ._body), _contentLength(requ
 
 static bool addContentToFile(std::string body, std::ofstream *newFile)
 {
-	newFile->write(body.c_str(), body.size());
+	//newFile->write(body.c_str(), body.size());
+	*newFile << body;
 	return (true);
 }
 
 const std::string Post::createResponse()
 {
+	// TODO: GERER L"AJOUT A UN FICHIER, pas juste le creer"
 	std::string resp;
 	std::ofstream newFile;
 	Request dataError;
 
-	newFile.open(this->_host + this->_location);
+	newFile.open(this->_host + this->_location, std::ios::app);
 	if (!newFile.is_open())
-		throw(ResponseError(400, "Heeeeu jsp", dataError));
-	if (!addContentType(&resp, this->_contentType, this->_contentType))
-		throw(ResponseError(400, "Heeeeuu jsp", dataError));
+		throw(ResponseError(401, "Heeeeu jsp", dataError));
+	if (!addContentType(&resp, this->_contentType))
+		throw(ResponseError(402, "Heeeeuu jsp", dataError));
 	if (!addContentToFile(this->_body, &newFile)) // need some test
-		throw(ResponseError(400, "Heeeeu jsp", dataError));
+		throw(ResponseError(403, "Heeeeu jsp", dataError));
 	if (!addLocation(&resp, this->_host, this->_location))
-		throw(ResponseError(400, "Heeeeu jsp", dataError));
-	if (addStartLine(&resp, this->_protocol, 201, "Created"))
-		throw(ResponseError(400, "Heeeeu jsp", dataError));
+		throw(ResponseError(404, "Heeeeu jsp", dataError));
+	if (!addStartLine(&resp, this->_protocol, 201, "Created"))
+		throw(ResponseError(405, "Heeeeu jsp", dataError));
 	if (!addBody(&resp, this->_body))
-		throw(ResponseError(400, "Heeeeu jsp", dataError));
+		throw(ResponseError(406, "Heeeeu jsp", dataError));
 
 	return (resp);
 }
@@ -52,3 +55,24 @@ const std::string Post::createResponse()
 //    "email": "brian.smith@example.com"
 //  }
 //}
+//
+int main ()
+{
+	Request requ;
+	requ._protocol = "HTTP/1.1";
+	requ._host = "../../www";
+	requ._location = "/testAlex/test.txt";
+	requ._ContentType = "text/txt";
+	requ._body = "Je suis un test et j'ai conscience de ma condition de simple test, je suis ok avec ça.";
+	Post test(requ);
+	try {
+	test.createResponse();
+	} catch (ResponseError &e) {
+		std::cerr << RED << e.createResponse() << std::endl;
+	}
+	catch (std::exception &e) {
+		std::cout << e.what() << std::endl;
+		return (1);
+	}
+	return 0;
+}
