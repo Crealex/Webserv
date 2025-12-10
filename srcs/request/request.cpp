@@ -75,7 +75,6 @@ Request createRequest(char* buffer)
 	std::istringstream iss(buffer);
 	std::string line;
 
-
 	std::getline(iss, line);
 	setHeader(line, ret);
 	while (std::getline(iss, line))
