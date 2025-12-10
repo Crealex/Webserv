@@ -3,8 +3,11 @@
 #include "../../includes/colors.hpp"
 #include "../../includes/includes.hpp"
 #include "../../includes/requests/Request.hpp"
+#include "../../includes/requests/ResponseError.hpp"
 #include <fstream>
-#include <unistd.h>
+#include <iterator>
+#include <pstl/glue_algorithm_defs.h>
+#include <string>
 
 Delete::Delete(Request requ) : Methods(requ)
 {
@@ -16,27 +19,44 @@ Delete::Delete(Request requ) : Methods(requ)
  *
  * @param protocol
  */
-static std::string noContent(std::string protocol)
+static std::string noContent(std::string protocol, Request dataRequ)
 {
 	std::string resp;
 
 	resp.append(protocol + "204" + "No content");
 	if (!addDate(&resp))
-		throw (ResponseError());
+		throw (ResponseError(500, "can't add start line", dataRequ));
+	resp.append("Server: webserv");
+	return (resp);
 }
 
 const std::string Delete::createResponse()
 {
 	std::ifstream	file;
+	std::string		contentFile;
 	std::string		path;
+	std::string		resp;
+	Request			dataRequ;
 
 	path = this->_host + this->_location;
 	if (access(path.c_str(), F_OK) == -1)
-	{
-		return (noContent(this->_protocol)); // créer la version si nos content
-	}
+		return (noContent(this->_protocol, dataRequ));
+	if (std::remove(path.c_str()))
+		throw (ResponseError(500, "can't remove content", dataRequ));
+	if (!addDate(&resp))
+		throw (ResponseError(500, "can't add date", dataRequ));
+	if (!addContentType(&resp, "*/*", this->_location))
+		throw (ResponseError(500, "can't add content type", dataRequ));
+	file.open(path);
+	if (!file.is_open())
+		throw (ResponseError(ResponseError(500, "can't open the file", dataRequ)));
+	std::getline(file, contentFile, '\0');
+	if (!addContentLenght(&resp, contentFile))
+
+	
 
 
+	return (resp);
 }
 
 // If content exist:

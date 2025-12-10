@@ -66,6 +66,8 @@ bool addDate(std::string *resp)
 
 	std::time(&tt);
 	time = std::localtime(&tt);
+	if (!time)
+		return (false);
 	std::strftime(buff, 100, "Date: %a, %d %b %Y %X GMT\n", time);
 	resp->append(buff);
 	return (true);
