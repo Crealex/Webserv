@@ -16,12 +16,7 @@ std::string const	&Socket::getHostname() const
 	return (this->_hostname);
 }
 
-std::vector<SocketData>	Socket::getSockData()
-{
-	return (this->_sockData);
-}
-
-std::vector<SocketData> const	&Socket::getSockData() const
+std::vector<SocketData *> const	&Socket::getSockData() const
 {
 	return (this->_sockData);
 }
@@ -33,6 +28,7 @@ void	Socket::setFdClient()
 }
 
 // METHODS
+// PRIVATE
 void	Socket::addingSockets(serverData data)
 {
 	size_t		nbAddPort;
@@ -40,7 +36,24 @@ void	Socket::addingSockets(serverData data)
 	nbAddPort = data.addressPort.size();
 	for (size_t index = 0; index < nbAddPort; index++)
 	{
-		SocketData	result(data.addressPort[index]);
+		SocketData	*result = new SocketData(data.addressPort[index]);
 		this->_sockData.push_back(result);
 	}
+}
+
+// PUBLIC
+std::vector<SocketData *>::iterator	Socket::getBegin()
+{
+	return (this->_sockData.begin());
+}
+
+std::vector<SocketData *>::iterator	Socket::getEnd()
+{
+	return (this->_sockData.end());
+}
+
+void	Socket::eraseSocket(std::vector<SocketData *>::iterator it)
+{
+	std::cout << "bruh" << std::endl;
+	this->_sockData.erase(it);
 }
