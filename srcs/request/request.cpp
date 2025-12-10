@@ -1,7 +1,7 @@
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseError.hpp"
 
-std::vector<std::string> acceptedType()
+static std::vector<std::string> acceptedType()
 {
 	std::vector<std::string> v;
 
