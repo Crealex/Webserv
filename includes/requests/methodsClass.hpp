@@ -20,13 +20,13 @@ class Methods
 
 // addLineToResp.cpp
 
-bool addStartLine(std::string *resp, std::string protocol, unsigned int code, std::string mess);
-bool addContentType(std::string *resp, std::string accept, std::string file);
-bool addDate(std::string *resp);
-bool addLastModif(std::string *resp, std::string pathTarget);
-bool addContentLenght(std::string *resp, std::string file);
-bool addBody(std::string *resp, std::string file);
-bool addLocation(std::string *resp, std::string host, std::string location);
-bool addContentType(std::string *resp, std::string type);
+bool	addStartLine(std::string *resp, std::string protocol, unsigned int code, std::string mess);
+bool	addContentType(std::string *resp, std::string accept, std::string file);
+bool	addDate(std::string *resp);
+bool	addLastModif(std::string *resp, std::string pathTarget);
+bool	addContentLenght(std::string *resp, std::string file);
+bool	addBody(std::string *resp, std::string file);
+bool	addLocation(std::string *resp, std::string host, std::string location);
+bool	addContentType(std::string *resp, std::string type);
 
 #endif
