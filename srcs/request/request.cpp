@@ -99,7 +99,7 @@ Request createRequest(char* buffer)
 		}
 		catch(...)
 		{
-			throw ResponseError(411, "error test", ret);
+			throw ResponseError(411, "Error, unvalid variable", ret);
 		}
 	}
 
@@ -136,23 +136,24 @@ Request createRequest(char* buffer)
 
 // int main()
 // {
-// 	// test GET
-// 	// std::string str = "GET /contact HTTP/1.1\nHost: exemple.fr\nUser-Agent: curl/8.6.0\nAccept: */*";
+	// test GET
+	// std::string str = "GET /contact HTTP/1.1\nHost: exemple.fr\nUser-Agent: curl/8.6.0\nAccept: */*";
 
-// 	// test POST 1
-// 	// std::string str = "POST /test HTTP/1.1\nHost: exemple.fr\nContent-Type: application/x-www-form-urlencoded\nContent-Length: 27\n\nfield1=value1&field2=value2";
+	// test POST 1
+	// char str[] = "POST /test HTTP/1.1\nHost: exemple.fr\nContent-Type: application/x-www-form-urlencoded\nContent-Length: 27\n\nfield1=value1&field2=value2";
 
-// 	// test POST 2 (si qqun arrive a le faire marcher ?)
-// 	// std::string str = "POST /test HTTP/1.1\nHost: exemple.fr\nContent-Type: multipart/form-data;boundary="delimiter12345"\n\n--delimiter12345\nContent-Disposition: form-data; name="field1"\n\nvalue1\n--delimiter12345\nContent-Disposition: form-data; name="field2"; filename="exemple.txt"\n\nvalue2\n--delimiter12345--";
+	// test POST 2 (si qqun arrive a le faire marcher ?)
+	// char str[] = "POST /test HTTP/1.1\nHost: ./.\nContent-Type: text/html\nContent-Length: 50\n\n--delimiter12345\nContent-Disposition: form-data; name=\"field1\"\n\nvalue1\n--delimiter12345\nContent-Disposition: form-data; name=\"field2\"; filename=\"exemple.txt\"\n\nvalue2\n--delimiter12345--";
 
-// 	// test DELETE
-// 	std::string str = "DELETE /fichier.html HTTP/1.1\nHost: example.com";
+	// test DELETE
+	// char str[] = "DELETE /fichier.html HTTP/1.1\nHost: example.com";
 
-// 	Request req;
+	// std::cout << "test :\n" << str << std::endl;
 
-// 	req = createRequest((char *)str.c_str());
-
-// 	std::cout << "method = " << req._method
+// 	Request req = createRequest(str);
+	
+// 	std::cout 
+// 		<< "method = " << req._method
 // 		<< "\nlocation = " << req._location
 // 		<< "\nprotocol = " << req._protocol
 // 		<< "\nhost = " << req._host
@@ -160,5 +161,5 @@ Request createRequest(char* buffer)
 // 		<< "\naccept = " << req._accept
 // 		<< "\ncontent type = " << req._ContentType
 // 		<< "\ncontent length = " << req._ContentLength
-// 		<< "\nbody = " << req._body << std::endl;
+// 		<< "\nbody = \n" << req._body << std::endl;
 // }
