@@ -58,32 +58,32 @@ const std::string Get::createResponse()
 
 // *** TEST MAIN ***
 
-int main(void)
-{
-	Request requ;
-
-	requ._accept = "text/html";
-	requ._host = "../../www";
-	requ._location = "/demo/index.html";
-	requ._protocol = "HTTP/1.1";
-	requ._userAgent = "Firefox";
-	try 
-	{
-		Get		resp(requ);
-		std::cout << "resp: " << std::endl;
-		std::cout << resp.createResponse() << std::endl;
-
-	}
-	catch (ResponseError &e)
-	{
-		std::cout << e.createResponse() << std::endl;
-	}
-	catch (std::exception &e)
-	{
-		std::cout << e.what() << std::endl;
-	}
-
-}
+//int main(void)
+//{
+//	Request requ;
+//
+//	requ._accept = "text/html";
+//	requ._host = "../../www";
+//	requ._location = "/demo/index.html";
+//	requ._protocol = "HTTP/1.1";
+//	requ._userAgent = "Firefox";
+//	try 
+//	{
+//		Get		resp(requ);
+//		std::cout << "resp: " << std::endl;
+//		std::cout << resp.createResponse() << std::endl;
+//
+//	}
+//	catch (ResponseError &e)
+//	{
+//		std::cout << e.createResponse() << std::endl;
+//	}
+//	catch (std::exception &e)
+//	{
+//		std::cout << e.what() << std::endl;
+//	}
+//
+//}
 
 //*** RESPONSE EXAMPLE ***
 //	HTTP/1.1 200 OK
