@@ -5,8 +5,6 @@
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseError.hpp"
 #include <fstream>
-#include <iterator>
-#include <pstl/glue_algorithm_defs.h>
 #include <string>
 
 Delete::Delete(Request requ) : Methods(requ)
@@ -39,22 +37,25 @@ const std::string Delete::createResponse()
 	Request			dataRequ;
 
 	path = this->_host + this->_location;
+	//std::cout << path << std::endl;
 	if (access(path.c_str(), F_OK) == -1)
 		return (noContent(this->_protocol, dataRequ));
-	if (std::remove(path.c_str()))
-		throw (ResponseError(500, "can't remove content", dataRequ));
 	if (!addDate(&resp))
 		throw (ResponseError(500, "can't add date", dataRequ));
 	if (!addContentType(&resp, "*/*", this->_location))
 		throw (ResponseError(500, "can't add content type", dataRequ));
-	file.open(path);
+	file.open(path.c_str());
 	if (!file.is_open())
-		throw (ResponseError(ResponseError(500, "can't open the file", dataRequ)));
+		throw (ResponseError(500, "can't open the file", dataRequ));
 	std::getline(file, contentFile, '\0');
 	if (!addContentLenght(&resp, contentFile))
-
-	
-
+		throw (ResponseError(500, "can't add content lenght", dataRequ));
+	if (!addBody(&resp, contentFile))
+		throw (ResponseError(500, "can't add body", dataRequ));
+	if (std::remove(path.c_str()))
+		throw (ResponseError(500, "can't remove content", dataRequ));
+	if (!addStartLine(&resp, this->_protocol, 200, "content deleted"))
+		throw (ResponseError(500, "can't remove content", dataRequ));
 
 	return (resp);
 }
@@ -74,3 +75,26 @@ const std::string Delete::createResponse()
 //if content doesn't exist:
 //HTTP/1.1 204 No Content
 //Date: Wed, 04 Sep 2024 10:16:04 GMT
+
+int main()
+{
+	Request requ;
+	requ._protocol = "HTTP/1.1";
+	requ._host = "../../www";
+	requ._location = "/testAlex/test.txt";
+	requ._ContentType = "text/txt";
+	requ._body = "Je suis un test et j'ai conscience de ma condition de simple test, je suis ok avec ça.";
+	Delete test(requ);
+	try
+	{
+		std::cout << test.createResponse() << std::endl;
+	} catch (ResponseError &e)
+	{
+		std::cerr << RED << e.createResponse() << std::endl;
+	} catch (std::exception &e)
+	{
+		std::cout << e.what() << std::endl;
+		return (1);
+	}
+	return 0;
+}

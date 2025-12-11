@@ -1,10 +1,9 @@
 
-
 #include "../../includes/includes.hpp"
 #include "../../includes/requests/MimeTypes.hpp"
 #include <ctime>
 #include <exception>
-#include <fstream>https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/501
+#include <fstream>
 #include <sstream>
 #include <sys/stat.h>
 
@@ -18,8 +17,8 @@ bool addStartLine(std::string *resp, std::string protocol, unsigned int code, st
 
 	ss << code;
 	try {
-		resp->insert(0, protocol + " " + ss.str() + " " + mess + "\n"); // TODO: Voir comment mettre des messages personnalisé
-	} catch (std::exception) {
+		resp->insert(0, protocol + " " + ss.str() + " " + mess + "\n");
+	} catch (std::exception &e) {
 		return (false);
 	}
 
@@ -30,6 +29,7 @@ std::string findMimeType(std::string file)
 {
 	std::string extension;
 
+	std::cout << "file in " << file << std::endl;
 	extension = file.substr(file.find_last_of(".") + 1, file.length());
 	return MimeTypes::getType(extension);
 }
@@ -50,7 +50,7 @@ bool addContentType(std::string *resp, std::string accept, std::string file)
 bool addContentType(std::string *resp, std::string type)
 {
 	try {
-		resp->append("Content-Type: " + type);	
+		resp->append("Content-Type: " + type + "\n");	
 	} catch (std::exception &e) {
 		return (false);
 	}
@@ -107,7 +107,7 @@ bool addContentLenght(std::string *resp, std::string file)
 	ss << size;
 	try {
 		resp->append("Content-Lenght: " + ss.str() + "\n");
-	} catch (std::exception) {
+	} catch (std::exception &e) {
 		return (false);
 	}
 	return (true);
