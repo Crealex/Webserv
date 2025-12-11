@@ -1,6 +1,12 @@
 #include "../../includes/requests/Request.hpp"
 #include "request.cpp"
 
+/**
+ * @brief create the right Method object and return it in a Methods pointer
+ * 
+ * @param buffer the client request
+ * @return Methods* 
+ */
 Methods* createMethod(char *buffer)
 {
 	Methods* ret;

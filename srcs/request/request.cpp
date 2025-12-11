@@ -1,6 +1,11 @@
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseError.hpp"
 
+/**
+ * @brief return a hard vector with the different accepted Content-Type
+ * 
+ * @return Vector with the Content-Type
+ */
 static std::vector<std::string> acceptedType()
 {
 	std::vector<std::string> v;
@@ -27,6 +32,12 @@ static std::vector<std::string> acceptedType()
 	return v;
 }
 
+/**
+ * @brief Parse the request header : The method, the location and the protocol
+ * 
+ * @param line 
+ * @param req 
+ */
 static void setHeader(std::string line, Request& req)
 {
 	std::stringstream ss(line);
@@ -56,6 +67,12 @@ static void setHeader(std::string line, Request& req)
 	req._protocol = protocol;
 }
 
+/**
+ * @brief Create a map with key and pointer to the right string in the Request object
+ * 
+ * @param req 
+ * @return std::map<std::string, std::string*> 
+ */
 static std::map<std::string, std::string*> createMap(Request &req)
 {
 	std::map<std::string, std::string*> ret;
@@ -68,6 +85,12 @@ static std::map<std::string, std::string*> createMap(Request &req)
 	return ret;
 }
 
+/**
+ * @brief Parse the client request and create a Request structure
+ * 
+ * @param buffer the client request
+ * @return The created Request object
+ */
 Request createRequest(char* buffer)
 {
 	Request ret;
@@ -77,8 +100,9 @@ Request createRequest(char* buffer)
 
 	std::getline(iss, line);
 	setHeader(line, ret);
-	while (std::getline(iss, line))
+	while (std::getline(iss, line)) 
 	{
+		// extract and parse the different element of the request
 		if (line.empty())
 			break ;
 		std::stringstream ss(line);
@@ -103,6 +127,7 @@ Request createRequest(char* buffer)
 		}
 	}
 
+	// extract the body of the request
 	std::string body;
 	while (std::getline(iss, body))
 	{
@@ -110,6 +135,7 @@ Request createRequest(char* buffer)
 		ret._body += body;
 	}
 	
+	// verify the different extracted element
 	std::string verif = ret._ContentType;
 	std::vector<std::string> v = acceptedType();
 	for (std::vector<std::string>::iterator it = v.begin();
