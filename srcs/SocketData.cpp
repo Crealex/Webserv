@@ -57,7 +57,6 @@ void	SocketData::assignmentSocket(addPort_t addPort)
 
 	this->_sockadd.sin_family = AF_INET;
 	this->_sockadd.sin_port = htons(addPort.second);
-	std::cout << "port : " << this->_sockadd.sin_port << std::endl;
 	this->_sockadd.sin_addr.s_addr = ipToUint(addPort.first);
 	socketFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (socketFd != -1)
