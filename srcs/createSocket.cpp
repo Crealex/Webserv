@@ -19,20 +19,14 @@ static void	printSocketListen(std::vector<Socket *> sockets)
 	}
 }
 
-static int	listenSocket(std::vector<Socket *> &sockets, std::vector<Socket *>::iterator &itSock, std::vector<SocketData *>::iterator &itSD)
+static void	listenSocket(std::vector<Socket *> &sockets, std::vector<Socket *>::iterator &itSock, std::vector<SocketData *>::iterator &itSD)
 {
 	int checkFail;
 
 	checkFail = 0;
 	checkFail = listen((*itSD)->getFdServer(), 2);
 	if (checkFail < 0)
-	{
 		(*itSock)->eraseSocket(itSD);
-		return (-1);
-	}
-	if ((*itSock)->getSockData().size() == 0)
-		return (-1);
-	return (0);
 }
 
 static int	bindSocket(std::vector<Socket *> &sockets)
@@ -48,10 +42,9 @@ static int	bindSocket(std::vector<Socket *> &sockets)
 			if (checkFail < 0)
 				(*itSock)->eraseSocket(itSD);
 			else
-			{
-				if (listenSocket(sockets, itSock, itSD) < 0)
-					return (-1);
-			}
+				listenSocket(sockets, itSock, itSD);
+			if ((*itSock)->getSockData().size() == 0)
+				return (-1);
 		}
 	}
 	return (0);

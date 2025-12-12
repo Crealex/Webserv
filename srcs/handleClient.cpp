@@ -9,28 +9,32 @@ int	receiveRequest(Config &conf, std::vector<Socket *> &sockets)
 	return (0);
 }
 
-int	acceptClient(std::vector<Socket *> &sockets, std::vector<Socket *>::iterator &itSock, std::vector<SocketData *>::iterator &itSD)
+int	acceptClient(std::vector<Socket *> &sockets, size_t i, size_t j)
 {
 	int fdClient;
 
 	fdClient = 0;
-	fdClient = accept((*itSD)->getFdClient(), nullptr, nullptr);
+	fdClient = accept(sockets[i]->getSockData()[j]->getFdServer(), nullptr, nullptr);
 	if (fdClient < 0)
-	{
-		(*itSock)->eraseSocket(itSD);
 		return (-1);
-	}
+	sockets[i]->setFdClient(fdClient, j);
 	return (0);
 }
 
 int	handleClient(std::vector<Socket *> &sockets, Config conf)
 {
-	for (std::vector<Socket *>::iterator itSock = sockets.begin(); itSock != sockets.end(); itSock++)
+	size_t	sizeSockets;
+	size_t	sizeSocketData;
+
+	sizeSockets = sockets.size();
+	for (size_t i = 0; i < sizeSockets; i++)
 	{
-		for (std::vector<SocketData *>::iterator itSD = (*itSock)->getBegin(); itSD != (*itSock)->getEnd(); itSD++)
+		sizeSocketData = sockets[i]->getSockData().size();
+		for (size_t j = 0; j < sizeSocketData; j++)
 		{
-			if (acceptClient(sockets, itSock, itSD) < 0)
-				
+			if (acceptClient(sockets, i, j) < 0)
+				continue;
+			
 		}
 	}
 	return (0);

@@ -22,9 +22,9 @@ std::vector<SocketData *> const	&Socket::getSockData() const
 }
 
 // SETTER
-void	Socket::setFdClient()
+void	Socket::setFdClient(int newFdClient, size_t indexSocketData)
 {
-
+	this->_sockData[indexSocketData]->setFdClient(newFdClient);
 }
 
 // METHODS

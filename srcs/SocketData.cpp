@@ -50,6 +50,12 @@ int const	&SocketData::getFdClient() const
 	return (this->_fdClient);
 }
 
+//SETTERS
+void	SocketData::setFdClient(int newFdClient)
+{
+	this->_fdClient = newFdClient;
+}
+
 // METHODS
 void	SocketData::assignmentSocket(addPort_t addPort)
 {
