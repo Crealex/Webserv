@@ -24,6 +24,7 @@ std::map<std::string, std::string> MimeTypes::initMap()
 	m["bin"] = "application/octet-stream";
 	m["avi"] = "video/x-msvideo";
 	m["avif"] = "image/avif";
+	m["txt"] = "text/plain";
 	return (m);
 }
 

@@ -21,7 +21,7 @@ static std::string noContent(std::string protocol, Request dataRequ)
 {
 	std::string resp;
 
-	resp.append(protocol + "204" + "No content");
+	resp.append(protocol + " 204 " + "No content" + "\n");
 	if (!addDate(&resp))
 		throw (ResponseError(500, "can't add start line", dataRequ));
 	resp.append("Server: webserv");
@@ -76,25 +76,25 @@ const std::string Delete::createResponse()
 //HTTP/1.1 204 No Content
 //Date: Wed, 04 Sep 2024 10:16:04 GMT
 
-int main()
-{
-	Request requ;
-	requ._protocol = "HTTP/1.1";
-	requ._host = "../../www";
-	requ._location = "/testAlex/test.txt";
-	requ._ContentType = "text/txt";
-	requ._body = "Je suis un test et j'ai conscience de ma condition de simple test, je suis ok avec ça.";
-	Delete test(requ);
-	try
-	{
-		std::cout << test.createResponse() << std::endl;
-	} catch (ResponseError &e)
-	{
-		std::cerr << RED << e.createResponse() << std::endl;
-	} catch (std::exception &e)
-	{
-		std::cout << e.what() << std::endl;
-		return (1);
-	}
-	return 0;
-}
+//int main()
+//{
+//	Request requ;
+//	requ._protocol = "HTTP/1.1";
+//	requ._host = "../../www";
+//	requ._location = "/testAlex/test.txt";
+//	requ._ContentType = "text/txt";
+//	requ._body = "Je suis un test et j'ai conscience de ma condition de simple test, je suis ok avec ça.";
+//	Delete test(requ);
+//	try
+//	{
+//		std::cout << test.createResponse() << std::endl;
+//	} catch (ResponseError &e)
+//	{
+//		std::cerr << RED << e.createResponse() << std::endl;
+//	} catch (std::exception &e)
+//	{
+//		std::cout << e.what() << std::endl;
+//		return (1);
+//	}
+//	return 0;
+//}

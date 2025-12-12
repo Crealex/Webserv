@@ -15,10 +15,13 @@ class Methods
 	Methods(Request requ);
 
   public:
+	/**
+	 * @brief a virtual funtction for build the reponse, implementation in get.cpp, post.cpp, delete.cpp, ResponseError.cpp
+	 */
 	virtual const std::string createResponse() = 0;
 };
 
-// addLineToResp.cpp
+// addLineToResp.cpp, all prototypes for build the response in delete.cpp, errorResponse.cpp, get.cpp and post.cpp
 
 bool	addStartLine(std::string *resp, std::string protocol, unsigned int code, std::string mess);
 bool	addContentType(std::string *resp, std::string accept, std::string file);
