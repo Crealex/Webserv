@@ -19,27 +19,33 @@ static void	printSocketListen(std::vector<Socket *> sockets)
 	}
 }
 
-static void	acceptClient(std::vector<Socket *> sockets)
+static int	acceptClient(std::vector<Socket *> sockets, std::vector<Socket *>::iterator &itSock, std::vector<SocketData *>::iterator itSD)
 {
-	
+	int fdClient;
+
+	fdClient = 0;
+	fdClient = accept();
+	return (0);
 }
 
-int	createSocket(Config conf)
+static int	listenSocket(std::vector<Socket *> &sockets, std::vector<Socket *>::iterator &itSock, std::vector<SocketData *>::iterator &itSD)
 {
-	std::vector<Socket *>	sockets;
-	size_t				sizeAddPort;
-	int					checkFail;
+	int checkFail;
 
-	sizeAddPort = conf.getAddressPort().size();
-	sockets.reserve(sizeAddPort);
 	checkFail = 0;
-	for (size_t i = 0; i < sizeAddPort; i++)
-	{
-		Socket	*temp = new Socket(conf.getAddressPort()[i]);
-		sockets.push_back(temp);
-	}
-	if (sockets.size() == 0)
+	checkFail = listen((*itSD)->getFdServer(), 2);
+	if (checkFail < 0)
+		(*itSock)->eraseSocket(itSD);
+	if ((*itSock)->getSockData().size() == 0)
 		return (-1);
+	return (0);
+}
+
+static int	bindListenSocket(std::vector<Socket *> &sockets)
+{
+	int	checkFail;
+
+	checkFail = 0;
 	for (std::vector<Socket *>::iterator itSock = sockets.begin(); itSock != sockets.end(); itSock++)
 	{
 		for (std::vector<SocketData *>::iterator itSD = (*itSock)->getBegin(); itSD != (*itSock)->getEnd(); itSD++)
@@ -47,13 +53,36 @@ int	createSocket(Config conf)
 			checkFail = bind((*itSD)->getFdServer(), (struct sockaddr *)&((*itSD)->getSockadd()), sizeof(sockaddr_in));
 			if (checkFail < 0)
 				(*itSock)->eraseSocket(itSD);
-			checkFail = listen((*itSD)->getFdServer(), 2);
-			if (checkFail < 0)
-				(*itSock)->eraseSocket(itSD);
-			if ((*itSock)->getSockData().size() == 0)
-				return (-1);
+			else
+			{
+				if (listenSocket(sockets, itSock, itSD) < 0)
+					return (-1);
+				else
+				{
+					acceptClient(sockets, )
+				}
+			}
 		}
 	}
+	return (0);
+}
+
+int	createSocket(Config conf)
+{
+	std::vector<Socket *>	sockets;
+	size_t				sizeAddPort;
+
+	sizeAddPort = conf.getAddressPort().size();
+	sockets.reserve(sizeAddPort);
+	for (size_t i = 0; i < sizeAddPort; i++)
+	{
+		Socket	*temp = new Socket(conf.getAddressPort()[i]);
+		sockets.push_back(temp);
+	}
+	if (sockets.size() == 0)
+		return (-1);
+	if (bindListenSocket(sockets) < 0)
+		return (-1);
 	printSocketListen(sockets);
 	return (0);
 }
