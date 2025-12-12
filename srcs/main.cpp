@@ -3,6 +3,7 @@
 #include "../includes/printDebug.hpp"
 #include "../includes/includes.hpp"
 #include "../includes/includeSocket.hpp"
+#include "../includes/includeRequest.hpp"
 
 
 int main (int argc, char **argv) 
@@ -16,8 +17,13 @@ int main (int argc, char **argv)
 	{
 		Config configTest(argv[1]);
 		printConfigClass(configTest);
-		createSocket(configTest);
-	} catch (std::exception &e) 
+		if (createSocket(configTest) < 0)
+		{
+			std::cerr << RED << "Error : no socket for the webserv" << std::endl << RESET;
+			return (-2);
+		}
+	}
+	catch (std::exception &e) 
 	{
 		std::cout << RED << e.what() << RESET << std::endl;
 	}

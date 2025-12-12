@@ -8,6 +8,6 @@
 
 #include <sys/socket.h>
 
-void	createSocket(Config conf);
+int	createSocket(Config conf);
 
 #endif
