@@ -12,11 +12,12 @@ ResponseError::~ResponseError() _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW
 {
 }
 
-const std::string ResponseError::createResponse() const throw()
+const std::string ResponseError::createResponse() const
 {
 	std::string resp;
 
 	addStartLine(&resp, this->_protocol, this->_code, this->_message);
 	return (resp);
+	// std::cout << "bonjour jespere ca marche" << std::endl;
 }
 
