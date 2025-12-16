@@ -22,6 +22,8 @@ class SocketData
 		sockaddr_in	const	&getSockadd() const;
 		int	const			&getFdServer() const;
 		int	const			&getFdClient() const;
+
+		void	setFdClient(int newFdClient);
 };
 
 #endif

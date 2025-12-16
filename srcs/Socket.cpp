@@ -22,9 +22,9 @@ std::vector<SocketData *> const	&Socket::getSockData() const
 }
 
 // SETTER
-void	Socket::setFdClient()
+void	Socket::setFdClient(int newFdClient, size_t indexSocketData)
 {
-
+	this->_sockData[indexSocketData]->setFdClient(newFdClient);
 }
 
 // METHODS
@@ -52,8 +52,7 @@ std::vector<SocketData *>::iterator	Socket::getEnd()
 	return (this->_sockData.end());
 }
 
-void	Socket::eraseSocket(std::vector<SocketData *>::iterator it)
+void	Socket::eraseSocket(int i)
 {
-	std::cout << "bruh" << std::endl;
-	this->_sockData.erase(it);
+	this->_sockData.erase(this->getBegin() + i);
 }

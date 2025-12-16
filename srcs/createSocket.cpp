@@ -19,49 +19,41 @@ static void	printSocketListen(std::vector<Socket *> sockets)
 	}
 }
 
-static int	acceptClient(std::vector<Socket *> sockets, std::vector<Socket *>::iterator &itSock, std::vector<SocketData *>::iterator itSD)
+static void	listenSocket(std::vector<Socket *> &sockets, int i, int j)
 {
-	int fdClient;
-
-	fdClient = 0;
-	fdClient = accept();
-	return (0);
-}
-
-static int	listenSocket(std::vector<Socket *> &sockets, std::vector<Socket *>::iterator &itSock, std::vector<SocketData *>::iterator &itSD)
-{
-	int checkFail;
+	int									checkFail;
+	std::vector<SocketData *>::iterator	eltToErase;
 
 	checkFail = 0;
-	checkFail = listen((*itSD)->getFdServer(), 2);
+	checkFail = listen(sockets[i]->getSockData()[j]->getFdServer(), 2);
 	if (checkFail < 0)
-		(*itSock)->eraseSocket(itSD);
-	if ((*itSock)->getSockData().size() == 0)
-		return (-1);
-	return (0);
+		sockets[i]->eraseSocket(j);
 }
 
-static int	bindListenSocket(std::vector<Socket *> &sockets)
+static int	bindSocket(std::vector<Socket *> &sockets)
 {
-	int	checkFail;
+	int		checkFail;
+	size_t	sizeSockets;
+	size_t	sizeSockData;
 
 	checkFail = 0;
-	for (std::vector<Socket *>::iterator itSock = sockets.begin(); itSock != sockets.end(); itSock++)
+	sizeSockets = sockets.size();
+	for (size_t i = 0; i < sizeSockets; i++)
 	{
-		for (std::vector<SocketData *>::iterator itSD = (*itSock)->getBegin(); itSD != (*itSock)->getEnd(); itSD++)
+		sizeSockData = sockets[i]->getSockData().size();
+		for (size_t j = 0; j != sizeSockData; j++)
 		{
-			checkFail = bind((*itSD)->getFdServer(), (struct sockaddr *)&((*itSD)->getSockadd()), sizeof(sockaddr_in));
+			checkFail = bind(sockets[i]->getSockData()[j]->getFdServer(), (struct sockaddr *)&(sockets[i]->getSockData()[j]->getSockadd()), sizeof(sockaddr_in));
 			if (checkFail < 0)
-				(*itSock)->eraseSocket(itSD);
+				sockets[i]->eraseSocket(j);
 			else
-			{
-				if (listenSocket(sockets, itSock, itSD) < 0)
-					return (-1);
-				else
-				{
-					acceptClient(sockets, )
-				}
-			}
+				listenSocket(sockets, i, j);
+		}
+		if (sockets[i]->getSockData().size() == 0)
+		{
+			sockets.erase(sockets.begin() + i);
+			if (sockets.size() == 0)
+				return (-1);
 		}
 	}
 	return (0);
@@ -81,7 +73,7 @@ int	createSocket(Config conf)
 	}
 	if (sockets.size() == 0)
 		return (-1);
-	if (bindListenSocket(sockets) < 0)
+	if (bindSocket(sockets) < 0)
 		return (-1);
 	printSocketListen(sockets);
 	return (0);
