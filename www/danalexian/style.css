@@ -32,7 +32,6 @@ main {
   background: var(--rose);
   border-radius: 10px;
   padding: 10px;
-  width: 1/4;
 }
 
 .card button {
@@ -40,10 +39,15 @@ main {
   border: 1px solid var(--current-line);
   border-radius: 15px;
   padding: 5px;
-  transition: 200ms ease-in-out;
+  transition: 100ms ease-in-out;
 }
 
-.card button:hover {
-  transform: rotate(360deg);
+.btn-container {
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.card .btn-container:hover button {
+  transform: rotate(1800deg);
   border: 3px solid var(--current-line);
 }
