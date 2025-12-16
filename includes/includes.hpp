@@ -11,5 +11,9 @@
 #include <stdexcept>
 #include <unistd.h>
 #include <dirent.h>
+#include <sstream>
+#include <fstream>
+
+#include "colors.hpp"
 
 #endif
