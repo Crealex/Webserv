@@ -4,6 +4,11 @@
 # include <map>
 # include <string>
 
+/**
+ * @class MimeTypes
+ * @brief static class with a map representive all mimes tupe handle by our server
+ *
+ */
 class MimeTypes
 {
 	private:
