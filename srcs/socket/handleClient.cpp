@@ -1,5 +1,5 @@
-#include "../includes/includes.hpp"
-#include "../includes/Socket.hpp"
+#include "../../includes/includes.hpp"
+#include "../../includes/socket/Socket.hpp"
 
 std::string	receiveRequest(Config &conf, int fdClient)
 {

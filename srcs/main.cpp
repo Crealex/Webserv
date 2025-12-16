@@ -2,8 +2,8 @@
 #include "../includes/Config.hpp"
 #include "../includes/printDebug.hpp"
 #include "../includes/includes.hpp"
-#include "../includes/includeSocket.hpp"
-#include "../includes/includeClient.hpp"
+#include "../includes/socket/includeSocket.hpp"
+#include "../includes/socket/includeClient.hpp"
 
 
 int main (int argc, char **argv) 
