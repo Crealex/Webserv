@@ -12,7 +12,7 @@ ResponseError::~ResponseError() _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW
 {
 }
 
-const std::string ResponseError::createResponse() const
+const std::string ResponseError::createResponse()
 {
 	std::string resp;
 

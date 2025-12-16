@@ -14,7 +14,7 @@ void sendResponse(unsigned int socket, Config conf, char *buff)
 		response = request->createResponse();
 		delete request;
 	}
-	catch(const ResponseError& e)
+	catch(ResponseError& e)
 	{
 		response = e.createResponse();
 	}
