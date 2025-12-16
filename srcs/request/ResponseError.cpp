@@ -11,7 +11,8 @@ ResponseError::ResponseError(unsigned int code, std::string message, Request req
 ResponseError::~ResponseError() _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW
 {
 }
-const std::string ResponseError::createResponse()
+
+const std::string ResponseError::createResponse() const throw()
 {
 	std::string resp;
 
