@@ -19,31 +19,40 @@ static void	printSocketListen(std::vector<Socket *> sockets)
 	}
 }
 
-static void	listenSocket(std::vector<Socket *> &sockets, std::vector<Socket *>::iterator &itSock, std::vector<SocketData *>::iterator &itSD)
+static void	listenSocket(std::vector<Socket *> &sockets, int i, int j)
 {
-	int checkFail;
+	int									checkFail;
+	std::vector<SocketData *>::iterator	eltToErase;
 
 	checkFail = 0;
-	checkFail = listen((*itSD)->getFdServer(), 2);
+	checkFail = listen(sockets[i]->getSockData()[j]->getFdServer(), 2);
 	if (checkFail < 0)
-		(*itSock)->eraseSocket(itSD);
+		sockets[i]->eraseSocket(j);
 }
 
 static int	bindSocket(std::vector<Socket *> &sockets)
 {
-	int	checkFail;
+	int		checkFail;
+	size_t	sizeSockets;
+	size_t	sizeSockData;
 
 	checkFail = 0;
-	for (std::vector<Socket *>::iterator itSock = sockets.begin(); itSock != sockets.end(); itSock++)
+	sizeSockets = sockets.size();
+	for (size_t i = 0; i < sizeSockets; i++)
 	{
-		for (std::vector<SocketData *>::iterator itSD = (*itSock)->getBegin(); itSD != (*itSock)->getEnd(); itSD++)
+		sizeSockData = sockets[i]->getSockData().size();
+		for (size_t j = 0; j != sizeSockData; j++)
 		{
-			checkFail = bind((*itSD)->getFdServer(), (struct sockaddr *)&((*itSD)->getSockadd()), sizeof(sockaddr_in));
+			checkFail = bind(sockets[i]->getSockData()[j]->getFdServer(), (struct sockaddr *)&(sockets[i]->getSockData()[j]->getSockadd()), sizeof(sockaddr_in));
 			if (checkFail < 0)
-				(*itSock)->eraseSocket(itSD);
+				sockets[i]->eraseSocket(j);
 			else
-				listenSocket(sockets, itSock, itSD);
-			if ((*itSock)->getSockData().size() == 0)
+				listenSocket(sockets, i, j);
+		}
+		if (sockets[i]->getSockData().size() == 0)
+		{
+			sockets.erase(sockets.begin() + i);
+			if (sockets.size() == 0)
 				return (-1);
 		}
 	}
