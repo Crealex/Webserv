@@ -1,5 +1,5 @@
 NAME	= webServ
-SRCS	= $(addprefix srcs/, Config.cpp main.cpp printDebug.cpp) 
+SRCS	= $(addprefix srcs/, Config.cpp main.cpp printDebug.cpp send.cpp) 
 PARSING	= $(addprefix srcs/parsing_config/, createStruct.cpp parseElt.cpp structParse.cpp)
 SOCKET  = $(addprefix srcs/socket/, createSocket.cpp Socket.cpp SocketData.cpp handleClient.cpp printSocket.cpp)
 OBJS	= ${SRCS:%.cpp=${OBJDIR}/%.o}

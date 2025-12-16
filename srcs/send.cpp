@@ -1,6 +1,6 @@
 #include "../includes/includes.hpp"
-#include "../includes/Socket.hpp"
-#include "../includes/SocketData.hpp"
+#include "../includes/socket/Socket.hpp"
+#include "../includes/socket/SocketData.hpp"
 #include "request/getMethods.cpp"
 
 void sendResponse(unsigned int socket, Config conf, char *buff)
@@ -14,7 +14,7 @@ void sendResponse(unsigned int socket, Config conf, char *buff)
 		response = request->createResponse();
 		delete request;
 	}
-	catch(ResponseError& e)
+	catch(const ResponseError& e)
 	{
 		response = e.createResponse();
 	}

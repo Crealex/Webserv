@@ -14,7 +14,7 @@ static void	listenSocket(std::vector<Socket *> &sockets, int i, int j)
 		sockets[i]->eraseSocket(j);
 }
 
-static int	bindSocket(std::vector<Socket *> &sockets)
+static void	bindSocket(std::vector<Socket *> &sockets)
 {
 	int		checkFail;
 	size_t	sizeSockets;
@@ -34,16 +34,11 @@ static int	bindSocket(std::vector<Socket *> &sockets)
 				listenSocket(sockets, i, j);
 		}
 		if (sockets[i]->getSockData().size() == 0)
-		{
 			sockets.erase(sockets.begin() + i);
-			if (sockets.size() == 0)
-				return (-1);
-		}
 	}
-	return (0);
 }
 
-int	createSocket(Config conf)
+std::vector<Socket *>	createSocket(Config conf)
 {
 	std::vector<Socket *>	sockets;
 	size_t				sizeAddPort;
@@ -55,9 +50,6 @@ int	createSocket(Config conf)
 		Socket	*temp = new Socket(conf.getAddressPort()[i]);
 		sockets.push_back(temp);
 	}
-	if (sockets.size() == 0)
-		return (-1);
-	if (bindSocket(sockets) < 0)
-		return (-1);
-	return (0);
+	bindSocket(sockets);
+	return (sockets);
 }

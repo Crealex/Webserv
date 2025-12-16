@@ -8,6 +8,7 @@
 
 #include <sys/socket.h>
 
-int	createSocket(Config conf);
+std::vector<Socket *>	createSocket(Config conf);
+void	printSocketListen(std::vector<Socket *> sockets);
 
 #endif

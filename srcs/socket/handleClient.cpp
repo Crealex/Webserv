@@ -1,21 +1,16 @@
-#include "../../includes/includes.hpp"
-#include "../../includes/socket/Socket.hpp"
+#include "../../includes/socket/includeSend.hpp"
 
-std::string	receiveRequest(Config &conf, int fdClient)
+static void	receiveRequest(Config &conf, int fdClient, char *bufRecv)
 {
 	int			sizeRecv;
-	char		bufRecv[conf.getMaxSize()];
-	std::string	res;
 
 	sizeRecv = -1;
 	while (sizeRecv == -1 || bufRecv == NULL)
 		sizeRecv = recv(fdClient, bufRecv, conf.getMaxSize() - 1, 0);
 	bufRecv[conf.getMaxSize()] = '\0';
-	res = bufRecv;
-	return (res);
 }
 
-void	acceptClient(std::vector<Socket *> &sockets, size_t i, size_t j)
+static void	acceptClient(std::vector<Socket *> &sockets, size_t i, size_t j)
 {
 	int fdClient;
 
@@ -25,11 +20,11 @@ void	acceptClient(std::vector<Socket *> &sockets, size_t i, size_t j)
 	sockets[i]->setFdClient(fdClient, j);
 }
 
-int	handleClient(std::vector<Socket *> &sockets, Config conf)
+void	handleClient(std::vector<Socket *> &sockets, Config conf)
 {
-	size_t		sizeSockets;
-	size_t		sizeSocketData;
-	std::string	bufRecv;
+	size_t	sizeSockets;
+	size_t	sizeSocketData;
+	char	bufRecv[conf.getMaxSize()];
 
 	sizeSockets = sockets.size();
 	for (size_t i = 0; i < sizeSockets; i++)
@@ -38,9 +33,8 @@ int	handleClient(std::vector<Socket *> &sockets, Config conf)
 		for (size_t j = 0; j < sizeSocketData; j++)
 		{
 			acceptClient(sockets, i, j);
-			bufRecv = receiveRequest(conf, sockets[i]->getSockData()[j]->getFdClient());
-			(void)bufRecv;
+			receiveRequest(conf, sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
+			sendResponse(sockets[i]->getSockData()[j]->getFdClient(), conf, bufRecv);
 		}
 	}
-	return (0);
 }

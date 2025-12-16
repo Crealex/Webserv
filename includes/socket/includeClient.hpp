@@ -7,7 +7,7 @@
 #include "Socket.hpp"
 
 #include <sys/socket.h>
-int	receiveRequest(Config &conf, std::vector<Socket *> &sockets);
-int	acceptClient(std::vector<Socket *> sockets, std::vector<Socket *>::iterator &itSock, std::vector<SocketData *>::iterator &itSD);
+
+void	handleClient(std::vector<Socket *> &sockets, Config conf);
 
 #endif
