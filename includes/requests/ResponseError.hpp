@@ -18,7 +18,7 @@ class ResponseError : public std::exception, public Methods
 
   public:
 	ResponseError(unsigned int code, std::string message, Request requ);
-	const std::string createResponse() const throw();
+	const std::string createResponse();
 	~ResponseError() _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW;
 };
 
