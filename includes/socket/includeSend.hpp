@@ -8,6 +8,6 @@
 
 #include <sys/socket.h>
 
-void	sendResponse(unsigned int socket, Config conf, char *buff);
+void sendResponse(unsigned int socket, char *buff);
 
 #endif

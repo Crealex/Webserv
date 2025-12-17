@@ -1,5 +1,5 @@
 #include "../../includes/requests/Request.hpp"
-#include "request.cpp"
+#include "../../includes/requests/ResponseError.hpp"
 
 /**
  * @brief create the right Method object and return it in a Methods pointer
@@ -18,6 +18,6 @@ Methods* createMethod(char *buffer)
 		return new Post(req);
 	else if (req._method == "DELETE")
 		return new Delete(req);
-	// else
-	//	throw wrong method error
+	else
+		throw ResponseError(501, "Error: Not implemented method", req);
 }

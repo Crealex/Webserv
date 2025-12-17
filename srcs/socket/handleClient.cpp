@@ -34,7 +34,7 @@ void	handleClient(std::vector<Socket *> &sockets, Config conf)
 		{
 			acceptClient(sockets, i, j);
 			receiveRequest(conf, sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
-			sendResponse(sockets[i]->getSockData()[j]->getFdClient(), conf, bufRecv);
+			sendResponse(sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
 		}
 	}
 }
