@@ -1,12 +1,11 @@
 #include "../includes/includes.hpp"
-#include "../includes/socket/Socket.hpp"
-#include "../includes/socket/SocketData.hpp"
-#include "../includes/requests/methodsClass.hpp"
-#include "../includes/requests/ResponseError.hpp"
+#include "../includes/Socket.hpp"
+#include "../includes/SocketData.hpp"
+#include "request/getMethods.cpp"
 
 void sendResponse(unsigned int socket, char *buff)
 {
-	std::string response;
+	const std::string response;
 	
 	try
 	{
