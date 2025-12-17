@@ -8,6 +8,7 @@
 
 int main (int argc, char **argv) 
 {
+	std::vector<Socket *>	sockets;
 	if (argc > 2)
 	{
 		std::cerr << RED << "Invalid number of arguments, you need the executable and maybe a config file" << RESET << std::endl;
@@ -17,11 +18,14 @@ int main (int argc, char **argv)
 	{
 		Config configTest(argv[1]);
 		printConfigClass(configTest);
-		if (createSocket(configTest) < 0)
+		sockets = createSocket(configTest);
+		if (sockets.size() == 0)
 		{
 			std::cerr << RED << "Error : no socket for the webserv" << std::endl << RESET;
 			return (-2);
 		}
+		while (1)
+			handleClient(sockets, configTest);
 	}
 	catch (std::exception &e) 
 	{

@@ -19,6 +19,7 @@ class Methods
 	 * @brief a virtual funtction for build the reponse, implementation in get.cpp, post.cpp, delete.cpp, ResponseError.cpp
 	 */
 	virtual const std::string createResponse() = 0;
+	virtual ~Methods();
 };
 
 // addLineToResp.cpp, all prototypes for build the response in delete.cpp, errorResponse.cpp, get.cpp and post.cpp
@@ -31,5 +32,8 @@ bool	addContentLenght(std::string *resp, std::string file);
 bool	addBody(std::string *resp, std::string file);
 bool	addLocation(std::string *resp, std::string host, std::string location);
 bool	addContentType(std::string *resp, std::string type);
+
+Methods* createMethod(char *buffer);
+Request createRequest(char* buffer);
 
 #endif
