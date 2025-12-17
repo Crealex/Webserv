@@ -25,7 +25,6 @@ static uint32_t ipToUint(std::string s)
 	unsigned int		byte3;
 	uint32_t			result;
 
-	bytes.reserve(4);
 	if (std::sscanf(s.c_str(), "%u.%u.%u.%u", &byte0, &byte1, &byte2, &byte3) == 4)
 	{
 		if (byte0 >= 256 || byte1 >= 256 || byte2 >= 256 || byte3 >= 256)
