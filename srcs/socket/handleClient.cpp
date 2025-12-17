@@ -8,7 +8,7 @@ static char *receiveRequest(Config &conf, int fdClient, char *bufRecv)
 	sizeRecv = -1;
 	sizeRecv = recv(fdClient, bufRecv, conf.getMaxSize() - 1, 0);
 	if (sizeRecv == -1)
-		std::cout << "erreur avec recv" << std::endl;
+		std::cerr << "erreur avec recv" << std::endl;
 	bufRecv[sizeRecv] = '\0';
 	return (bufRecv);
 }
@@ -19,6 +19,8 @@ static void	acceptClient(std::vector<Socket *> &sockets, size_t i, size_t j)
 
 	fdClient = -1;
 	fdClient = accept(sockets[i]->getSockData()[j]->getFdServer(), NULL, NULL);
+	if (fdClient)
+		std::cerr << "Error, with accept" << std::endl;
 	sockets[i]->setFdClient(fdClient, j);
 }
 
