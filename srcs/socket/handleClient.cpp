@@ -22,11 +22,14 @@ static void	acceptClient(std::vector<Socket *> &sockets, size_t i, size_t j)
 
 void	handleClient(std::vector<Socket *> &sockets, Config conf)
 {
+	std::cout << "meh" << std::endl;
 	size_t	sizeSockets;
 	size_t	sizeSocketData;
 	char	*bufRecv = NULL;
 
+	std::cout << "meh" << std::endl;
 	sizeSockets = sockets.size();
+	std::cout << "size sockets : " << sizeSockets << std::endl;
 	for (size_t i = 0; i < sizeSockets; i++)
 	{
 		sizeSocketData = sockets[i]->getSockData().size();
