@@ -1,4 +1,4 @@
-#include "../includes/SocketData.hpp"
+#include "../../includes/socket/SocketData.hpp"
 #include <sstream>
 #include <string>
 #include <sys/socket.h>

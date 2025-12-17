@@ -1,8 +1,10 @@
 NAME	= webServ
-SRCS	= $(addprefix srcs/, Config.cpp main.cpp printDebug.cpp createSocket.cpp Socket.cpp SocketData.cpp handleClient.cpp) 
+SRCS	= $(addprefix srcs/, Config.cpp main.cpp printDebug.cpp send.cpp) 
 PARSING	= $(addprefix srcs/parsing_config/, createStruct.cpp parseElt.cpp structParse.cpp)
+SOCKET  = $(addprefix srcs/socket/, createSocket.cpp Socket.cpp SocketData.cpp handleClient.cpp printSocket.cpp)
 OBJS	= ${SRCS:%.cpp=${OBJDIR}/%.o}
 OBJPARS	= ${PARSING:%.cpp=${OBJDIR}/%.o}
+OBJSOCK	= ${SOCKET:%.cpp=${OBJDIR}/%.o}
 OBJDIR	= objets
 CFLAGS	= -Werror -Wextra -Wall -std=c++98
 CC = c++
@@ -25,8 +27,8 @@ CURRENT_FILE = 0
 
 all:	${NAME} display_ascii
 
-${NAME}:	${OBJS} ${OBJPARS}
-	@${CC} ${CFLAGS} ${OBJS} ${OBJPARS} -o ${NAME}
+${NAME}:	${OBJS} ${OBJPARS} ${OBJSOCK}
+	@${CC} ${CFLAGS} ${OBJS} ${OBJPARS} ${OBJSOCK} -o ${NAME}
 	@echo "${BOLD}${GREEN}📦 Link complete: ${NAME}${END}"
 
 ${OBJDIR}/%.o: %.cpp | ${OBJDIR}
@@ -39,6 +41,7 @@ ${OBJDIR}:
 	@mkdir -p ${OBJDIR}
 	@mkdir -p ${OBJDIR}/srcs
 	@mkdir -p ${OBJDIR}/srcs/parsing_config
+	@mkdir -p ${OBJDIR}/srcs/socket
 	@echo "${BOLD}${BLUE}📁 Created objects directory${END}"
 
 clean:

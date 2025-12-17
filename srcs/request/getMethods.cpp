@@ -9,7 +9,6 @@
  */
 Methods* createMethod(char *buffer)
 {
-	Methods* ret;
 	std::string method;
 	Request req = createRequest(buffer);
 
