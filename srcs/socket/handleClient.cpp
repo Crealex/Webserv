@@ -26,7 +26,6 @@ void	handleClient(std::vector<Socket *> &sockets, Config conf)
 	std::cout << "meh" << std::endl;
 	size_t	sizeSockets;
 	size_t	sizeSocketData;
-	std::cout << "meh" << std::endl;
 	char	*bufRecv = NULL;
 
 	std::cout << "meh" << std::endl;
