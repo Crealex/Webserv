@@ -34,6 +34,7 @@ static void	acceptClient(std::vector<Socket *> &sockets, size_t i, size_t j)
 {
 	int fdClient;
 
+	fdClient = -1;
 	fdClient = accept(sockets[i]->getSockData()[j]->getFdServer(), NULL, NULL);
 	std::cout << "after accept" << std::endl;
 	if (fdClient == -1)
@@ -45,6 +46,7 @@ static char	*receiveRequest(Config &conf, int fdClient, char *bufRecv)
 {
 	int			sizeRecv;
 
+	sizeRecv = -1;
 	sizeRecv = recv(fdClient, bufRecv, conf.getMaxSize() - 1, 0);
 	if (sizeRecv == -1)
 		std::cerr << "erreur avec recv" << std::endl;
