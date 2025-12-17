@@ -35,26 +35,29 @@ static void	acceptClient(std::vector<Socket *> &sockets, size_t i, size_t j)
 	int fdClient;
 
 	fdClient = -1;
-	while (fdClient == -1)
-		fdClient = accept(sockets[i]->getSockData()[j]->getFdServer(), NULL, NULL);
+	fdClient = accept(sockets[i]->getSockData()[j]->getFdServer(), NULL, NULL);
+	if (fdClient)
+		std::cerr << "Error, with accept" << std::endl;
 	sockets[i]->setFdClient(fdClient, j);
 }
 
-static void	receiveRequest(Config &conf, int fdClient, char *bufRecv)
+static char	*receiveRequest(Config &conf, int fdClient, char *bufRecv)
 {
 	int			sizeRecv;
 
 	sizeRecv = -1;
-	while (sizeRecv == -1 || bufRecv == NULL)
-		sizeRecv = recv(fdClient, bufRecv, conf.getMaxSize() - 1, 0);
+	sizeRecv = recv(fdClient, bufRecv, conf.getMaxSize() - 1, 0);
+	if (sizeRecv == -1)
+		std::cerr << "erreur avec recv" << std::endl;
 	bufRecv[sizeRecv] = '\0';
+	return (bufRecv);
 }
 
 void	handleClient(std::vector<Socket *> &sockets, Config conf)
 {
 	size_t	sizeSockets;
 	size_t	sizeSocketData;
-	char	*bufRecv = NULL;
+	char	*bufRecv = new char [conf.getMaxSize()];
 	int		countPollEvent;
 	pollfd	*fds;
 	int		nbPoll;
@@ -72,8 +75,8 @@ void	handleClient(std::vector<Socket *> &sockets, Config conf)
 		for (size_t j = 0; j < sizeSocketData; j++)
 		{
 			acceptClient(sockets, i, j);
-			receiveRequest(conf, sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
-			std::cout << "receive: " << bufRecv << std::endl;
+			bufRecv = receiveRequest(conf, sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
+			std::cout << "Request: " << bufRecv << std::endl;
 			sendResponse(sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
 		}
 	}
