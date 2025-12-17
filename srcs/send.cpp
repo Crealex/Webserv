@@ -24,4 +24,5 @@ void sendResponse(unsigned int socket, char *buff)
 	{
 		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
 	}
+	std::cout << "here: " << response  << std::endl;
 }

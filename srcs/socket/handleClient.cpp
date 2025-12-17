@@ -19,7 +19,7 @@ static void	acceptClient(std::vector<Socket *> &sockets, size_t i, size_t j)
 
 	fdClient = -1;
 	fdClient = accept(sockets[i]->getSockData()[j]->getFdServer(), NULL, NULL);
-	if (fdClient)
+	if (fdClient == -1)
 		std::cerr << "Error, with accept" << std::endl;
 	sockets[i]->setFdClient(fdClient, j);
 }

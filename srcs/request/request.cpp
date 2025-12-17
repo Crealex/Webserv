@@ -95,6 +95,7 @@ Request createRequest(char* buffer)
 {
 	Request ret;
 	std::map<std::string, std::string*> ptrMap = createMap(ret);
+	std::cout << "Test requ" << std::endl;
 	std::istringstream iss(buffer);
 	std::string line;
 
@@ -123,8 +124,11 @@ Request createRequest(char* buffer)
 		}
 		catch(...)
 		{
-			throw ResponseError(411, "Error, unvalid variable", ret);
 		}
+		std::cout << "verif contentType: " << ret._ContentType << std::endl;
+		std::cout << "verif contentLength: " << ret._ContentLength << std::endl;
+		std::cout << "verif host: " << ret._host << std::endl;
+		std::cout << "verif user-agent: " << ret._userAgent << std::endl;
 	}
 
 	// extract the body of the request
