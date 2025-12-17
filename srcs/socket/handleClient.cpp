@@ -1,4 +1,5 @@
 #include "../../includes/socket/includeSend.hpp"
+#include <fstream>
 
 static void	receiveRequest(Config &conf, int fdClient, char *bufRecv)
 {
@@ -38,7 +39,6 @@ void	handleClient(std::vector<Socket *> &sockets, Config conf)
 		{
 			acceptClient(sockets, i, j);
 			receiveRequest(conf, sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
-
 			sendResponse(sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
 		}
 	}
