@@ -37,8 +37,10 @@ void	handleClient(std::vector<Socket *> &sockets, Config conf)
 		sizeSocketData = sockets[i]->getSockData().size();
 		for (size_t j = 0; j < sizeSocketData; j++)
 		{
+			std::cout << "before accept" << std::endl;
 			acceptClient(sockets, i, j);
 			receiveRequest(conf, sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
+			std::cout << "receive: " << bufRecv << std::endl;
 			sendResponse(sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
 		}
 	}
