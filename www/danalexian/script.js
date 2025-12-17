@@ -4,7 +4,7 @@ document.querySelectorAll(".card button").forEach((btn) =>
     const endpoint = btn.dataset.endpoint;
     const card = btn.closest(".card");
     const resultSpan = card.querySelector(".result");
-	
-	get
+
+    resultSpan.append(`<p> method: ${method}, endpoint: ${endpoint}<p/>`);
   }),
 );
