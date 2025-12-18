@@ -1,5 +1,5 @@
 #include "../../includes/socket/includeSend.hpp"
-#include <fstream>
+#include <sys/epoll.h>
 
 static pollfd	*settingPollFds(std::vector<Socket *> &sockets, int &sizeRes)
 {
@@ -56,12 +56,12 @@ static char	*receiveRequest(Config &conf, int fdClient, char *bufRecv)
 
 void	handleClient(std::vector<Socket *> &sockets, Config conf)
 {
-	size_t	sizeSockets;
-	size_t	sizeSocketData;
-	char	*bufRecv = new char [conf.getMaxSize()];
-	int		countPollEvent;
-	pollfd	*fds;
-	int		nbPoll;
+	size_t		sizeSockets;
+	size_t		sizeSocketData;
+	char		*bufRecv = new char [conf.getMaxSize()];
+	int			countPollEvent;
+	epoll_event	*fds;
+	int			nbPoll;
 
 	nbPoll = 0;
 	fds = settingPollFds(sockets, nbPoll);

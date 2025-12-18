@@ -57,6 +57,7 @@ int const	&SocketData::getFdClient() const
 void	SocketData::setFdClient(int newFdClient)
 {
 	this->_fdClient = newFdClient;
+	this->sockOptNonBlocking(this->_fdClient);
 }
 
 // METHODS
