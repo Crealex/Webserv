@@ -42,6 +42,7 @@ static void checkGET(Request req)
 		throw ResponseError(411, "Error: Missing value", req);
 	}
 
+	int leave = 0;
 	std::vector<std::string> v = acceptedType();
 	for (std::vector<std::string>::iterator it = v.begin();
 	it != v.end(); it++)
@@ -51,8 +52,14 @@ static void checkGET(Request req)
 		while (std::getline(iss, str, ','))
 		{
 			if (str == *it)
+			{
+				leave = 1;
 				break ;
+			}
 		}
+
+		if (leave == 1)
+			break ;
 
 		if (it + 1 == v.end())
 			throw ResponseError(415, "Error: Unsupported Media Type", req);
@@ -194,15 +201,26 @@ Request createRequest(char* buffer)
 	}
 	
 	// verify the different extracted element
-	//if (ret._host.empty() || access(ret._host.c_str(), F_OK) != 0)
-	//{
-	//	throw ResponseError(400, "Error: Host cannot be accessed", ret);
-	//}
+	// if (ret._host.empty() || access(ret._host.c_str(), F_OK) != 0)
+	// {
+	// 	throw ResponseError(400, "Error: Host cannot be accessed", ret);
+	// }
 
 	if (ret._method == "POST")
 		checkPost(ret);
 	else if (ret._method == "GET")
 		checkGET(ret);
+
+	std::cout << std::endl << std::endl
+		<< "method = " << ret._method
+		<< "\nlocation = " << ret._location
+		<< "\nprotocol = " << ret._protocol
+		<< "\nhost = " << ret._host
+		<< "\nuserAgent = " << ret._userAgent
+		<< "\naccept = " << ret._accept
+		<< "\ncontent type = " << ret._ContentType
+		<< "\ncontent length = " << ret._ContentLength
+		<< "\nbody = \n" << ret._body << std::endl;
 
 	return ret;
 }
