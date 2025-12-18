@@ -1,5 +1,4 @@
 
-
 #include "../../includes/includes.hpp"
 #include "../../includes/requests/MimeTypes.hpp"
 #include <ctime>
@@ -9,6 +8,8 @@
 #include <sys/stat.h>
 
 
+// INFO: All prototypes are in methodClass.hpp
+
 //	HTTP/1.1 200 OK
 bool addStartLine(std::string *resp, std::string protocol, unsigned int code, std::string mess)
 {
@@ -16,8 +17,8 @@ bool addStartLine(std::string *resp, std::string protocol, unsigned int code, st
 
 	ss << code;
 	try {
-		resp->insert(0, protocol + " " + ss.str() + " " + mess + "\n"); // TODO: Voir comment mettre des messages personnalisé
-	} catch (std::exception) {
+		resp->insert(0, protocol + " " + ss.str() + " " + mess + "\n");
+	} catch (std::exception &e) {
 		return (false);
 	}
 
@@ -28,6 +29,7 @@ std::string findMimeType(std::string file)
 {
 	std::string extension;
 
+	std::cout << "file in " << file << std::endl;
 	extension = file.substr(file.find_last_of(".") + 1, file.length());
 	return MimeTypes::getType(extension);
 }
@@ -48,7 +50,7 @@ bool addContentType(std::string *resp, std::string accept, std::string file)
 bool addContentType(std::string *resp, std::string type)
 {
 	try {
-		resp->append("Content-Type: " + type);	
+		resp->append("Content-Type: " + type + "\n");	
 	} catch (std::exception &e) {
 		return (false);
 	}
@@ -64,6 +66,8 @@ bool addDate(std::string *resp)
 
 	std::time(&tt);
 	time = std::localtime(&tt);
+	if (!time)
+		return (false);
 	std::strftime(buff, 100, "Date: %a, %d %b %Y %X GMT\n", time);
 	resp->append(buff);
 	return (true);
@@ -103,7 +107,7 @@ bool addContentLenght(std::string *resp, std::string file)
 	ss << size;
 	try {
 		resp->append("Content-Lenght: " + ss.str() + "\n");
-	} catch (std::exception) {
+	} catch (std::exception &e) {
 		return (false);
 	}
 	return (true);

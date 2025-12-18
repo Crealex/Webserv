@@ -14,4 +14,6 @@
 #include <sstream>
 #include <fstream>
 
+#include "colors.hpp"
+
 #endif
