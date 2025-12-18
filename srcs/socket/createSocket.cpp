@@ -3,7 +3,7 @@
 #include "../../includes/socket/Socket.hpp"
 #include <arpa/inet.h>
 
-static void	listenSocket(std::vector<Socket *> &sockets, int i, int j)
+static void	listenSocket(std::vector<Socket *> &sockets, size_t &i, size_t &j, size_t &sizeSockData)
 {
 	int									checkFail;
 	std::vector<SocketData *>::iterator	eltToErase;
@@ -11,7 +11,11 @@ static void	listenSocket(std::vector<Socket *> &sockets, int i, int j)
 	checkFail = 0;
 	checkFail = listen(sockets[i]->getSockData()[j]->getFdServer(), 2);
 	if (checkFail < 0)
+	{
 		sockets[i]->eraseSocket(j);
+		j--;
+		sizeSockData--;
+	}
 }
 
 static void	bindSocket(std::vector<Socket *> &sockets)
@@ -29,12 +33,20 @@ static void	bindSocket(std::vector<Socket *> &sockets)
 		{
 			checkFail = bind(sockets[i]->getSockData()[j]->getFdServer(), (struct sockaddr *)&(sockets[i]->getSockData()[j]->getSockadd()), sizeof(sockaddr_in));
 			if (checkFail < 0)
+			{
 				sockets[i]->eraseSocket(j);
+				j--;
+				sizeSockData--;
+			}
 			else
-				listenSocket(sockets, i, j);
+				listenSocket(sockets, i, j, sizeSockData);
 		}
 		if (sockets[i]->getSockData().size() == 0)
+		{
 			sockets.erase(sockets.begin() + i);
+			i--;
+			sizeSockets--;
+		}
 	}
 }
 
