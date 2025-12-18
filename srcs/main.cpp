@@ -24,6 +24,7 @@ int main (int argc, char **argv)
 			std::cerr << RED << "Error : no socket for the webserv" << std::endl << RESET;
 			return (-2);
 		}
+		printSocketListen(sockets);
 		while (1)
 			handleClient(sockets, configTest);
 	}
