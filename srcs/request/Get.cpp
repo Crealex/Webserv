@@ -29,7 +29,13 @@ const std::string Get::createResponse()
 	dataError._location = this->_location;
 	dataError._userAgent = this->_userAgent;
 	path = this->_host + this->_location;
-	target.open(path.c_str());
+	std::cout << "raw path:" << path << std::endl;
+	//target.open(path.c_str());
+	// *** FORCE A GOOD PATH ***
+	target.open("../../www/danalexian/index.html");
+	path = "../../www/danalexian/";
+	std::cout << "path: " << path << std::endl;
+	// *************************
 	if (!target.is_open())
 		throw ResponseError(404, "Not found", dataError);
 	stat((this->_host + this->_location).c_str(), &fileData);

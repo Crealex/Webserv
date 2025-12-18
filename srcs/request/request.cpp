@@ -33,8 +33,9 @@ static std::vector<std::string> acceptedType()
 	return v;
 }
 
-bool checkGET(Request req)
+void checkGET(Request req)
 {
+	std::cout << "in checkGET" << std::endl;
 	if (req._userAgent.empty() || 
 		req._accept.empty())
 	{
@@ -42,19 +43,20 @@ bool checkGET(Request req)
 	}
 
 	std::vector<std::string> v = acceptedType();
-	for (std::vector<std::string>::iterator it = v.begin();
-		it != v.end(); it++)
-	{
-		if (req._accept == *it)
-			break ;
+	//for (std::vector<std::string>::iterator it = v.begin();
+	//	it != v.end(); it++)
+	//{
+	//	if (req._accept == *it)
+	//		break ;
 
-		if (it + 1 == v.end())
-			throw ResponseError(415, "Error: Unsupported Media Type", req);
-	}
+	//	if (it + 1 == v.end())
+	//		throw ResponseError(415, "Error: Unsupported Media Type", req);
+	//}
 }
 
-bool checkPost(Request req)
+void checkPost(Request req)
 {
+	std::cout << "in checkPost" << std::endl;
 	if (req._ContentType.empty() || 
 		req._body.empty())
 	{
@@ -173,6 +175,7 @@ Request createRequest(char* buffer)
 		std::cout << "verif contentLength: " << ret._ContentLength << std::endl;
 		std::cout << "verif host: " << ret._host << std::endl;
 		std::cout << "verif user-agent: " << ret._userAgent << std::endl;
+		std::cout << "verif accept:" << ret._accept << std::endl;
 	}
 
 	// extract the body of the request
@@ -184,14 +187,14 @@ Request createRequest(char* buffer)
 	}
 	
 	// verify the different extracted element
-	if (ret._host.empty() || access(ret._host.c_str(), F_OK) != 0)
-	{
-		throw ResponseError(400, "Error: Host cannot be accessed", ret);
-	}
+	//if (ret._host.empty() || access(ret._host.c_str(), F_OK) != 0)
+	//{
+	//	throw ResponseError(400, "Error: Host cannot be accessed", ret);
+	//}
 
-	if (ret._method == "POST")
+	if (ret._method == "GET")
 		checkGET(ret);
-	else if (ret._method == "GET")
+	else if (ret._method == "POST")
 		checkPost(ret);
 
 	return ret;
