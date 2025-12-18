@@ -33,7 +33,7 @@ static std::vector<std::string> acceptedType()
 	return v;
 }
 
-bool checkGET(Request req)
+void checkGET(Request req)
 {
 	if (req._userAgent.empty() || 
 		req._accept.empty())
@@ -53,7 +53,7 @@ bool checkGET(Request req)
 	}
 }
 
-bool checkPost(Request req)
+void checkPost(Request req)
 {
 	if (req._ContentType.empty() || 
 		req._body.empty())
