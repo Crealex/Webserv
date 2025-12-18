@@ -18,19 +18,21 @@ SocketData::~SocketData()
 
 static uint32_t ipToUint(std::string s)
 {
-	std::stringstream			toBytes;
-	std::vector<unsigned int>	bytes;
-	uint32_t					result;
+	std::stringstream	toBytes;
+	unsigned int		byte0;
+	unsigned int		byte1;
+	unsigned int		byte2;
+	unsigned int		byte3;
+	uint32_t			result;
 
-	bytes.reserve(4);
-	if (std::sscanf(s.c_str(), "%u.%u.%u.%u", &bytes[0], &bytes[1], &bytes[2], &bytes[3]) == 4)
+	if (std::sscanf(s.c_str(), "%u.%u.%u.%u", &byte0, &byte1, &byte2, &byte3) == 4)
 	{
-		if (bytes[0] >= 256 || bytes[1] >= 256 || bytes[2] >= 256 || bytes[3] >= 256)
+		if (byte0 >= 256 || byte1 >= 256 || byte2 >= 256 || byte3 >= 256)
 			throw std::invalid_argument(RED "Error : bytes not right in IP address : higher than 256" RESET);
 	}
 	else
 		throw std::invalid_argument(RED "Error : bytes not right in IP address" RESET);
-	result = (bytes[3] << 24) + (bytes[2] << 16) + (bytes[1] << 8) + bytes[0];
+	result = (byte3 << 24) + (byte2 << 16) + (byte1 << 8) + byte0;
 	return (result);
 }
 
