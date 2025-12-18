@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <cstdio>
+#include <fcntl.h>
 
 SocketData::SocketData(addPort_t addPort)
 {
@@ -69,14 +70,15 @@ void	SocketData::assignmentSocket(addPort_t addPort)
 	socketFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (socketFd != -1)
 	{
-		sockOpt(socketFd);
+		sockOptNonBlocking(socketFd);
 		this->_fdServer = (socketFd);
 	}
 }
-void	SocketData::sockOpt(int &socketFd)
+void	SocketData::sockOptNonBlocking(int &socketFd)
 {
 		int	opt;
 
 		opt = 1;
+		fcntl(socketFd, F_SETFL, O_NONBLOCK);
 		setsockopt(socketFd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(int));
 }

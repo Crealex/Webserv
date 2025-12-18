@@ -63,19 +63,18 @@ void	handleClient(std::vector<Socket *> &sockets, Config conf)
 
 	nbPoll = 0;
 	fds = settingPollFds(sockets, nbPoll);
-	std::cout << "maybe" << std::endl;
-	(void)fds;
-	(void)countPollEvent;
-	// countPollEvent = poll(fds, nbPoll, 2500);
+	std::cout << "maybe 0" << std::endl;
+	countPollEvent = poll(fds, nbPoll, 2500);
+	std::cout << "count Poll : " << countPollEvent << std::endl;
 
 	sizeSockets = sockets.size();
 	for (size_t i = 0; i < sizeSockets; i++)
 	{
-		std::cout << "maybe" << std::endl;
+		std::cout << "maybe 1" << std::endl;
 		sizeSocketData = sockets[i]->getSockData().size();
 		for (size_t j = 0; j < sizeSocketData; j++)
 		{
-			std::cout << "maybe" << std::endl;
+			std::cout << "maybe 2" << std::endl;
 			acceptClient(sockets, i, j);
 			std::cout << "Request: " << std::endl;
 			bufRecv = receiveRequest(conf, sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
