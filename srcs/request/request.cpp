@@ -180,16 +180,11 @@ Request createRequest(char* buffer)
 			std::string str;
 			while (ss >> word)
 				str.append(word + ' ');
-			*strPtr = word;
+			*strPtr = str;
 		}
 		catch(...)
 		{
 		}
-		std::cout << "verif contentType: " << ret._ContentType << std::endl;
-		std::cout << "verif contentLength: " << ret._ContentLength << std::endl;
-		std::cout << "verif host: " << ret._host << std::endl;
-		std::cout << "verif user-agent: " << ret._userAgent << std::endl;
-		std::cout << "verif accept:" << ret._accept << std::endl;
 	}
 
 	// extract the body of the request

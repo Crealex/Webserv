@@ -12,7 +12,7 @@ class Post: public Methods
 		std::string		_body;
     public:
 	Post(Request requ);
-	const std::string	createResponse();
+	const std::string	createResponse(Config conf);
 };
 
 #endif // !POST_HPP

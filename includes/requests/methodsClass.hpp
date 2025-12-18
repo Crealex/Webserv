@@ -2,6 +2,7 @@
 
 #define METHODS_CLASS_HPP
 #include "../includes.hpp"
+#include "../Config.hpp"
 
 struct Request;
 
@@ -18,7 +19,7 @@ class Methods
 	/**
 	 * @brief a virtual funtction for build the reponse, implementation in get.cpp, post.cpp, delete.cpp, ResponseError.cpp
 	 */
-	virtual const std::string createResponse() = 0;
+	virtual const std::string createResponse(Config conf) = 0;
 	virtual ~Methods();
 };
 

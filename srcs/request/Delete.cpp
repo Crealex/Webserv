@@ -28,13 +28,15 @@ static std::string noContent(std::string protocol, Request dataRequ)
 	return (resp);
 }
 
-const std::string Delete::createResponse()
+const std::string Delete::createResponse(Config conf)
 {
 	std::ifstream	file;
 	std::string		contentFile;
 	std::string		path;
 	std::string		resp;
 	Request			dataRequ;
+	// TODO: Revoir le path
+	(void)conf;
 
 	path = this->_host + this->_location;
 	//std::cout << path << std::endl;

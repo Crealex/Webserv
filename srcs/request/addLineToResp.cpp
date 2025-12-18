@@ -5,6 +5,7 @@
 #include <exception>
 #include <fstream>
 #include <sstream>
+#include <string>
 #include <sys/stat.h>
 
 
@@ -37,13 +38,21 @@ std::string findMimeType(std::string file)
 bool addContentType(std::string *resp, std::string accept, std::string file)
 {
 	std::string contentType;
+	std::stringstream acceptSs(accept);
+	std::string type;
 
 	contentType = findMimeType(file);
-	if (contentType != accept && accept != "*/*")
-		return (false);
-
-	resp->append("Content-Type: " + contentType + "\n");
-	return (true);
+	std::cout << "accept in addContentType" << accept << std::endl;
+	while (std::getline(acceptSs, type,  ','))
+	{
+		std::cout << "type: " << type << ", Content-Type: " << contentType << std::endl;
+		if (contentType == type || type == "*/*")
+		{
+			resp->append("Content-Type: " + contentType + "\n");
+			return (true);
+		}
+	}
+	return (false);
 }
 
 // For post.cpp
@@ -106,7 +115,7 @@ bool addContentLenght(std::string *resp, std::string file)
 	size = file.size();
 	ss << size;
 	try {
-		resp->append("Content-Lenght: " + ss.str() + "\n");
+		resp->append("Content-Length: " + ss.str() + "\n");
 	} catch (std::exception &e) {
 		return (false);
 	}

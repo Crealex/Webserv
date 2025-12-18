@@ -17,7 +17,7 @@ static bool addContentToFile(std::string body, std::ofstream *newFile)
 	return (true);
 }
 
-const std::string Post::createResponse()
+const std::string Post::createResponse(Config conf)
 {
 	// TODO: GERER L"AJOUT A UN FICHIER, pas juste le creer"
 	std::string resp;
@@ -26,6 +26,8 @@ const std::string Post::createResponse()
 	std::string path;
 
 	(void)_contentLength;
+	// TODO: Path a revoir
+	(void)conf;
 	path = this->_host + this->_location;
 	newFile.open(path.c_str(), std::ios::app);
 	if (!newFile.is_open())

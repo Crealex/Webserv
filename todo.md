@@ -1,0 +1,2 @@
+- check pk fait pas une boucle complete
+- faire un .conf qui prend le bon site
