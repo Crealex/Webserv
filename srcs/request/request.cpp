@@ -177,7 +177,7 @@ Request createRequest(char* buffer)
 			std::string str;
 			while (ss >> word)
 				str.append(word + ' ');
-			*strPtr = word;
+			*strPtr = str;
 		}
 		catch(...)
 		{
