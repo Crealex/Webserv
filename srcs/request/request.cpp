@@ -54,9 +54,9 @@ static void checkGET(Request req)
 				break ;
 		}
 
-	//	if (it + 1 == v.end())
-	//		throw ResponseError(415, "Error: Unsupported Media Type", req);
-	//}
+		if (it + 1 == v.end())
+			throw ResponseError(415, "Error: Unsupported Media Type", req);
+	}
 }
 
 static void checkPost(Request req)

@@ -66,7 +66,7 @@ const std::string Get::createResponse()
 //	requ._accept = "text/html";
 //	requ._host = "../../www";
 //	requ._location = "/demo/index.html";
-//	requ._protocol = "HTTP/1.1";
+//	requ._protocol = "HTTe/1.1";
 //	requ._userAgent = "Firefox";
 //	try 
 //	{
