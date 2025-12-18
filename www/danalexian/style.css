@@ -51,3 +51,9 @@ main {
   transform: rotate(1800deg);
   border: 3px solid var(--current-line);
 }
+
+.card button:active {
+  color: var(--purple);
+  background-color: var(--rose);
+  transform: scale(1.2);
+}
