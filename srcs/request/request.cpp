@@ -10,6 +10,7 @@ static std::vector<std::string> acceptedType()
 {
 	std::vector<std::string> v;
 
+	v.push_back("*/*");
 	v.push_back("text/html");
 	v.push_back("text/css");
 	v.push_back("image/png");
@@ -30,6 +31,48 @@ static std::vector<std::string> acceptedType()
 	v.push_back("image/avif");
 
 	return v;
+}
+
+bool checkGET(Request req)
+{
+	if (req._userAgent.empty() || 
+		req._accept.empty())
+	{
+		throw ResponseError(411, "Error: Missing value", req);
+	}
+
+	std::vector<std::string> v = acceptedType();
+	for (std::vector<std::string>::iterator it = v.begin();
+		it != v.end(); it++)
+	{
+		if (req._accept == *it)
+			break ;
+
+		if (it + 1 == v.end())
+			throw ResponseError(415, "Error: Unsupported Media Type", req);
+	}
+}
+
+bool checkPost(Request req)
+{
+	if (req._ContentType.empty() || 
+		req._body.empty())
+	{
+		throw ResponseError(411, "Error: Missing value", req);
+	}
+
+	std::vector<std::string> v = acceptedType();
+	for (std::vector<std::string>::iterator it = v.begin();
+		it != v.end(); it++)
+	{
+		if (req._ContentType == *it)
+			break ;
+
+		if (it + 1 == v.end())
+			throw ResponseError(415, "Error: Unsupported Media Type", req);
+	}
+
+	// TODO check if content length < maxSize
 }
 
 /**
@@ -81,7 +124,8 @@ static std::map<std::string, std::string*> createMap(Request &req)
 	ret.insert(std::make_pair(std::string("User-Agent:"), &req._userAgent));
 	ret.insert(std::make_pair(std::string("Accept:"), &req._accept));
 	ret.insert(std::make_pair(std::string("Content-Type:"), &req._ContentType));
-
+	ret.insert(std::make_pair(std::string("Accept:"), &req._accept));
+	
 	return ret;
 }
 
@@ -140,26 +184,15 @@ Request createRequest(char* buffer)
 	}
 	
 	// verify the different extracted element
-	std::string verif = ret._ContentType;
-	std::vector<std::string> v = acceptedType();
-	for (std::vector<std::string>::iterator it = v.begin();
-		it != v.end(); it++)
-	{
-		if (verif == *it)
-			break ;
-		if (it + 1 == v.end())
-		{
-			throw ResponseError(415, "Error: Unsupported Media Type", ret);
-		}
-	}
-
 	if (ret._host.empty() || access(ret._host.c_str(), F_OK) != 0)
 	{
 		throw ResponseError(400, "Error: Host cannot be accessed", ret);
 	}
 
-	if (ret._method == "POST" && ret._ContentLength == 0)
-			throw ResponseError(411, "Error: Content length isnt specified", ret);
+	if (ret._method == "POST")
+		checkGET(ret);
+	else if (ret._method == "GET")
+		checkPost(ret);
 
 	return ret;
 }
