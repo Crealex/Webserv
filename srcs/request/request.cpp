@@ -65,7 +65,7 @@ static void checkGET(Request req)
 	}
 }
 
-static void checkPost(Request req)
+static void checkPost(Request req, unsigned int maxSize)
 {
 	if (req._ContentType.empty() || 
 		req._body.empty())
@@ -84,7 +84,8 @@ static void checkPost(Request req)
 			throw ResponseError(415, "Error: Unsupported Media Type", req);
 	}
 
-	// TODO check if content length < maxSize
+	if (req._ContentLength > maxSize)
+		throw ResponseError(413 , "Error: content too large", req);
 }
 
 /**
@@ -146,7 +147,7 @@ static std::map<std::string, std::string*> createMap(Request &req)
  * @param buffer the client request
  * @return The created Request object
  */
-Request createRequest(char* buffer)
+Request createRequest(char* buffer, unsigned int maxSize)
 {
 	Request ret;
 	std::map<std::string, std::string*> ptrMap = createMap(ret);
@@ -199,7 +200,7 @@ Request createRequest(char* buffer)
 	// }
 
 	if (ret._method == "POST")
-		checkPost(ret);
+		checkPost(ret, maxSize);
 	else if (ret._method == "GET")
 		checkGET(ret);
 
