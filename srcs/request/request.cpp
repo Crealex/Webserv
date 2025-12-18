@@ -33,7 +33,7 @@ static std::vector<std::string> acceptedType()
 	return v;
 }
 
-void checkGET(Request req)
+static void checkGET(Request req)
 {
 	if (req._userAgent.empty() || 
 		req._accept.empty())
@@ -43,17 +43,22 @@ void checkGET(Request req)
 
 	std::vector<std::string> v = acceptedType();
 	for (std::vector<std::string>::iterator it = v.begin();
-		it != v.end(); it++)
+	it != v.end(); it++)
 	{
-		if (req._accept == *it)
-			break ;
+		std::istringstream iss(req._accept);
+		std::string str;
+		while (std::getline(iss, str, ','))
+		{
+			if (str == *it)
+				break ;
+		}
 
 		if (it + 1 == v.end())
 			throw ResponseError(415, "Error: Unsupported Media Type", req);
 	}
 }
 
-void checkPost(Request req)
+static void checkPost(Request req)
 {
 	if (req._ContentType.empty() || 
 		req._body.empty())
@@ -124,7 +129,6 @@ static std::map<std::string, std::string*> createMap(Request &req)
 	ret.insert(std::make_pair(std::string("User-Agent:"), &req._userAgent));
 	ret.insert(std::make_pair(std::string("Accept:"), &req._accept));
 	ret.insert(std::make_pair(std::string("Content-Type:"), &req._ContentType));
-	ret.insert(std::make_pair(std::string("Accept:"), &req._accept));
 	
 	return ret;
 }
@@ -149,6 +153,7 @@ Request createRequest(char* buffer)
 		// extract and parse the different element of the request
 		if (line.empty())
 			break ;
+
 		std::stringstream ss(line);
 		std::string word;
 		ss >> word;
@@ -162,7 +167,9 @@ Request createRequest(char* buffer)
 		try
 		{
 			std::string* strPtr = ptrMap.at(word);
-			ss >> word;
+			std::string str;
+			while (ss >> word)
+				str.append(word + ' ');
 			*strPtr = word;
 		}
 		catch(...)
@@ -185,9 +192,9 @@ Request createRequest(char* buffer)
 	}
 
 	if (ret._method == "POST")
-		checkGET(ret);
-	else if (ret._method == "GET")
 		checkPost(ret);
+	else if (ret._method == "GET")
+		checkGET(ret);
 
 	return ret;
 }
