@@ -33,7 +33,7 @@ bool	addBody(std::string *resp, std::string file);
 bool	addLocation(std::string *resp, std::string host, std::string location);
 bool	addContentType(std::string *resp, std::string type);
 
-Methods* createMethod(char *buffer);
-Request createRequest(char* buffer);
+Methods* createMethod(char *buffer, unsigned int maxSize);
+Request createRequest(char* buffer, unsigned int maxSize);
 
 #endif

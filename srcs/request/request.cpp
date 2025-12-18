@@ -10,6 +10,7 @@ static std::vector<std::string> acceptedType()
 {
 	std::vector<std::string> v;
 
+	v.push_back("*/*");
 	v.push_back("text/html");
 	v.push_back("text/css");
 	v.push_back("image/png");
@@ -30,6 +31,61 @@ static std::vector<std::string> acceptedType()
 	v.push_back("image/avif");
 
 	return v;
+}
+
+static void checkGET(Request req)
+{
+	if (req._userAgent.empty() || 
+		req._accept.empty())
+	{
+		throw ResponseError(411, "Error: Missing value", req);
+	}
+
+	int leave = 0;
+	std::vector<std::string> v = acceptedType();
+	for (std::vector<std::string>::iterator it = v.begin();
+	it != v.end(); it++)
+	{
+		std::istringstream iss(req._accept);
+		std::string str;
+		while (std::getline(iss, str, ','))
+		{
+			if (str == *it)
+			{
+				leave = 1;
+				break ;
+			}
+		}
+
+		if (leave == 1)
+			break ;
+
+		if (it + 1 == v.end())
+			throw ResponseError(415, "Error: Unsupported Media Type", req);
+	}
+}
+
+static void checkPost(Request req, unsigned int maxSize)
+{
+	if (req._ContentType.empty() || 
+		req._body.empty())
+	{
+		throw ResponseError(411, "Error: Missing value", req);
+	}
+
+	std::vector<std::string> v = acceptedType();
+	for (std::vector<std::string>::iterator it = v.begin();
+		it != v.end(); it++)
+	{
+		if (req._ContentType == *it)
+			break ;
+
+		if (it + 1 == v.end())
+			throw ResponseError(415, "Error: Unsupported Media Type", req);
+	}
+
+	if (req._ContentLength > maxSize)
+		throw ResponseError(413 , "Error: content too large", req);
 }
 
 /**
@@ -81,7 +137,7 @@ static std::map<std::string, std::string*> createMap(Request &req)
 	ret.insert(std::make_pair(std::string("User-Agent:"), &req._userAgent));
 	ret.insert(std::make_pair(std::string("Accept:"), &req._accept));
 	ret.insert(std::make_pair(std::string("Content-Type:"), &req._ContentType));
-
+	
 	return ret;
 }
 
@@ -91,7 +147,7 @@ static std::map<std::string, std::string*> createMap(Request &req)
  * @param buffer the client request
  * @return The created Request object
  */
-Request createRequest(char* buffer)
+Request createRequest(char* buffer, unsigned int maxSize)
 {
 	Request ret;
 	std::map<std::string, std::string*> ptrMap = createMap(ret);
@@ -105,6 +161,7 @@ Request createRequest(char* buffer)
 		// extract and parse the different element of the request
 		if (line.empty())
 			break ;
+
 		std::stringstream ss(line);
 		std::string word;
 		ss >> word;
@@ -118,12 +175,13 @@ Request createRequest(char* buffer)
 		try
 		{
 			std::string* strPtr = ptrMap.at(word);
-			ss >> word;
-			*strPtr = word;
+			std::string str;
+			while (ss >> word)
+				str.append(word + ' ');
+			*strPtr = str;
 		}
 		catch(...)
 		{
-			throw ResponseError(411, "Error, unvalid variable", ret);
 		}
 	}
 
@@ -136,26 +194,26 @@ Request createRequest(char* buffer)
 	}
 	
 	// verify the different extracted element
-	std::string verif = ret._ContentType;
-	std::vector<std::string> v = acceptedType();
-	for (std::vector<std::string>::iterator it = v.begin();
-		it != v.end(); it++)
-	{
-		if (verif == *it)
-			break ;
-		if (it + 1 == v.end())
-		{
-			throw ResponseError(415, "Error: Unsupported Media Type", ret);
-		}
-	}
+	// if (ret._host.empty() || access(ret._host.c_str(), F_OK) != 0)
+	// {
+	// 	throw ResponseError(400, "Error: Host cannot be accessed", ret);
+	// }
 
-	if (ret._host.empty() || access(ret._host.c_str(), F_OK) != 0)
-	{
-		throw ResponseError(400, "Error: Host cannot be accessed", ret);
-	}
+	if (ret._method == "POST")
+		checkPost(ret, maxSize);
+	else if (ret._method == "GET")
+		checkGET(ret);
 
-	if (ret._method == "POST" && ret._ContentLength == 0)
-			throw ResponseError(411, "Error: Content length isnt specified", ret);
+	std::cout << std::endl << std::endl
+		<< "method = " << ret._method
+		<< "\nlocation = " << ret._location
+		<< "\nprotocol = " << ret._protocol
+		<< "\nhost = " << ret._host
+		<< "\nuserAgent = " << ret._userAgent
+		<< "\naccept = " << ret._accept
+		<< "\ncontent type = " << ret._ContentType
+		<< "\ncontent length = " << ret._ContentLength
+		<< "\nbody = \n" << ret._body << std::endl;
 
 	return ret;
 }

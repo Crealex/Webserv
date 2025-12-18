@@ -81,7 +81,7 @@ void	handleClient(std::vector<Socket *> &sockets, Config conf)
 			std::cout << "Request: " << std::endl;
 			bufRecv = receiveRequest(conf, sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
 			std::cout << "Request: " << bufRecv << std::endl;
-			sendResponse(sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
+			sendResponse(sockets[i]->getSockData()[j]->getFdClient(), bufRecv, conf.getMaxSize());
 		}
 	}
 }

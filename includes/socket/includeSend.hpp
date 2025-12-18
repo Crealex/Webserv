@@ -8,6 +8,6 @@
 
 #include <sys/socket.h>
 
-void sendResponse(unsigned int socket, char *buff);
+void sendResponse(unsigned int socket, char *buff, unsigned int maxSize);
 
 #endif
