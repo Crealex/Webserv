@@ -51,8 +51,10 @@ static void checkGET(Request req)
 		std::string str;
 		while (std::getline(iss, str, ','))
 		{
-			if (str == *it)
+		std::cout << "*it: " << *it << ", str: " << str << std::endl;
+			if (str.compare(*it) == 0)
 			{
+				std::cout << "is egal" << std::endl;
 				leave = 1;
 				break ;
 			}
@@ -180,6 +182,7 @@ Request createRequest(char* buffer)
 			std::string str;
 			while (ss >> word)
 				str.append(word + ' ');
+			str.erase(str.end() - 1);
 			*strPtr = str;
 		}
 		catch(...)

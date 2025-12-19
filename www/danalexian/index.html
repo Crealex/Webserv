@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Danalexian</title>
-    <link href="style.css" rel="stylesheet" />
+    <link href="./style.css" rel="stylesheet" />
   </head>
   <body>
     <header></header>
@@ -21,24 +21,30 @@
           <h2>Method get succes</h2>
           <p>Permet de tester quand la méthode get réussis</p>
           <div class="btn-container">
-            <button data-method="GET">Test get</button>
-            <span class=".result"></span>
+            <button data-method="GET" data-endpoint="./get.txt">
+              Test get
+            </button>
+            <span class="result"></span>
           </div>
         </div>
         <div class="card">
           <h2>Method post succes</h2>
           <p>Permet de tester quand la methode post réussis</p>
           <div class="btn-container">
-            <button data-method="POST">Test post</button>
-            <span class=".result"></span>
+            <button data-method="POST" data-endpoint="./post.txt">
+              Test post
+            </button>
+            <span class="result"></span>
           </div>
         </div>
         <div class="card">
           <h2>Method delete succes</h2>
           <p>Permet de tester quand la méthode delete réussis</p>
           <div class="btn-container">
-            <button data-method="DELETE">Test delete</button>
-            <span class=".result"></span>
+            <button data-method="DELETE" data-endpoint="./post.txt">
+              Test delete
+            </button>
+            <span class="result"></span>
           </div>
         </div>
         <div class="card">
@@ -46,7 +52,7 @@
           <p>Permet de tester quand la méthode get échoue</p>
           <div class="btn-container">
             <button data-method="GET">Test get</button>
-            <span class=".result"></span>
+            <span class="result"></span>
           </div>
         </div>
         <div class="card">
@@ -54,7 +60,7 @@
           <p>Permet de tester quand la méthode post échoue</p>
           <div class="btn-container">
             <button data-method="POST">Test post</button>
-            <span class=".result"></span>
+            <span class="result"></span>
           </div>
         </div>
         <div class="card">
@@ -62,10 +68,11 @@
           <p>Permet de tester quand la méthode delete échoue</p>
           <div class="btn-container">
             <button data-method="DELETE">Test delete</button>
-            <span class=".result"></span>
+            <span class="result"></span>
           </div>
         </div>
       </div>
+      <script src="./script.js"></script>
     </main>
   </body>
 </html>
