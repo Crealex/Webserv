@@ -8,6 +8,6 @@
 
 #include <sys/socket.h>
 
-void	handleClient(std::vector<Socket *> &sockets, Config conf);
+void	handleClient(std::vector<Socket *> &sockets, Config conf, int nbSockets);
 
 #endif

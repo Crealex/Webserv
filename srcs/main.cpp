@@ -16,9 +16,11 @@ int main (int argc, char **argv)
 	}
 	try 
 	{
-		Config configTest(argv[1]);
+		int		nbSockets;
+		Config	configTest(argv[1]);
+
 		printConfigClass(configTest);
-		sockets = createSocket(configTest);
+		sockets = createSocket(configTest, nbSockets);
 		if (sockets.size() == 0)
 		{
 			std::cerr << RED << "Error : no socket for the webserv" << std::endl << RESET;
@@ -26,7 +28,7 @@ int main (int argc, char **argv)
 		}
 		printSocketListen(sockets);
 		while (1)
-			handleClient(sockets, configTest);
+			handleClient(sockets, configTest, nbSockets);
 	}
 	catch (std::exception &e) 
 	{

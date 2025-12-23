@@ -1,79 +1,42 @@
 #include "../../includes/socket/includeSend.hpp"
 #include <sys/epoll.h>
 
-static int	countNbEpoll(std::vector<Socket *> &sockets)
+static int	createEpoll()
 {
-	int	count;
-	int	sizeSockets;
+	int	res;
 
-	count = 0;
-	sizeSockets = sockets.size();
-	for (int i = 0; i < sizeSockets; i++)
+	res = epoll_create(1);
+	if (res == -1)
 	{
-		count += sockets[i]->getSockData().size();
-		std::cout << "count : " << count << std::endl;
+		std::cout << "here ? " << std::endl;
+		return (createEpoll());
 	}
-	return (count);
+	return (res);
 }
 
-static epoll_event	*settingEpollFdServer(std::vector<Socket *> &sockets, int sizeRes, int *epollFds)
+static epoll_event	*addEpollServer(std::vector<Socket *> &sockets, int sizeRes, int epollFd)
 {
-	size_t		sizeSocket;
-	size_t		sizeSockData;
 	epoll_event	*res;
-	int			indexEpoll;
+	int			sizeSocket;
+	int			sizeSockData;
+	int			count;
 
-	res = NULL;
+	res = new epoll_event[sizeRes];
 	sizeSocket = sockets.size();
-	indexEpoll = 0;
-	std::cout << "hereee ? " << std::endl;
-
-	for (size_t i = 0; i < sizeSocket; i++)
+	count = 0;
+	for (int i = 0; i < sizeSocket; i++)
 	{
 		sizeSockData = sockets[i]->getSockData().size();
-		std::cout << "hereee 1? " << std::endl;
-		for (size_t j = 0; j < sizeSockData; j++)
+		for (int j = 0; j < sizeSockData; j++)
 		{
-			epollFds[indexEpoll] = 
-			if (tempEpollFds[sizeRes] == -1)
-			{
-
-				std::cout << "here ? " << std::endl;
-				if (tempEpollFds)
-					delete[] tempEpollFds;
-				if (*epollFds)
-					delete[] *epollFds;
-				if (res)
-					delete[] res;
-				sizeRes = 0;
-				return (settingEpollFdServer(sockets, sizeRes, epollFds));
-			}
-			if (*epollFds)
-				delete[] *epollFds;
-			*epollFds = tempEpollFds;
-			temp = new epoll_event[sizeRes + 1];
-			for (int i = 0; i < sizeRes; i++)
-				temp[i] = res[i];
-			temp[sizeRes].data.fd = sockets[i]->getSockData()[j]->getFdServer();
-			temp[sizeRes].events = EPOLLOUT;
-			if (epoll_ctl(*epollFds[sizeRes], EPOLL_CTL_ADD, temp[sizeRes].data.fd, &temp[sizeRes]) < 0)
+			res[count].data.fd = sockets[i]->getSockData()[j]->getFdServer();
+			res[count].events = EPOLLOUT;
+			if (epoll_ctl(epollFd, EPOLL_CTL_ADD, res[count].data.fd, &res[count]) < 0)
 			{
 				if (res)
 					delete[] res;
-				if (*epollFds)
-					delete[] *epollFds;
-				if (tempEpollFds)
-					delete[] tempEpollFds;
-				if (temp)
-					delete[] temp;
-				sizeRes = 0;
-				std::cout << "help" << std::endl;
-				return (settingEpollFdServer(sockets, sizeRes, epollFds));
+				return (addEpollServer(sockets, sizeRes, epollFd));
 			}
-			if (res)
-				delete[] res;
-			res = temp;
-			sizeRes++;
 		}
 	}
 	return (res);
@@ -95,36 +58,21 @@ static int	acceptClient(std::vector<Socket *> &sockets, size_t i, size_t j)
 	return (0);
 }
 
-static void	setEpollClient(int clientFd, epoll_event **fds, int &nbPollFd, int **epollFds)
+static void	addEpollClient(int clientFd, epoll_event **fds, int &nbPollFd, int epollFd)
 {
-	int			*tempEpollFd;
 	epoll_event	*temp;
 
 	temp = new epoll_event[nbPollFd + 1];
 	for (int i = 0; i < nbPollFd; i++)
 		temp[i] = (*fds)[i];
 
-	tempEpollFd = new int[nbPollFd + 1];
-	for (int i = 0; i < nbPollFd; i++)
-		tempEpollFd[i] = (*epollFds)[i];
-	tempEpollFd[nbPollFd] = epoll_create(1);
-	if (tempEpollFd[nbPollFd] == -1)
-	{
-		if (tempEpollFd)
-			delete[] tempEpollFd;
-		if (*epollFds)
-			delete[] *epollFds;
-		if (temp)
-			delete[] temp;
-		setEpollClient(clientFd, fds, nbPollFd, epollFds);
-	}
 	temp[nbPollFd].data.fd = clientFd;
 	temp[nbPollFd].events = EPOLLIN;
-	if (epoll_ctl((*epollFds)[nbPollFd], EPOLL_CTL_ADD, temp[nbPollFd].data.fd, &temp[nbPollFd]) < 0)
+	if (epoll_ctl(epollFd, EPOLL_CTL_ADD, temp[nbPollFd].data.fd, &temp[nbPollFd]) < 0)
 	{
 		if (temp)
 			delete[] temp;
-		setEpollClient(clientFd, fds, nbPollFd, epollFds);
+		addEpollClient(clientFd, fds, nbPollFd, epollFd);
 	}
 	nbPollFd++;
 }
@@ -141,20 +89,19 @@ static char	*receiveRequest(Config &conf, int fdClient, char *bufRecv)
 	return (bufRecv);
 }
 
-void	handleClient(std::vector<Socket *> &sockets, Config conf)
+void	handleClient(std::vector<Socket *> &sockets, Config conf, int nbSockets)
 {
 	size_t		sizeSockets;
 	size_t		sizeSocketData;
 	char		*bufRecv = new char [conf.getMaxSize()];
-	int			*epollFds;
-	epoll_event	*fds;
-	int			nbEpoll;
+	int			epollFd;
+	epoll_event	*fdsEvent;
+	int			epollCounterWait;
 
-	nbEpoll = countNbEpoll(sockets);
-	epollFds = new int[nbEpoll];
-	fds = new epoll_event[nbEpoll];
-	std::cout << "here ? : " << nbEpoll << std::endl;
-	fds = settingEpollFdServer(sockets, nbEpoll, epollFds);
+	epollCounterWait = 0;
+	epollFd = createEpoll();
+	std::cout << "here ? : " << std::endl;
+	fdsEvent = addEpollServer(sockets, nbSockets, epollFd);
 
 	sizeSockets = sockets.size();
 	for (size_t i = 0; i < sizeSockets; i++)
@@ -167,12 +114,18 @@ void	handleClient(std::vector<Socket *> &sockets, Config conf)
 			if (acceptClient(sockets, i, j) < 0)
 				continue ;
 			std::cout << "bruh" << std::endl;
-			setEpollClient(sockets[i]->getSockData()[j]->getFdClient(), &fds, nbEpoll, &epollFds);
-			std::cout << "Request: " << std::endl;
-			bufRecv = receiveRequest(conf, sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
-			std::cout << "Request: " << bufRecv << std::endl;
-			if (bufRecv)
-				sendResponse(sockets[i]->getSockData()[j]->getFdClient(), bufRecv, conf.getMaxSize());
+			addEpollClient(sockets[i]->getSockData()[j]->getFdClient(), &fdsEvent, nbSockets, epollFd);
+			epollCounterWait = epoll_wait(epollFd, fdsEvent, nbSockets, 2000);
+			if (epollCounterWait < 1)
+				continue ;
+			for (int indexEvent = 0; indexEvent < epollCounterWait; indexEvent++)
+			{
+				std::cout << "Request: " << std::endl;
+				bufRecv = receiveRequest(conf, sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
+				std::cout << "Request: " << bufRecv << std::endl;
+				if (bufRecv)
+					sendResponse(sockets[i]->getSockData()[j]->getFdClient(), bufRecv, conf.getMaxSize());
+			}
 		}
 	}
 }

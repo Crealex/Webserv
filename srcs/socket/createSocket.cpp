@@ -3,7 +3,7 @@
 #include "../../includes/socket/Socket.hpp"
 #include <arpa/inet.h>
 
-static void	listenSocket(std::vector<Socket *> &sockets, size_t &i, size_t &j, size_t &sizeSockData)
+static int	listenSocket(std::vector<Socket *> &sockets, size_t &i, size_t &j, size_t &sizeSockData)
 {
 	int									checkFail;
 	std::vector<SocketData *>::iterator	eltToErase;
@@ -15,12 +15,15 @@ static void	listenSocket(std::vector<Socket *> &sockets, size_t &i, size_t &j, s
 		sockets[i]->eraseSocket(j);
 		j--;
 		sizeSockData--;
+		return (0);
 	}
+	return (1);
 }
 
-static void	bindSocket(std::vector<Socket *> &sockets)
+static int	bindSocket(std::vector<Socket *> &sockets)
 {
 	int		checkFail;
+	int		nbSockets;
 	size_t	sizeSockets;
 	size_t	sizeSockData;
 
@@ -39,7 +42,9 @@ static void	bindSocket(std::vector<Socket *> &sockets)
 				sizeSockData--;
 			}
 			else
-				listenSocket(sockets, i, j, sizeSockData);
+			{
+				nbSockets += listenSocket(sockets, i, j, sizeSockData);
+			}
 		}
 		if (sockets[i]->getSockData().size() == 0)
 		{
@@ -48,9 +53,10 @@ static void	bindSocket(std::vector<Socket *> &sockets)
 			sizeSockets--;
 		}
 	}
+	return (nbSockets);
 }
 
-std::vector<Socket *>	createSocket(Config conf)
+std::vector<Socket *>	createSocket(Config conf, int &nbSockets)
 {
 	std::vector<Socket *>	sockets;
 	size_t				sizeAddPort;
@@ -62,6 +68,6 @@ std::vector<Socket *>	createSocket(Config conf)
 		Socket	*temp = new Socket(conf.getAddressPort()[i]);
 		sockets.push_back(temp);
 	}
-	bindSocket(sockets);
+	nbSockets = bindSocket(sockets);
 	return (sockets);
 }
