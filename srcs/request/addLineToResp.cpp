@@ -126,7 +126,7 @@ bool addContentLenght(std::string *resp, std::string file)
 //	<!-- Contenu HTML -->
 bool addBody(std::string *resp, std::string file)
 {
-	resp->append("\n" + file);
+	resp->append("\n" + file + "\n\n");
 	return (true);
 }
 

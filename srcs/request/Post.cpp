@@ -25,10 +25,9 @@ const std::string Post::createResponse(Config conf)
 	Request dataError;
 	std::string path;
 
-	(void)_contentLength;
-	// TODO: Path a revoir
-	(void)conf;
-	path = this->_host + this->_location;
+	path = conf.getDirRoot(conf.getSitesName()[0]) + conf.getSitesName()[0] + this->_location;
+	if (path.find(".") > path.length())
+		path.append(conf.getDefaultFile(conf.getSitesName()[0]));
 	newFile.open(path.c_str(), std::ios::app);
 	if (!newFile.is_open())
 		throw(ResponseError(500, "Can't open new file or create it", dataError));
@@ -38,6 +37,7 @@ const std::string Post::createResponse(Config conf)
 		throw(ResponseError(500, "Can't add content file", dataError));
 	if (!addLocation(&resp, this->_host, this->_location))
 		throw(ResponseError(500, "Can't add Location", dataError));
+	resp.append("\n");
 	if (!addStartLine(&resp, this->_protocol, 201, "Created"))
 		throw(ResponseError(500, "Can't add start line", dataError));
 	if (!addBody(&resp, this->_body))

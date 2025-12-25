@@ -29,6 +29,7 @@ static std::vector<std::string> acceptedType()
 	v.push_back("application/octet-stream");
 	v.push_back("video/x-msvideo");
 	v.push_back("image/avif");
+	v.push_back("text/plain");
 
 	return v;
 }
@@ -162,6 +163,8 @@ Request createRequest(char* buffer)
 	setHeader(line, ret);
 	while (std::getline(iss, line)) 
 	{
+		if (!line.empty() && line[line.size() - 1] == '\r')
+        line.erase(line.size() - 1);
 		// extract and parse the different element of the request
 		if (line.empty())
 			break ;

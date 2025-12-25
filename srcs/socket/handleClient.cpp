@@ -43,6 +43,7 @@ void	handleClient(std::vector<Socket *> &sockets, Config conf)
 			bufRecv = receiveRequest(conf, sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
 			std::cout << "Request: " << bufRecv << std::endl;
 			sendResponse(sockets[i]->getSockData()[j]->getFdClient(), bufRecv, conf);
+			close(sockets[i]->getSockData()[j]->getFdClient()); // INFO: Temporaire pour faires mes test (Alex)
 		}
 		std::cout << BOLD << "out handClient" << RESET << std::endl;
 	}

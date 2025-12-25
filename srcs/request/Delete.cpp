@@ -23,8 +23,8 @@ static std::string noContent(std::string protocol, Request dataRequ)
 
 	resp.append(protocol + " 204 " + "No content" + "\n");
 	if (!addDate(&resp))
-		throw (ResponseError(500, "can't add start line", dataRequ));
-	resp.append("Server: webserv");
+		throw (ResponseError(500, "can't add start line\n", dataRequ));
+	resp.append("Server: webserv\n\n");
 	return (resp);
 }
 
@@ -36,9 +36,10 @@ const std::string Delete::createResponse(Config conf)
 	std::string		resp;
 	Request			dataRequ;
 	// TODO: Revoir le path
-	(void)conf;
 
-	path = this->_host + this->_location;
+	path = conf.getDirRoot(conf.getSitesName()[0]) + conf.getSitesName()[0] + this->_location;
+	if (path.find(".") > path.length())
+		path.append(conf.getDefaultFile(conf.getSitesName()[0]));
 	//std::cout << path << std::endl;
 	if (access(path.c_str(), F_OK) == -1)
 		return (noContent(this->_protocol, dataRequ));
