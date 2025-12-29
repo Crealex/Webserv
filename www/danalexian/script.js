@@ -3,7 +3,11 @@ document.querySelectorAll(".card button").forEach((btn) =>
     const method = btn.dataset.method;
     const endpoint = btn.dataset.endpoint;
     const card = btn.closest(".card");
-    const resultSpan = card.querySelector(".result");
+    const resultDiv = card.querySelector(".result");
+    const methodDiv = resultDiv.querySelector(".method");
+    const endpointDiv = resultDiv.querySelector(".endpoint");
+    const headerDiv = resultDiv.querySelector(".header");
+    const bodyDiv = resultDiv.querySelector(".body");
     let response;
     if (method === "GET") {
       if (endpoint) response = await fetch(endpoint);
@@ -20,10 +24,17 @@ document.querySelectorAll(".card button").forEach((btn) =>
       if (endpoint) response = await fetch(endpoint, { method: "DELETE" });
     }
     if (!response) {
-      resultSpan.textContent = "Méthode non valide";
+      resultDiv.textContent = "Méthode non valide";
       return;
     }
-    const data = await response.text();
-    resultSpan.textContent = `method: ${method}, endpoint: ${endpoint}, result: ${data}`;
+    const body = await response.text();
+    const length = response.headers.get("content-length");
+    const type = response.headers.get("content-type");
+    const date = response.headers.get("date");
+    const lModified = response.headers.get("last-modified");
+    methodDiv.innerHTML = `<strong>method:</strong> ${method}`;
+    endpointDiv.innerHTML = `<strong>endpoint:</strong> ${endpoint}`;
+    headerDiv.innerHTML = `content-length: ${length}<br/>content-type: ${type}<br/>date: ${date}<br/>last-modified: ${lModified}`;
+    bodyDiv.textContent = `body: ${body}`;
   }),
 );

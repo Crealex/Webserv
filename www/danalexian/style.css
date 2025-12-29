@@ -4,18 +4,39 @@
   --rose: #ff79c6;
   --purple: #bd93f9;
   --current-line: #6272a4;
+  --green: #50fa7b;
+  --red: #ff5555;
 }
 
 body {
-  font-family: Cursive;
+  font-family: "Consolas", "Monaco", "Courrier New", monospace, Cursive;
   width: 100%;
   background: var(--main-bg);
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 main {
   width: 75%;
   margin: 0 auto;
   text-align: center;
+}
+
+header {
+  width: 100%;
+}
+.title {
+  text-align: center;
+  display: block;
+  margin: 10px;
+  font-size: 3rem;
+  font-weight: bolder;
+  border: 2px solid var(--rose);
+  border-radius: 5px;
+  background: linear-gradient(90deg, var(--rose) 0%, var(--purple) 100%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .intro {
@@ -33,6 +54,10 @@ main {
   border-radius: 10px;
   padding: 10px;
 }
+.btn-container {
+  width: fit-content;
+  margin: 0 auto;
+}
 
 .card button {
   background: var(--purple);
@@ -42,15 +67,15 @@ main {
   transition: 100ms ease-in-out;
 }
 
-.btn-container {
-  width: fit-content;
-  margin: 0 auto;
+.card button:hover {
+  border: 2px solid var(--current-line);
+  cursor: pointer;
 }
 
-.card .btn-container:hover button {
+/*.card .btn-container:hover button {
   transform: rotate(1800deg);
   border: 3px solid var(--current-line);
-}
+}*/
 
 .card button:active {
   color: var(--purple);

@@ -7,74 +7,73 @@
     <link href="./style.css" rel="stylesheet" />
   </head>
   <body>
-    <header></header>
+    <header>
+      <span class="title">DANALEXIAN</span>
+    </header>
     <main>
       <div class="intro">
-        <h1>Bienvenue sur Danalexian</h1>
+        <h1>Bienvenue sur note site!</h1>
         <p>
-          Ce fabuleux site est d'utilisé pour tester le fonctionnement de notre
-          merveilleux serveur web, codé en c++
+          Ce fabuleux site est utilisé pour tester le fonctionnement de notre
+          merveilleux serveur web, codé en c++ et en amour inconditionnel
         </p>
       </div>
       <div class="card-container">
         <div class="card">
-          <h2>Method get succes</h2>
-          <p>Permet de tester quand la méthode get réussis</p>
+          <h2>Method GET</h2>
+          <p>Permet de tester le fonctionnement de la méthode GET</p>
           <div class="btn-container">
             <button data-method="GET" data-endpoint="./get.txt">
-              Test get
+              GET succes
             </button>
-            <span class="result"></span>
+            <button data-method="GET" data-endpoint="./camorchepo">
+              GET failure
+            </button>
+          </div>
+          <div class="result">
+            <div class="method"></div>
+            <div class="endpoint"></div>
+            <div class="status"></div>
+            <div class="header"></div>
+            <div class="body"></div>
           </div>
         </div>
         <div class="card">
-          <h2>Method post succes</h2>
-          <p>Permet de tester quand la methode post réussis</p>
+          <h2>Method POST</h2>
+          <p>Permet de tester le fonctionnement de la méthode POST</p>
           <div class="btn-container">
             <button data-method="POST" data-endpoint="./post.txt">
-              Test post
+              POST succes
             </button>
-            <span class="result"></span>
+            <button data-method="POST" data-endpoint="./comorchepo">
+              POST failure
+            </button>
+            <div class="result">
+              <div class="method"></div>
+              <div class="endpoint"></div>
+              <div class="status"></div>
+              <div class="header"></div>
+              <div class="body"></div>
+            </div>
           </div>
         </div>
         <div class="card">
-          <h2>Method delete succes</h2>
-          <p>Permet de tester quand la méthode delete réussis</p>
+          <h2>Method DELETE</h2>
+          <p>Permet de tester le fontionnement de la méthode DELETE</p>
           <div class="btn-container">
             <button data-method="DELETE" data-endpoint="./post.txt">
-              Test delete
+              DELETE succes
             </button>
-            <span class="result"></span>
-          </div>
-        </div>
-        <div class="card">
-          <h2>Method get failure</h2>
-          <p>Permet de tester quand la méthode get échoue</p>
-          <div class="btn-container">
-            <button data-method="GET" data-endpoint="camarchepo">
-              Test get
+            <button data-method="DELETE" data-endpoint="./failure">
+              DELETE FAILURE
             </button>
-            <span class="result"></span>
-          </div>
-        </div>
-        <div class="card">
-          <h2>Method post failure</h2>
-          <p>Permet de tester quand la méthode post échoue</p>
-          <div class="btn-container">
-            <button data-method="POST" data-endpoint="camarchepo">
-              Test post
-            </button>
-            <span class="result"></span>
-          </div>
-        </div>
-        <div class="card">
-          <h2>Method delete failure</h2>
-          <p>Permet de tester quand la méthode delete échoue</p>
-          <div class="btn-container">
-            <button data-method="DELETE" data-endpoint="camarchepo">
-              Test delete
-            </button>
-            <span class="result"></span>
+            <div class="result">
+              <div class="method"></div>
+              <div class="endpoint"></div>
+              <div class="status"></div>
+              <div class="header"></div>
+              <div class="body"></div>
+            </div>
           </div>
         </div>
       </div>
