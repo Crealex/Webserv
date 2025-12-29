@@ -111,7 +111,7 @@ bool addContentLenght(std::string *resp, std::string file)
 	unsigned int size;
 	std::stringstream ss;
 
-	size = file.size();
+	size = file.length();
 	ss << size;
 	try {
 		resp->append("Content-Length: " + ss.str() + "\n");

@@ -10,6 +10,7 @@ document.querySelectorAll(".card button").forEach((btn) =>
     const bodyDiv = resultDiv.querySelector(".body");
     const statusDiv = resultDiv.querySelector(".status");
     const timeDiv = resultDiv.querySelector(".time");
+    const startTime = performance.now();
 
     let response;
     if (method === "GET") {
@@ -36,7 +37,7 @@ document.querySelectorAll(".card button").forEach((btn) =>
     const type = response.headers.get("content-type");
     const date = response.headers.get("date");
     const lModified = response.headers.get("last-modified");
-    const time = performance.now();
+    const time = performance.now() - startTime;
 
     if (status >= 200 && status < 300)
       resultDiv.style.backgroundColor = "var(--green)";

@@ -8,16 +8,21 @@
   --red: #ff5555;
 }
 
-body {
-  font-family: "Consolas", "Monaco", "Courrier New", monospace, Cursive;
+body,
+html {
+  font-family: "Consolas", "Monaco", "Courier New", monospace, Cursive;
   width: 100%;
+  height: 100%;
   background: var(--main-bg);
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 main {
+  flex-grow: 1;
   width: 85%;
   margin: 0 auto;
   text-align: center;
@@ -57,7 +62,8 @@ header {
 }
 .btn-container {
   width: fit-content;
-  margin: 0 auto;
+  margin: auto;
+  height: auto;
 }
 
 .card button {
@@ -72,15 +78,10 @@ header {
   border: 2px solid var(--current-line);
   cursor: pointer;
   transform: scale(1.05);
-  -webkit-box-shadow: 0px 0px 168px 55px rgba(190, 147, 249, 0.55);
-  -moz-box-shadow: 0px 0px 168px 55px rgba(190, 147, 249, 0.55);
-  box-shadow: 0px 0px 168px 55px rgba(190, 147, 249, 0.55);
+  -webkit-box-shadow: 0px 0px 30px 10px rgba(190, 147, 249, 0.55);
+  -moz-box-shadow: 0px 0px 30px 10px rgba(190, 147, 249, 0.55);
+  box-shadow: 0px 0px 30px 10px rgba(190, 147, 249, 0.55);
 }
-
-/*.card .btn-container:hover button {
-  transform: rotate(1800deg);
-  border: 3px solid var(--current-line);
-}*/
 
 .card button:active {
   color: var(--purple);
@@ -94,4 +95,21 @@ header {
   border-radius: 14px;
   text-align: left;
   padding: 5px;
+}
+
+.body {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+footer {
+  background: radial-gradient(
+    circle,
+    var(--foregrund) 0%,
+    var(--current-line) 100%
+  );
+  text-align: center;
+  border-radius: 5px;
 }
