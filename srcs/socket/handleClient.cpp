@@ -1,48 +1,5 @@
 #include "../../includes/socket/includeSend.hpp"
-#include <sys/epoll.h>
-
-static int	createEpoll()
-{
-	int	res;
-
-	res = epoll_create(1);
-	if (res == -1)
-	{
-		std::cout << "here ? " << std::endl;
-		return (createEpoll());
-	}
-	return (res);
-}
-
-static epoll_event	*addEpollServer(std::vector<Socket *> &sockets, int sizeRes, int epollFd)
-{
-	epoll_event	*res;
-	int			sizeSocket;
-	int			sizeSockData;
-	int			count;
-
-	res = new epoll_event[sizeRes];
-	sizeSocket = sockets.size();
-	count = 0;
-	std::cout << "here ? : addEpollServer" << std::endl;
-	for (int i = 0; i < sizeSocket; i++)
-	{
-		sizeSockData = sockets[i]->getSockData().size();
-		for (int j = 0; j < sizeSockData; j++)
-		{
-			res[count].data.fd = sockets[i]->getSockData()[j]->getFdServer();
-			res[count].events = EPOLLOUT;
-			if (epoll_ctl(epollFd, EPOLL_CTL_ADD, res[count].data.fd, &res[count]) < 0)
-			{
-				if (res)
-					delete[] res;
-				return (addEpollServer(sockets, sizeRes, epollFd));
-			}
-		}
-	}
-	return (res);
-}
-
+#include "../../includes/epoll/Epoll.hpp"
 
 static int	acceptClient(std::vector<Socket *> &sockets, size_t i, size_t j)
 {
@@ -59,23 +16,24 @@ static int	acceptClient(std::vector<Socket *> &sockets, size_t i, size_t j)
 	return (0);
 }
 
-static void	addEpollClient(int clientFd, epoll_event **fds, int &nbPollFd, int epollFd)
+static void	addEpollClient(int clientFd, int nbPollFd, Epoll epoll)
 {
 	epoll_event	*temp;
 
 	temp = new epoll_event[nbPollFd + 1];
 	for (int i = 0; i < nbPollFd; i++)
-		temp[i] = (*fds)[i];
+		temp[i] = epoll.getEvents()[i];
 
 	temp[nbPollFd].data.fd = clientFd;
 	temp[nbPollFd].events = EPOLLIN;
-	if (epoll_ctl(epollFd, EPOLL_CTL_ADD, temp[nbPollFd].data.fd, &temp[nbPollFd]) < 0)
+	if (epoll_ctl(epoll.getEpollFd(), EPOLL_CTL_ADD, temp[nbPollFd].data.fd, &temp[nbPollFd]) < 0)
 	{
 		if (temp)
 			delete[] temp;
-		addEpollClient(clientFd, fds, nbPollFd, epollFd);
+		addEpollClient(clientFd, nbPollFd, epoll);
 	}
-	nbPollFd++;
+	epoll.setEvents(temp);
+	epoll.setNbSockets(nbPollFd + 1);
 }
 
 static char	*receiveRequest(Config &conf, int fdClient, char *bufRecv)
@@ -90,34 +48,25 @@ static char	*receiveRequest(Config &conf, int fdClient, char *bufRecv)
 	return (bufRecv);
 }
 
-void	handleClient(std::vector<Socket *> &sockets, Config conf, int nbSockets)
+void	handleClient(std::vector<Socket *> &sockets, Config conf, Epoll &epoll)
 {
 	size_t		sizeSockets;
 	size_t		sizeSocketData;
 	char		*bufRecv = new char [conf.getMaxSize()];
-	int			epollFd;
-	epoll_event	*fdsEvent;
 	int			epollCounterWait;
 
 	epollCounterWait = 0;
-	epollFd = createEpoll();
-	std::cout << "here ? : " << std::endl;
-	fdsEvent = addEpollServer(sockets, nbSockets, epollFd);
-	std::cout << "here ? : 1" << std::endl;
 
 	sizeSockets = sockets.size();
 	for (size_t i = 0; i < sizeSockets; i++)
 	{
-		std::cout << "maybe 1" << std::endl;
 		sizeSocketData = sockets[i]->getSockData().size();
 		for (size_t j = 0; j < sizeSocketData; j++)
 		{
-			std::cout << "maybe 2" << std::endl;
 			if (acceptClient(sockets, i, j) < 0)
 				continue ;
-			std::cout << "bruh" << std::endl;
-			addEpollClient(sockets[i]->getSockData()[j]->getFdClient(), &fdsEvent, nbSockets, epollFd);
-			epollCounterWait = epoll_wait(epollFd, fdsEvent, nbSockets, 2000);
+			addEpollClient(sockets[i]->getSockData()[j]->getFdClient(), epoll.getNbSockets(), epoll);
+			epollCounterWait = epoll_wait(epoll.getEpollFd(), epoll.getEvents(), epoll.getNbSockets(), 2000);
 			if (epollCounterWait < 1)
 				continue ;
 			for (int indexEvent = 0; indexEvent < epollCounterWait; indexEvent++)
@@ -126,7 +75,11 @@ void	handleClient(std::vector<Socket *> &sockets, Config conf, int nbSockets)
 				bufRecv = receiveRequest(conf, sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
 				std::cout << "Request: " << bufRecv << std::endl;
 				if (bufRecv)
+				{
+					std::cout << "before send ? " << std::endl;
 					sendResponse(sockets[i]->getSockData()[j]->getFdClient(), bufRecv, conf.getMaxSize());
+					std::cout << "after send ? " << std::endl;
+				}
 			}
 		}
 	}

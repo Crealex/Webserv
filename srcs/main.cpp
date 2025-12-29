@@ -27,8 +27,11 @@ int main (int argc, char **argv)
 			return (-2);
 		}
 		printSocketListen(sockets);
+		std::cout << "where is the bad alloc" << std::endl;
+		Epoll	epoll(sockets, nbSockets);
+		std::cout << "maybe after the epoll ?" << std::endl;
 		while (1)
-			handleClient(sockets, configTest, nbSockets);
+			handleClient(sockets, configTest, epoll);
 	}
 	catch (std::exception &e) 
 	{

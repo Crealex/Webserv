@@ -28,6 +28,7 @@ static int	bindSocket(std::vector<Socket *> &sockets)
 	size_t	sizeSockData;
 
 	checkFail = 0;
+	nbSockets = 0;
 	sizeSockets = sockets.size();
 	for (size_t i = 0; i < sizeSockets; i++)
 	{
