@@ -24,6 +24,7 @@ static epoll_event	*addEpollServer(std::vector<Socket *> &sockets, int sizeRes, 
 	res = new epoll_event[sizeRes];
 	sizeSocket = sockets.size();
 	count = 0;
+	std::cout << "here ? : addEpollServer" << std::endl;
 	for (int i = 0; i < sizeSocket; i++)
 	{
 		sizeSockData = sockets[i]->getSockData().size();
@@ -102,6 +103,7 @@ void	handleClient(std::vector<Socket *> &sockets, Config conf, int nbSockets)
 	epollFd = createEpoll();
 	std::cout << "here ? : " << std::endl;
 	fdsEvent = addEpollServer(sockets, nbSockets, epollFd);
+	std::cout << "here ? : 1" << std::endl;
 
 	sizeSockets = sockets.size();
 	for (size_t i = 0; i < sizeSockets; i++)
