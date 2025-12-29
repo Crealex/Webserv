@@ -9,6 +9,8 @@ document.querySelectorAll(".card button").forEach((btn) =>
     const headerDiv = resultDiv.querySelector(".header");
     const bodyDiv = resultDiv.querySelector(".body");
     const statusDiv = resultDiv.querySelector(".status");
+    const timeDiv = resultDiv.querySelector(".time");
+
     let response;
     if (method === "GET") {
       if (endpoint) response = await fetch(endpoint);
@@ -34,13 +36,17 @@ document.querySelectorAll(".card button").forEach((btn) =>
     const type = response.headers.get("content-type");
     const date = response.headers.get("date");
     const lModified = response.headers.get("last-modified");
+    const time = performance.now();
+
     if (status >= 200 && status < 300)
       resultDiv.style.backgroundColor = "var(--green)";
     else resultDiv.style.backgroundColor = "var(--red)";
+
     statusDiv.innerHTML = `<strong>status: </strong>${status}`;
     methodDiv.innerHTML = `<strong>method:</strong> ${method}`;
     endpointDiv.innerHTML = `<strong>endpoint:</strong> ${endpoint}`;
     headerDiv.innerHTML = `<strong>content-length: </strong>${length}<br/><strong>content-type: </strong>${type}<br/><strong>date: </strong>${date}<br/><strong>last-modified: </strong>${lModified}`;
     bodyDiv.innerHTML = `<strong>body:</strong> ${body}`;
+    timeDiv.innerHTML = `<strong>Response's time: </strong>${time}ms`;
   }),
 );
