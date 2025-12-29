@@ -25,12 +25,15 @@ const std::string Post::createResponse(Config conf)
 	Request dataError;
 	std::string path;
 
+	dataError._protocol = this->_protocol;
+	dataError._host = this->_host;
+	dataError._location = this->_location;
 	path = conf.getDirRoot(conf.getSitesName()[0]) + conf.getSitesName()[0] + this->_location;
 	if (path.find(".") > path.length())
 		path.append(conf.getDefaultFile(conf.getSitesName()[0]));
 	newFile.open(path.c_str(), std::ios::app);
 	if (!newFile.is_open())
-		throw(ResponseError(500, "Can't open new file or create it", dataError));
+		throw (ResponseError(401, "Unauthorized", dataError));
 	if (!addContentType(&resp, this->_contentType))
 		throw(ResponseError(500, "Can't add content type", dataError));
 	if (!addContentToFile(this->_body, &newFile)) // need some test

@@ -42,10 +42,9 @@ bool addContentType(std::string *resp, std::string accept, std::string file)
 	std::string type;
 
 	contentType = findMimeType(file);
-	std::cout << "accept in addContentType" << accept << std::endl;
 	while (std::getline(acceptSs, type,  ','))
 	{
-		std::cout << "type: " << type << ", Content-Type: " << contentType << std::endl;
+		//std::cout << "type: " << type << ", Content-Type: " << contentType << std::endl;
 		if (contentType == type || type == "*/*")
 		{
 			resp->append("Content-Type: " + contentType + "\n");

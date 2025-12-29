@@ -17,7 +17,9 @@ const std::string ResponseError::createResponse(Config conf)
 	std::string resp;
 	(void)conf;
 
+	std::cout << "protocol in error response: " << this->_protocol << std::endl;
 	addStartLine(&resp, this->_protocol, this->_code, this->_message);
+	resp.append("\n\n");
 	return (resp);
 	// std::cout << "bonjour jespere ca marche" << std::endl;
 }
