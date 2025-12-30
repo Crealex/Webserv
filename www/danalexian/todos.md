@@ -26,7 +26,6 @@ script.js (tâches 3.x)
 | X   | Mesurer le temps de réponse avec performance.now()                                 | haute    |
 | X   | Extraire et afficher les headers principaux (Content-Type, Content-Length, Server) | haute    |
 | X   | Afficher le status code avec couleur (vert si 2xx, rouge sinon)                    | haute    |
-| 3.4 | Ajouter try/catch et affichage propre des erreurs réseau                           | moyenne  |
 | X   | Limiter l'affichage du body (truncate si trop long)                                | basse    |
 
 ---
@@ -42,12 +41,9 @@ Priorité haute (bugs)
 
 Priorité basse (optionnel)
 
-| Fix | Fichier | Description |
-|-----|---------|-------------|
-| X| style.css:13 | Typo "Courrier New" → "Courier New" |
-| X| style.css:81-83 | Réduire le glow (168px c'est énorme) |
-| 3.4 | script.js | Ajouter try/catch |
+| Fix | Fichier         | Description                          |
+| --- | --------------- | ------------------------------------ |
+| X   | style.css:13    | Typo "Courrier New" → "Courier New"  |
+| X   | style.css:81-83 | Réduire le glow (168px c'est énorme) |
 
 ---
-
-- Trouver comment avoir la size d'un png (car comme je fait ca fonctionne pas)
