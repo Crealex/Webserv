@@ -18,7 +18,6 @@ const std::string Get::createResponse(Config conf)
 {
 	std::string		resp;
 	std::ifstream	target;
-	std::string		file;
 	std::string		path;
 	Request			dataError;
 	
@@ -36,14 +35,22 @@ const std::string Get::createResponse(Config conf)
 	// *************************
 	if (!target.is_open())
 		throw ResponseError(404, "Not found", dataError);
-	std::getline(target, file, '\0');
+
+	target.seekg(0, std::ios::end);
+	size_t size = target.tellg();
+	target.seekg(0, std::ios::beg);
+	char* buffer = new char[size];
+	target.read(buffer, size);
+	std::string file(buffer, size);
+	delete[] buffer;
+
 	if (!addContentType(&resp, this->_accept, path))
 		throw ResponseError(406, "Not acceptable", dataError);
 	if (!addDate(&resp))
 		throw ResponseError(500, "Can't add date", dataError);
 	if (!addLastModif(&resp, path))
 		throw ResponseError(500, "can't add last modif", dataError);
-	if (!addContentLenght(&resp, file))
+	if (!addContentLenght(&resp, path))
 		throw ResponseError(500, "can't add content lenght", dataError);
 	if (!addBody(&resp, file))
 		throw ResponseError(500, "can't add body", dataError);

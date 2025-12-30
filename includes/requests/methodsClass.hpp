@@ -29,7 +29,7 @@ bool	addStartLine(std::string *resp, std::string protocol, unsigned int code, st
 bool	addContentType(std::string *resp, std::string accept, std::string file);
 bool	addDate(std::string *resp);
 bool	addLastModif(std::string *resp, std::string pathTarget);
-bool	addContentLenght(std::string *resp, std::string file);
+bool	addContentLenght(std::string *resp, std::string path);
 bool	addBody(std::string *resp, std::string file);
 bool	addLocation(std::string *resp, std::string host, std::string location);
 bool	addContentType(std::string *resp, std::string type);

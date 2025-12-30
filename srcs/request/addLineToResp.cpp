@@ -106,12 +106,14 @@ bool addLastModif(std::string *resp, std::string pathTarget)
 }
 
 //	Content-Length: 1234
-bool addContentLenght(std::string *resp, std::string file)
+bool addContentLenght(std::string *resp, std::string path)
 {
 	unsigned int size;
 	std::stringstream ss;
+	struct stat buff;
 
-	size = file.length();
+	stat(path.c_str(), &buff);
+	size = buff.st_size;
 	ss << size;
 	try {
 		resp->append("Content-Length: " + ss.str() + "\n");
