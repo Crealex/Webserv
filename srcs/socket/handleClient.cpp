@@ -8,10 +8,7 @@ static int	acceptClient(std::vector<Socket *> &sockets, size_t i, size_t j)
 	fdClient = -1;
 	fdClient = accept(sockets[i]->getSockData()[j]->getFdServer(), NULL, NULL);
 	if (fdClient == -1)
-	{
-		std::cerr << "Error, with accept" << std::endl;
 		return (-1);
-	}
 	sockets[i]->setFdClient(fdClient, j);
 	return (0);
 }
@@ -26,13 +23,18 @@ static void	addEpollClient(int clientFd, int nbPollFd, Epoll epoll)
 
 	temp[nbPollFd].data.fd = clientFd;
 	temp[nbPollFd].events = EPOLLIN;
+	std::cout << "hellooo" << std::endl;
 	if (epoll_ctl(epoll.getEpollFd(), EPOLL_CTL_ADD, temp[nbPollFd].data.fd, &temp[nbPollFd]) < 0)
 	{
 		if (temp)
+		{
 			delete[] temp;
+		}
 		addEpollClient(clientFd, nbPollFd, epoll);
 	}
+	std::cout << "bruhhh" << std::endl;
 	epoll.setEvents(temp);
+	std::cout << "bruhhh" << std::endl;
 	epoll.setNbSockets(nbPollFd + 1);
 }
 
@@ -65,7 +67,9 @@ void	handleClient(std::vector<Socket *> &sockets, Config conf, Epoll &epoll)
 		{
 			if (acceptClient(sockets, i, j) < 0)
 				continue ;
+			std::cout << "before add epoll client" << std::endl;
 			addEpollClient(sockets[i]->getSockData()[j]->getFdClient(), epoll.getNbSockets(), epoll);
+			std::cout << "after add epoll client" << std::endl;
 			epollCounterWait = epoll_wait(epoll.getEpollFd(), epoll.getEvents(), epoll.getNbSockets(), 2000);
 			if (epollCounterWait < 1)
 				continue ;

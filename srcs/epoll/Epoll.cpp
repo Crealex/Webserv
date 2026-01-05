@@ -45,7 +45,9 @@ void	Epoll::setNbSockets(int newNb)
 void	Epoll::setEvents(epoll_event *newEvents)
 {
 	if (this->_events)
+	{
 		delete[] this->_events;
+	}
 	this->_events = newEvents;
 }
 
