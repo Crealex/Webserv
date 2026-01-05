@@ -19,7 +19,6 @@ static bool addContentToFile(std::string body, std::ofstream *newFile)
 
 const std::string Post::createResponse(Config conf)
 {
-	// TODO: GERER L"AJOUT A UN FICHIER, pas juste le creer"
 	std::string resp;
 	std::ofstream newFile;
 	Request dataError;

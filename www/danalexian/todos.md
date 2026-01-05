@@ -1,49 +1,75 @@
-style.css (tâches 1.x)
+## Todolist Phase 2 - Upload & Test gros fichiers
 
-| #   | Tâche                                                                     | Priorité |
-| --- | ------------------------------------------------------------------------- | -------- |
-| X   | Changer la font: Cursive → 'Consolas', 'Monaco', 'Courier New', monospace | haute    |
-| X   | Ajouter un reset CSS basique (margin/padding à 0, box-sizing border-box)  | haute    |
-| X   | Styliser le header: titre Danalexian avec gradient purple/rose            | haute    |
-| X   | Améliorer les cartes: box-shadow subtile + hover effect doux              | moyenne  |
-| X   | Refaire le hover bouton: remplacer rotate(1800deg) par scale(1.05) + glow | moyenne  |
-| X   | Styliser la zone résultat: box avec sections status/headers/body          | moyenne  |
-| X   | Ajouter styles pour footer                                                | basse    |
+Phase 2A : Frontend (HTML/CSS/JS)
 
-index.html (tâches 2.x)
-
-| #   | Tâche                                                                                   | Priorité |
-| --- | --------------------------------------------------------------------------------------- | -------- |
-| X   | Ajouter le header avec titre "Danalexian" + sous-titre                                  | haute    |
-| X   | Organiser les cartes en 2 sections: "Tests Success" / "Tests Failure"                   | moyenne  |
-| X   | Restructurer la zone résultat dans chaque carte (div pour status, headers, body, temps) | moyenne  |
-| X   | Ajouter le footer: "Made by Dana, Kilian & Alexandre" + liens GitHub                    | basse    |
-
-script.js (tâches 3.x)
-
-| #   | Tâche                                                                              | Priorité |
-| --- | ---------------------------------------------------------------------------------- | -------- |
-| X   | Mesurer le temps de réponse avec performance.now()                                 | haute    |
-| X   | Extraire et afficher les headers principaux (Content-Type, Content-Length, Server) | haute    |
-| X   | Afficher le status code avec couleur (vert si 2xx, rouge sinon)                    | haute    |
-| X   | Limiter l'affichage du body (truncate si trop long)                                | basse    |
+| # | Fichier | Tâche | Priorité |
+|---|---------|-------|----------|
+| X | index.html | Ajouter une carte "Upload File" avec <input type="file"> + bouton "Upload" | haute |
+| p2a.2 | index.html | Ajouter une carte "Test Big File" avec 3 boutons: 100Ko, 500Ko, 1Mo | haute |
+| p2a.3 | index.html | Ajouter zone résultat dans les 2 nouvelles cartes (même structure que GET/POST/DELETE) | haute |
+| p2a.4 | style.css | Styliser l'input file (il est moche par défaut, utiliser label + opacity trick) | moyenne |
+| p2a.5 | style.css | Styliser les boutons de taille (100Ko/500Ko/1Mo) | basse |
+| p2a.6 | script.js | Créer fonction uploadFile() qui envoie via FormData API | haute |
+| p2a.7 | script.js | Créer fonction generateBigFile(sizeInKo) qui génère un Blob | haute |
+| p2a.8 | script.js | Brancher les event listeners sur les nouveaux boutons | haute |
+| p2a.9 | script.js | Afficher le résultat (status, headers, temps) | moyenne |
 
 ---
 
-bugs a fix:
+Phase 2B : Backend (C++)
 
-Priorité haute (bugs)
+| # | Fichier | Tâche | Priorité |
+|---|---------|-------|----------|
+| p2b.1 | - | Créer le dossier www/danalexian/uploads/ | haute |
+| p2b.2 | MimeTypes.cpp | Ajouter multipart/form-data dans la map | haute |
+| p2b.3 | Post.cpp | Parser le header Content-Type pour extraire le boundary | haute |
+| p2b.4 | Post.cpp | Parser le body multipart - trouver les boundaries et extraire le contenu | haute |
+| p2b.5 | Post.cpp | Extraire le filename depuis Content-Disposition | haute |
+| p2b.6 | Post.cpp | Écrire le fichier dans uploads/ (mode binaire!) | haute |
+| p2b.7 | Post.cpp | Vérifier Content-Length vs maxSize AVANT de lire le body | haute |
+| p2b.8 | Post.cpp | Retourner 413 Payload Too Large si fichier trop gros | moyenne |
+| p2b.9 | Post.cpp | Retourner 201 Created avec le path du fichier uploadé si succès | moyenne |
 
-| Fix | Fichier                | Description                                           |
-| --- | ---------------------- | ----------------------------------------------------- |
-| X   | index.html:15          | Typo "note site" → "notre site"                       |
-| X   | index.html:52-60,72-79 | .result est dans .btn-container au lieu d'être à côté |
+---
 
-Priorité basse (optionnel)
+# Notes techniques pour t'aider
+Frontend - FormData API (p2a.6)
+const formData = new FormData();
+formData.append('file', fileInput.files[0]);
+fetch('/uploads', {
+method: 'POST',
+body: formData // Le navigateur ajoute automatiquement le Content-Type avec boundary
+});
+Frontend - Générer un gros fichier (p2a.7)
+function generateBigFile(sizeInKo) {
+const bytes = new Uint8Array(sizeInKo _1024);
+// Remplir avec des données (ex: 'A' répété)
+bytes.fill(65); // 65 = 'A' en ASCII
+return new Blob([bytes], { type: 'application/octet-stream' });
+}
+CSS - Styliser input file (p2a.4)
+/_ Cacher le vrai input _/
+.file-input {
+opacity: 0;
+position: absolute;
+}
+/_ Styliser le label qui le déclenche _/
+.file-label {
+/_ tes styles ici \*/
+cursor: pointer;
+}
+Backend - Extraire boundary (p2b.3)
+Le header ressemble à : Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxk
+Tu dois parser après boundary= pour récupérer la chaîne.
 
-| Fix | Fichier         | Description                          |
-| --- | --------------- | ------------------------------------ |
-| X   | style.css:13    | Typo "Courrier New" → "Courier New"  |
-| X   | style.css:81-83 | Réduire le glow (168px c'est énorme) |
+---
+
+Ordre recommandé
+
+1. p2a.1 → p2a.3 : Structure HTML d'abord
+2. p2a.4 → p2a.5 : Un peu de CSS pour que ce soit joli
+3. p2a.6 → p2a.9 : La logique JS
+4. Test avec le navigateur : Tu verras les requêtes partir (même si le serveur ne répond pas encore correctement)
+5. p2b.1 → p2b.9 : Le backend
 
 ---
