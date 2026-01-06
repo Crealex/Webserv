@@ -1,0 +1,53 @@
+:root {
+  --main-bg: #282a36;
+  --foregrund: #f8f8f2;
+  --rose: #ff79c6;
+  --purple: #bd93f9;
+  --current-line: #6272a4;
+}
+
+body {
+  font-family: Cursive;
+  width: 100%;
+  background: var(--main-bg);
+}
+
+main {
+  width: 75%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.intro {
+  color: var(--foregrund);
+}
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.card {
+  background: var(--rose);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.card button {
+  background: var(--purple);
+  border: 1px solid var(--current-line);
+  border-radius: 15px;
+  padding: 5px;
+  transition: 100ms ease-in-out;
+}
+
+.btn-container {
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.card .btn-container:hover button {
+  transform: rotate(1800deg);
+  border: 3px solid var(--current-line);
+}

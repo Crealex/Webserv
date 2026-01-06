@@ -24,7 +24,7 @@ BLUE     := $(shell printf "\033[34m")
 BLACK    := $(shell printf "\033[1;90m")
 
 # Counter or compiled
-TOTAL_FILES := $(words $(SRCS))
+TOTAL_FILES := $(words $(SRCS) $(PARSING) $(SOCKET) $(REQUEST))
 CURRENT_FILE = 0
 
 all:	${NAME} display_ascii
