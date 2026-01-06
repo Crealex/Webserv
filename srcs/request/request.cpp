@@ -162,7 +162,6 @@ Request createRequest(char* buffer, size_t maxSize)
 		ret._body = retBody(body, maxSize, ret);
 	}
 
-	
 	// verify the different extracted element
 	std::string verif = ret._ContentType;
 	std::vector<std::string> v = acceptedType();
