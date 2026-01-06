@@ -30,6 +30,7 @@ static std::vector<std::string> acceptedType()
 	v.push_back("video/x-msvideo");
 	v.push_back("image/avif");
 	v.push_back("text/plain"); // INFO: ajouter par alex
+	v.push_back("multipart/form-data"); // INFO: ajouté par alex
 
 	return v;
 }
@@ -71,6 +72,7 @@ static void checkGET(Request req)
 
 static void checkPost(Request req)
 {
+	int leave = 0;
 	std::cout << "in checkPost" << std::endl;
 	if (req._ContentType.empty() || 
 		req._body.empty())
@@ -79,16 +81,28 @@ static void checkPost(Request req)
 	}
 
 	std::vector<std::string> v = acceptedType();
-	for (std::vector<std::string>::iterator it = v.begin();
-		it != v.end(); it++)
+	for (std::vector<std::string>::iterator it = v.begin(); // INFO: Toutes la boucle for complémentent modif (par alex avec l'aval de kiki)
+	it != v.end(); it++)
 	{
-		if (req._ContentType == *it)
+		std::istringstream iss(req._accept);
+		std::string str;
+		while (std::getline(iss, str, ','))
+		{
+		std::cout << "*it: " << *it << ", str: " << str << std::endl;
+			if (str.compare(*it) == 0)
+			{
+				std::cout << "is egal" << std::endl;
+				leave = 1;
+				break ;
+			}
+		}
+
+		if (leave == 1)
 			break ;
 
 		if (it + 1 == v.end())
 			throw ResponseError(415, "Error: Unsupported Media Type", req);
 	}
-
 	// TODO check if content length < maxSize
 }
 

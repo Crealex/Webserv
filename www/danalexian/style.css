@@ -89,6 +89,24 @@ header {
   transform: scale(1.2);
 }
 
+::file-selector-button {
+  background: var(--purple);
+  border: 1px solid var(--current-line);
+  border-radius: 15px;
+  padding: 5px;
+  transition: 200ms ease-in-out;
+  cursor: pointer;
+}
+
+::file-selector-button:hover {
+  border: 2px solid var(--current-line);
+  cursor: pointer;
+  transform: scale(1.05);
+  -webkit-box-shadow: 0px 0px 30px 10px rgba(190, 147, 249, 0.55);
+  -moz-box-shadow: 0px 0px 30px 10px rgba(190, 147, 249, 0.55);
+  box-shadow: 0px 0px 30px 10px rgba(190, 147, 249, 0.55);
+}
+
 .result {
   display: block;
   margin-top: 10px;
@@ -112,4 +130,5 @@ footer {
   );
   text-align: center;
   border-radius: 5px;
+  margin-top: 20px;
 }

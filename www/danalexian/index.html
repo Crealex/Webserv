@@ -84,14 +84,39 @@
           <h2>Upload de fichier</h2>
           <p>Permet de tester l'upload de divers fichier</p>
           <div class="btn-container">
-            <input type="file" name="inputFile" value="inputFile" />
+            <label for="inputFile" class="inputFile"
+              >Choisir un fichier:
+            </label>
+            <input
+              type="file"
+              name="inputFile"
+              id="inputFile"
+              value="inputFile"
+            />
             <button
               type="submit"
-              data-method="POST"
-              data-endpoint="pas defini"
+              data-method="POSTFILE"
+              data-endpoint="/updloads"
             >
               Upload
             </button>
+          </div>
+          <div class="result">
+            <div class="method"></div>
+            <div class="endpoint"></div>
+            <div class="status"></div>
+            <div class="header"></div>
+            <div class="body"></div>
+            <div class="time"></div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Gros fichiers</h2>
+          <p>Permet de tester les gros fichiers et les limites de max sizes</p>
+          <div class="btn-container">
+            <button data-method="POST" data-endpoint="pas defini">100ko</button>
+            <button data-method="POST" data-endpoint="pas defini">500ko</button>
+            <button data-method="POST" data-endpoint="pas defini">1mo</button>
           </div>
           <div class="result">
             <div class="method"></div>

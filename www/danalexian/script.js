@@ -1,3 +1,10 @@
+function uploadFile() {
+  const input = document.querySelector("#inputFile");
+  const form = new FormData();
+  form.append("file", input.files[0]);
+  return fetch("/uploads", { method: "POST", body: form });
+}
+
 document.querySelectorAll(".card button").forEach((btn) =>
   btn.addEventListener("click", async () => {
     const method = btn.dataset.method;
@@ -26,6 +33,8 @@ document.querySelectorAll(".card button").forEach((btn) =>
         });
     } else if (method === "DELETE") {
       if (endpoint) response = await fetch(endpoint, { method: "DELETE" });
+    } else if (method === "POSTFILE") {
+      response = await uploadFile();
     }
     if (!response) {
       resultDiv.textContent = "Méthode non valide";
