@@ -11,6 +11,7 @@ class Client
 		int			_fdSocket;
 		std::string	_buf;
 		sockaddr_in	_sockadd;
+		bool		_endOfFile;
 	
 	public:
 		Client();

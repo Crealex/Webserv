@@ -9,7 +9,8 @@
 
 #include <sys/socket.h>
 
-void	addEpollFd(int fd, int nbPollFd, Epoll epoll);
+void	sockOptNonBlocking(int &socketFd);
+void	addEpollFd(int fd, int nbPollFd, Epoll &epoll);
 void	sendResponse(unsigned int socket, char *buff, unsigned int maxSize);
 
 #endif

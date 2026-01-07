@@ -20,19 +20,17 @@ static bool	isServerSocket(int fd, std::vector<Socket *> sockets)
 	return (false);
 }
 
-static bool	isClientSocket(int fd, std::vector<Socket *> sockets)
+static bool	isClientSocket(int fd, std::vector<Client> clients, int &idClient)
 {
-	int	sizeSockets;
-	int	nbSockData;
+	int	sizeClients;
 
-	sizeSockets = sockets.size();
-	for (int i = 0; i < sizeSockets; i++)
+	sizeClients = clients.size();
+	for (int i = 0; i < sizeClients; i++)
 	{
-		nbSockData = sockets[i]->getSockData().size();
-		for (int j = 0; j < nbSockData; j++)
+		if (fd == clients[i].getFdClient())
 		{
-			if (fd == sockets[i]->getSockData()[j]->getFdClient())
-				return (true);
+			idClient = i;
+			return (true);
 		}
 	}
 	return (false);
@@ -52,35 +50,40 @@ static int	acceptClient(int fd, std::vector<Client> &clients, Epoll &epoll)
 	fdClient = accept(fd, (sockaddr *)&newSockadd, &addrlen);
 	if (fdClient == -1)
 		return (-1);
-	sockets[i]->setFdClient(fdClient, j);
-	newClient.setFdClient(sockets[i]->getSockData()[j]->getFdClient());
+	// sockets[i]->setFdClient(fdClient, j);
+	sockOptNonBlocking(fdClient);
+	newClient.setFdClient(fdClient);
 	newClient.setSockadd(newSockadd);
 	clients.push_back(newClient);
-	addEpollFd(sockets[i]->getSockData()[j]->getFdClient(), epoll.getNbSockets(), epoll);
+	addEpollFd(newClient.getFdClient(), epoll.getNbSockets(), epoll);
 	return (0);
 }
 
-static char	*receiveRequest(Config &conf, int fdClient, char *bufRecv)
+static void	receiveRequest(Config &conf, Client client)
 {
-	int			sizeRecv;
+	int		sizeRecv;
+	char	*buffer;
 
 	sizeRecv = -1;
-	sizeRecv = recv(fdClient, bufRecv, conf.getMaxSize() - 1, 0);
-	if (sizeRecv == -1)
-		std::cerr << "erreur avec recv" << std::endl;
-	bufRecv[sizeRecv] = '\0';
-	return (bufRecv);
+	sizeRecv = recv(client.getFdClient(), buffer, 10000, 0);
+	if (sizeRecv == -1 || sizeRecv < 10000)
+	{
+		client.
+	}
+	client.setBuf(buffer);
 }
 
 void	handleClient(std::vector<Socket *> &sockets, Config conf, Epoll &epoll)
 {
 	int					epollCounterWait;
+	int					idClient;
 	size_t				sizeSockets;
 	size_t				sizeSocketData;
 	std::vector<Client>	clients;
 	epoll_event			events[epoll.getNbSockets()];
 
 	epollCounterWait = 0;
+	idClient = 0;
 
 	sizeSockets = sockets.size();
 	epollCounterWait = epoll_wait(epoll.getEpollFd(), events, epoll.getNbSockets(), 2000);
@@ -90,21 +93,18 @@ void	handleClient(std::vector<Socket *> &sockets, Config conf, Epoll &epoll)
 	{
 		if (events[indexEvent].events == EPOLLIN && isServerSocket(events[indexEvent].data.fd, sockets))
 		{
-			if (acceptClient(events[indexEvent], clients, epoll) < 0)
+			if (acceptClient(events[indexEvent].data.fd, clients, epoll) < 0)
 				continue ;
 		}
-		else if (isClientSocket(events[indexEvent].data.fd, sockets))
+		else if (isClientSocket(events[indexEvent].data.fd, clients, idClient))
 		{
-			if (events[i].events == EPOLLIN)
+			if (events[indexEvent].events == EPOLLIN)
 			{
-				bufRecv = receiveRequest(conf, sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
+				receiveRequest(conf, clients[idClient]);
 			}
 			else
 			{
-				if (bufRecv)
-				{
-					sendResponse(sockets[i]->getSockData()[j]->getFdClient(), bufRecv, conf.getMaxSize());
-				}
+				sendResponse(sockets[i]->getSockData()[j]->getFdClient(), bufRecv, conf.getMaxSize());
 			}
 		}
 	}

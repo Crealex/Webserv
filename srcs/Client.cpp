@@ -4,6 +4,7 @@
 Client::Client()
 {
 	this->_fdSocket = -1;
+	this->_endOfFile = false;
 }
 
 Client::~Client()
