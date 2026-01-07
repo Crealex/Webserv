@@ -9,9 +9,10 @@ Phase 2A : Frontend (HTML/CSS/JS)
 | X     | index.html | Ajouter zone résultat dans les 2 nouvelles cartes (même structure que GET/POST/DELETE) | haute    |
 | X     | style.css  | Styliser l'input file (il est moche par défaut, utiliser label + opacity trick)        | moyenne  |
 | X     | style.css  | Styliser les boutons de taille (100Ko/500Ko/1Mo)                                       | basse    |
-| p2a.6 | script.js  | Créer fonction uploadFile() qui envoie via FormData API                                | haute    | | p2a.7 | script.js  | Créer fonction generateBigFile(sizeInKo) qui génère un Blob                            | haute    |
-| p2a.8 | script.js  | Brancher les event listeners sur les nouveaux boutons                                  | haute    |
-| p2a.9 | script.js  | Afficher le résultat (status, headers, temps)                                          | moyenne  |
+| X | script.js  | Créer fonction uploadFile() qui envoie via FormData API                                | haute    | 
+| X| script.js  | Créer fonction generateBigFile(sizeInKo) qui génère un Blob                            | haute    |
+| X| script.js  | Brancher les event listeners sur les nouveaux boutons                                  | haute    |
+| X| script.js  | Afficher le résultat (status, headers, temps)                                          | moyenne  |
 
 ---
 
@@ -19,8 +20,8 @@ Phase 2B : Backend (C++)
 
 | #     | Fichier       | Tâche                                                                    | Priorité |
 | ----- | ------------- | ------------------------------------------------------------------------ | -------- |
-| p2b.1 | -             | Créer le dossier www/danalexian/uploads/                                 | haute    |
-| p2b.2 | MimeTypes.cpp | Ajouter multipart/form-data dans la map                                  | haute    |
+| X| -             | Créer le dossier www/danalexian/uploads/                                 | haute    |
+| X| MimeTypes.cpp | Ajouter multipart/form-data dans la map                                  | haute    |
 | p2b.3 | Post.cpp      | Parser le header Content-Type pour extraire le boundary                  | haute    |
 | p2b.4 | Post.cpp      | Parser le body multipart - trouver les boundaries et extraire le contenu | haute    |
 | p2b.5 | Post.cpp      | Extraire le filename depuis Content-Disposition                          | haute    |

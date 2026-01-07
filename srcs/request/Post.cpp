@@ -3,18 +3,43 @@
 #include "../../includes/colors.hpp"
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseError.hpp"
+#include <cstddef>
 #include <exception>
 #include <fstream>
+#include <string>
 Post::Post(Request requ) : Methods(requ), _contentType(requ._ContentType), _contentLength(requ._ContentLength), _body(requ._body)
 {
 	std::cout << GREEN << "Default Post constructor called" << RESET << std::endl;
 }
 
+std::string extractBoundary(std::string contentType)
+{
+	std::string res;
+	unsigned int find;
+
+	find = contentType.find("boundary");
+	if (find < contentType.length())
+	{
+		res = contentType.erase(0, contentType.find('=') + 1);
+		std::cout << "res boundary: " << res << std::endl;
+	}
+	return (res);
+}
+
 static bool addContentToFile(std::string body, std::ofstream *newFile)
 {
-	// newFile->write(body.c_str(), body.size());
 	*newFile << body;
 	return (true);
+}
+
+void Post::handlePostFile(std::string *resp, std::string boundary)
+{
+	std::string body = this->_body;
+	std::stringstream iss;
+	while (std::getline(iss, body))
+	{
+		if (iss.str().compare(0, 10, "content-type"))
+	}
 }
 
 const std::string Post::createResponse(Config conf)
@@ -23,10 +48,17 @@ const std::string Post::createResponse(Config conf)
 	std::ofstream newFile;
 	Request dataError;
 	std::string path;
+	std::string boundary;
 
 	dataError._protocol = this->_protocol;
 	dataError._host = this->_host;
 	dataError._location = this->_location;
+	if (this->_contentType.find("multipart/form-data") < this->_contentType.size())
+	{
+		boundary = extractBoundary(this->_contentType);
+		handlePostFile(&resp, boundary);
+		return (resp);
+	}
 	path = conf.getDirRoot(conf.getSitesName()[0]) + conf.getSitesName()[0] + this->_location;
 	if (path.find(".") > path.length())
 		path.append(conf.getDefaultFile(conf.getSitesName()[0]));

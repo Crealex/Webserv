@@ -1,8 +1,22 @@
 function uploadFile() {
   const input = document.querySelector("#inputFile");
   const form = new FormData();
+  if (!input.files[0]) {
+    document.querySelector(".errDisplay").innerHTML =
+      `<p><strong>Missing file!</strong></p>`;
+    return;
+  }
   form.append("file", input.files[0]);
-  return fetch("/uploads", { method: "POST", body: form });
+  return fetch("uploads/" + input.files[0].name, {
+    method: "POST",
+    body: form,
+  });
+}
+
+function generateBigFile(sizeInKo) {
+  const bytes = new Uint8Array(sizeInKo * 1024);
+  bytes.fill(65);
+  return new Blob([bytes], { type: "application/octet-stream" });
 }
 
 document.querySelectorAll(".card button").forEach((btn) =>
@@ -35,11 +49,17 @@ document.querySelectorAll(".card button").forEach((btn) =>
       if (endpoint) response = await fetch(endpoint, { method: "DELETE" });
     } else if (method === "POSTFILE") {
       response = await uploadFile();
+    } else if (method === "POSTBIGFILE") {
+      const size = Number(btn.dataset.size);
+      const file = generateBigFile(size);
+      console.log(file);
+      response = await fetch(endpoint, { method: "POST", body: file });
     }
     if (!response) {
       resultDiv.textContent = "Méthode non valide";
       return;
     }
+    console.log(response);
     const body = await response.text();
     const status = response.status;
     const length = response.headers.get("content-length");

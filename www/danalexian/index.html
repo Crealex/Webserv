@@ -96,11 +96,12 @@
             <button
               type="submit"
               data-method="POSTFILE"
-              data-endpoint="/updloads"
+              data-endpoint="uploads/"
             >
               Upload
             </button>
           </div>
+          <div class="errDisplay"></div>
           <div class="result">
             <div class="method"></div>
             <div class="endpoint"></div>
@@ -114,9 +115,27 @@
           <h2>Gros fichiers</h2>
           <p>Permet de tester les gros fichiers et les limites de max sizes</p>
           <div class="btn-container">
-            <button data-method="POST" data-endpoint="pas defini">100ko</button>
-            <button data-method="POST" data-endpoint="pas defini">500ko</button>
-            <button data-method="POST" data-endpoint="pas defini">1mo</button>
+            <button
+              data-method="POSTBIGFILE"
+              data-endpoint="uploads/file100ko.txt"
+              data-size="100"
+            >
+              100ko
+            </button>
+            <button
+              data-method="POSTBIGFILE"
+              data-endpoint="uploads/file500ko.txt"
+              data-size="500"
+            >
+              500ko
+            </button>
+            <button
+              data-method="POSTBIGFILE"
+              data-endpoint="uploads/file1mo.txt"
+              data-size="1000"
+            >
+              1mo
+            </button>
           </div>
           <div class="result">
             <div class="method"></div>

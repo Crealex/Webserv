@@ -10,9 +10,10 @@ class Post: public Methods
 		std::string		_contentType;
 		unsigned int	_contentLength;
 		std::string		_body;
+		void handlePostFile(std::string *resp, std::string boundary);
     public:
-	Post(Request requ);
-	const std::string	createResponse(Config conf);
+		Post(Request requ);
+		const std::string	createResponse(Config conf);
 };
 
 #endif // !POST_HPP
