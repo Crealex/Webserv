@@ -9,6 +9,7 @@
 SocketData::SocketData(addPort_t addPort)
 {
 	assignmentSocket(addPort);
+	this->_fdClient = -1;
 }
 
 SocketData::~SocketData()
