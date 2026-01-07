@@ -87,7 +87,6 @@ epoll_event	*Epoll::addEpollServer(std::vector<Socket *> &sockets, int sizeRes, 
 			{
 				if (res)
 					delete[] res;
-				std::cout << "am i here ?" << std::endl;
 				return (addEpollServer(sockets, sizeRes, epollFd));
 			}
 		}

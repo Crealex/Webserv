@@ -13,31 +13,6 @@ static int	acceptClient(std::vector<Socket *> &sockets, size_t i, size_t j)
 	return (0);
 }
 
-static void	addEpollClient(int clientFd, int nbPollFd, Epoll epoll)
-{
-	epoll_event	*temp;
-
-	temp = new epoll_event[nbPollFd + 1];
-	for (int i = 0; i < nbPollFd; i++)
-		temp[i] = epoll.getEvents()[i];
-
-	temp[nbPollFd].data.fd = clientFd;
-	temp[nbPollFd].events = EPOLLIN;
-	std::cout << "hellooo" << std::endl;
-	if (epoll_ctl(epoll.getEpollFd(), EPOLL_CTL_ADD, temp[nbPollFd].data.fd, &temp[nbPollFd]) < 0)
-	{
-		if (temp)
-		{
-			delete[] temp;
-		}
-		addEpollClient(clientFd, nbPollFd, epoll);
-	}
-	std::cout << "bruhhh" << std::endl;
-	epoll.setEvents(temp);
-	std::cout << "bruhhh" << std::endl;
-	epoll.setNbSockets(nbPollFd + 1);
-}
-
 static char	*receiveRequest(Config &conf, int fdClient, char *bufRecv)
 {
 	int			sizeRecv;
