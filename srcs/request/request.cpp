@@ -160,12 +160,37 @@ static std::map<std::string, std::string*> createMap(Request &req)
 }
 
 /**
- * @brief Parse the client remultipart/form-dataquest and create a Request structure
+ * @brief extract all the body properly and return it
+ * 
+ * @param str 
+ * @return std::string 
+ */
+std::string retBody(std::string str, size_t maxSize, Request req)
+{
+	std::stringstream target(str);
+
+	target.seekg(0, std::ios::end);
+	size_t size = target.tellg();
+	if (size > maxSize)
+	{
+		throw ResponseError(413, "Error, content too large", req);
+	}
+	target.seekg(0, std::ios::beg);
+	char* buffer = new char[size];
+	target.read(buffer, size);
+	std::string file(buffer, size);
+	delete[] buffer;
+
+	return file;
+}
+
+/**
+ * @brief Parse the client request and create a Request structure
  * 
  * @param buffer the client request
  * @return The created Request object
  */
-Request createRequest(char* buffer)
+Request createRequest(char* buffer, size_t maxSize)
 {
 	Request ret;
 	std::map<std::string, std::string*> ptrMap = createMap(ret);
@@ -208,13 +233,15 @@ Request createRequest(char* buffer)
 	}
 
 	// extract the body of the request
-	std::string body;
-	while (std::getline(iss, body))
+	std::string buff(buffer);
+	size_t pos = buff.find("\n\n");
+	if (pos != std::string::npos)
 	{
-		body += '\n';
-		ret._body += body;
+		pos += 2;
+		std::string body = buff.substr(pos, buff.size() - pos);
+		ret._body = retBody(body, maxSize, ret);
 	}
-	
+
 	// verify the different extracted element
 	// if (ret._host.empty() || access(ret._host.c_str(), F_OK) != 0)
 	// {

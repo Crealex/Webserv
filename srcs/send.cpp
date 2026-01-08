@@ -11,8 +11,8 @@ void sendResponse(unsigned int socket, char *buff, Config conf)
 	try
 	{
 		Methods *request;
-		request = createMethod(buff);
-		response = request->createResponse(conf);
+		request = createMethod(buff, conf.getMaxSize());
+		response = request->createResponse();
 		delete request;
 	}
 	catch(ResponseError& e)
