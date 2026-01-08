@@ -29,12 +29,15 @@ static std::vector<std::string> acceptedType()
 	v.push_back("application/octet-stream");
 	v.push_back("video/x-msvideo");
 	v.push_back("image/avif");
+	v.push_back("text/plain"); // INFO: ajouter par alex
+	v.push_back("multipart/form-data"); // INFO: ajouté par alex
 
 	return v;
 }
 
 static void checkGET(Request req)
 {
+	std::cout << "in checkGET" << std::endl;
 	if (req._userAgent.empty() || 
 		req._accept.empty())
 	{
@@ -50,8 +53,10 @@ static void checkGET(Request req)
 		std::string str;
 		while (std::getline(iss, str, ','))
 		{
-			if (str == *it)
+		std::cout << "*it: " << *it << ", str: " << str << std::endl;
+			if (str.compare(*it) == 0)
 			{
+				std::cout << "is egal" << std::endl;
 				leave = 1;
 				break ;
 			}
@@ -67,6 +72,8 @@ static void checkGET(Request req)
 
 static void checkPost(Request req, unsigned int maxSize)
 {
+	int leave = 0;
+	std::cout << "in checkPost" << std::endl;
 	if (req._ContentType.empty() || 
 		req._body.empty())
 	{
@@ -74,18 +81,29 @@ static void checkPost(Request req, unsigned int maxSize)
 	}
 
 	std::vector<std::string> v = acceptedType();
-	for (std::vector<std::string>::iterator it = v.begin();
-		it != v.end(); it++)
+	for (std::vector<std::string>::iterator it = v.begin(); // INFO: Toutes la boucle for complémentent modif (par alex avec l'aval de kiki)
+	it != v.end(); it++)
 	{
-		if (req._ContentType == *it)
+		std::istringstream iss(req._accept);
+		std::string str;
+		while (std::getline(iss, str, ','))
+		{
+		std::cout << "*it: " << *it << ", str: " << str << std::endl;
+			if (str.compare(*it) == 0)
+			{
+				std::cout << "is egal" << std::endl;
+				leave = 1;
+				break ;
+			}
+		}
+
+		if (leave == 1)
 			break ;
 
 		if (it + 1 == v.end())
 			throw ResponseError(415, "Error: Unsupported Media Type", req);
 	}
-
-	if (req._ContentLength > maxSize)
-		throw ResponseError(413 , "Error: content too large", req);
+	// TODO check if content length < maxSize
 }
 
 /**
@@ -142,15 +160,41 @@ static std::map<std::string, std::string*> createMap(Request &req)
 }
 
 /**
+ * @brief extract all the body properly and return it
+ * 
+ * @param str 
+ * @return std::string 
+ */
+std::string retBody(std::string str, size_t maxSize, Request req)
+{
+	std::stringstream target(str);
+
+	target.seekg(0, std::ios::end);
+	size_t size = target.tellg();
+	if (size > maxSize)
+	{
+		throw ResponseError(413, "Error, content too large", req);
+	}
+	target.seekg(0, std::ios::beg);
+	char* buffer = new char[size];
+	target.read(buffer, size);
+	std::string file(buffer, size);
+	delete[] buffer;
+
+	return file;
+}
+
+/**
  * @brief Parse the client request and create a Request structure
  * 
  * @param buffer the client request
  * @return The created Request object
  */
-Request createRequest(char* buffer, unsigned int maxSize)
+Request createRequest(char* buffer, size_t maxSize)
 {
 	Request ret;
 	std::map<std::string, std::string*> ptrMap = createMap(ret);
+	std::cout << "Test requ" << std::endl;
 	std::istringstream iss(buffer);
 	std::string line;
 
@@ -158,6 +202,8 @@ Request createRequest(char* buffer, unsigned int maxSize)
 	setHeader(line, ret);
 	while (std::getline(iss, line)) 
 	{
+		if (!line.empty() && line[line.size() - 1] == '\r') // INFO: Ajouter par Alex (pour gerer les \r)
+        line.erase(line.size() - 1);
 		// extract and parse the different element of the request
 		if (line.empty())
 			break ;
@@ -178,6 +224,7 @@ Request createRequest(char* buffer, unsigned int maxSize)
 			std::string str;
 			while (ss >> word)
 				str.append(word + ' ');
+			str.erase(str.end() - 1);
 			*strPtr = str;
 		}
 		catch(...)
@@ -186,13 +233,15 @@ Request createRequest(char* buffer, unsigned int maxSize)
 	}
 
 	// extract the body of the request
-	std::string body;
-	while (std::getline(iss, body))
+	std::string buff(buffer);
+	size_t pos = buff.find("\n\n");
+	if (pos != std::string::npos)
 	{
-		body += '\n';
-		ret._body += body;
+		pos += 2;
+		std::string body = buff.substr(pos, buff.size() - pos);
+		ret._body = retBody(body, maxSize, ret);
 	}
-	
+
 	// verify the different extracted element
 	// if (ret._host.empty() || access(ret._host.c_str(), F_OK) != 0)
 	// {

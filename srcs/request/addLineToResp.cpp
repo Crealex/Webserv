@@ -5,6 +5,7 @@
 #include <exception>
 #include <fstream>
 #include <sstream>
+#include <string>
 #include <sys/stat.h>
 
 
@@ -37,13 +38,20 @@ std::string findMimeType(std::string file)
 bool addContentType(std::string *resp, std::string accept, std::string file)
 {
 	std::string contentType;
+	std::stringstream acceptSs(accept);
+	std::string type;
 
 	contentType = findMimeType(file);
-	if (contentType != accept && accept != "*/*")
-		return (false);
-
-	resp->append("Content-Type: " + contentType + "\n");
-	return (true);
+	while (std::getline(acceptSs, type,  ','))
+	{
+		//std::cout << "type: " << type << ", Content-Type: " << contentType << std::endl;
+		if (contentType == type || type == "*/*")
+		{
+			resp->append("Content-Type: " + contentType + "\n");
+			return (true);
+		}
+	}
+	return (false);
 }
 
 // For post.cpp
@@ -98,15 +106,17 @@ bool addLastModif(std::string *resp, std::string pathTarget)
 }
 
 //	Content-Length: 1234
-bool addContentLenght(std::string *resp, std::string file)
+bool addContentLenght(std::string *resp, std::string path)
 {
 	unsigned int size;
 	std::stringstream ss;
+	struct stat buff;
 
-	size = file.size();
+	stat(path.c_str(), &buff);
+	size = buff.st_size;
 	ss << size;
 	try {
-		resp->append("Content-Lenght: " + ss.str() + "\n");
+		resp->append("Content-Length: " + ss.str() + "\n");
 	} catch (std::exception &e) {
 		return (false);
 	}
@@ -117,7 +127,7 @@ bool addContentLenght(std::string *resp, std::string file)
 //	<!-- Contenu HTML -->
 bool addBody(std::string *resp, std::string file)
 {
-	resp->append("\n" + file);
+	resp->append("\n" + file + "\n\n");
 	return (true);
 }
 

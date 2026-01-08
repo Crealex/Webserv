@@ -7,7 +7,7 @@
  * @param buffer the client request
  * @return Methods* 
  */
-Methods* createMethod(char *buffer, unsigned int maxSize)
+Methods* createMethod(char *buffer, size_t maxSize)
 {
 	std::string method;
 	Request req = createRequest(buffer, maxSize);

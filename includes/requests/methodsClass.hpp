@@ -2,6 +2,7 @@
 
 #define METHODS_CLASS_HPP
 #include "../includes.hpp"
+#include "../Config.hpp"
 
 struct Request;
 
@@ -18,7 +19,7 @@ class Methods
 	/**
 	 * @brief a virtual funtction for build the reponse, implementation in get.cpp, post.cpp, delete.cpp, ResponseError.cpp
 	 */
-	virtual const std::string createResponse() = 0;
+	virtual const std::string createResponse(Config conf) = 0;
 	virtual ~Methods();
 };
 
@@ -28,12 +29,12 @@ bool	addStartLine(std::string *resp, std::string protocol, unsigned int code, st
 bool	addContentType(std::string *resp, std::string accept, std::string file);
 bool	addDate(std::string *resp);
 bool	addLastModif(std::string *resp, std::string pathTarget);
-bool	addContentLenght(std::string *resp, std::string file);
+bool	addContentLenght(std::string *resp, std::string path);
 bool	addBody(std::string *resp, std::string file);
 bool	addLocation(std::string *resp, std::string host, std::string location);
 bool	addContentType(std::string *resp, std::string type);
 
-Methods* createMethod(char *buffer, unsigned int maxSize);
-Request createRequest(char* buffer, unsigned int maxSize);
+Methods* createMethod(char *buffer, size_t maxSize);
+Request createRequest(char* buffer, size_t maxSize);
 
 #endif

@@ -14,12 +14,10 @@ Get::Get(Request requ): Methods(requ), _userAgent(requ._userAgent), _accept(requ
 
 // *** Create response
 
-const std::string Get::createResponse()
+const std::string Get::createResponse(Config conf)
 {
 	std::string		resp;
 	std::ifstream	target;
-	std::string		file;
-	struct stat		fileData;
 	std::string		path;
 	Request			dataError;
 	
@@ -28,19 +26,31 @@ const std::string Get::createResponse()
 	dataError._accept = this->_accept;
 	dataError._location = this->_location;
 	dataError._userAgent = this->_userAgent;
-	path = this->_host + this->_location;
+	// root + sitename + (si pas fichier precis) defaultfile
+	path = conf.getDirRoot(conf.getSitesName()[0]) + conf.getSitesName()[0] + this->_location;
+	if (path.find(".") > path.length())
+		path.append(conf.getDefaultFile(conf.getSitesName()[0]));
+	std::cout << "raw path:" << path << std::endl;
 	target.open(path.c_str());
+	// *************************
 	if (!target.is_open())
 		throw ResponseError(404, "Not found", dataError);
-	stat((this->_host + this->_location).c_str(), &fileData);
-	std::getline(target, file, '\0');
-	if (!addContentType(&resp, this->_accept, this->_location))
+
+	target.seekg(0, std::ios::end);
+	size_t size = target.tellg();
+	target.seekg(0, std::ios::beg);
+	char* buffer = new char[size];
+	target.read(buffer, size);
+	std::string file(buffer, size);
+	delete[] buffer;
+
+	if (!addContentType(&resp, this->_accept, path))
 		throw ResponseError(406, "Not acceptable", dataError);
 	if (!addDate(&resp))
 		throw ResponseError(500, "Can't add date", dataError);
-	if (!addLastModif(&resp, this->_host + this->_location))
+	if (!addLastModif(&resp, path))
 		throw ResponseError(500, "can't add last modif", dataError);
-	if (!addContentLenght(&resp, file))
+	if (!addContentLenght(&resp, path))
 		throw ResponseError(500, "can't add content lenght", dataError);
 	if (!addBody(&resp, file))
 		throw ResponseError(500, "can't add body", dataError);
@@ -60,7 +70,7 @@ const std::string Get::createResponse()
 //	requ._accept = "text/html";
 //	requ._host = "../../www";
 //	requ._location = "/demo/index.html";
-//	requ._protocol = "HTTP/1.1";
+//	requ._protocol = "HTTe/1.1";
 //	requ._userAgent = "Firefox";
 //	try 
 //	{
