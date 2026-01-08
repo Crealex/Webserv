@@ -70,7 +70,7 @@ static void checkGET(Request req)
 	}
 }
 
-static void checkPost(Request req)
+static void checkPost(Request req, unsigned int maxSize)
 {
 	int leave = 0;
 	std::cout << "in checkPost" << std::endl;
@@ -249,7 +249,7 @@ Request createRequest(char* buffer, size_t maxSize)
 	// }
 
 	if (ret._method == "POST")
-		checkPost(ret);
+		checkPost(ret, maxSize);
 	else if (ret._method == "GET")
 		checkGET(ret);
 
