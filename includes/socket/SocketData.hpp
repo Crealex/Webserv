@@ -14,7 +14,7 @@ class SocketData
 		int			_fdClient;
 
 		void	assignmentSocket(addPort_t addPort);
-		void	sockOpt(int &socketFd);
+		void	sockOptNonBlocking(int &socketFd);
 	public:
 		SocketData(addPort_t);
 		~SocketData();

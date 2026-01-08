@@ -1,7 +1,8 @@
 #include "../../includes/socket/includeSend.hpp"
-#include <fstream>
+#include "../../includes/epoll/Epoll.hpp"
+#include "../../includes/Client.hpp"
 
-static char *receiveRequest(Config &conf, int fdClient, char *bufRecv)
+static bool	isServerSocket(int fd, std::vector<Socket *> sockets)
 {
 	int			sizeRecv;
 
@@ -36,8 +37,8 @@ void	handleClient(std::vector<Socket *> &sockets, Config conf)
 	std::cout << BOLD << "in handleClient" << RESET << std::endl;
 	for (size_t i = 0; i < sizeSockets; i++)
 	{
-		sizeSocketData = sockets[i]->getSockData().size();
-		for (size_t j = 0; j < sizeSocketData; j++)
+		nbSockData = sockets[i]->getSockData().size();
+		for (int j = 0; j < nbSockData; j++)
 		{
 			acceptClient(sockets, i, j);
 			bufRecv = receiveRequest(conf, sockets[i]->getSockData()[j]->getFdClient(), bufRecv);

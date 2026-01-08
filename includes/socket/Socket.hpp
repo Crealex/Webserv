@@ -2,13 +2,14 @@
 
 #define SOCKET_HPP
 
+#include <poll.h>
 #include "SocketData.hpp"
 
 class Socket
 {
 	private:
-		std::string						_hostname;
-		std::vector<SocketData *>		_sockData;
+		std::string					_hostname;
+		std::vector<SocketData *>	_sockData;
 
 		void	addingSockets(serverData data);
 	public:
