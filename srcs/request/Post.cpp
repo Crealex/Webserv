@@ -3,39 +3,83 @@
 #include "../../includes/colors.hpp"
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseError.hpp"
+#include <cstddef>
 #include <exception>
 #include <fstream>
+#include <string>
 Post::Post(Request requ) : Methods(requ), _contentType(requ._ContentType), _contentLength(requ._ContentLength), _body(requ._body)
 {
 	std::cout << GREEN << "Default Post constructor called" << RESET << std::endl;
 }
 
+std::string extractBoundary(std::string contentType)
+{
+	std::string res;
+	unsigned int find;
+
+	find = contentType.find("boundary");
+	if (find < contentType.length())
+	{
+		res = contentType.erase(0, contentType.find('=') + 1);
+		std::cout << "res boundary: " << res << std::endl;
+	}
+	return (res);
+}
+
 static bool addContentToFile(std::string body, std::ofstream *newFile)
 {
-	// newFile->write(body.c_str(), body.size());
 	*newFile << body;
 	return (true);
 }
 
-const std::string Post::createResponse()
+// TODO: A continuer le moment venu...
+void Post::handlePostFile(std::string *resp, std::string boundary)
 {
-	// TODO: GERER L"AJOUT A UN FICHIER, pas juste le creer"
+	(void)resp;
+	(void)boundary;
+	std::stringstream iss;
+	while (std::getline(iss, this->_body))
+	{
+		if (iss.str().compare(0, 12, "content-type"))
+			this->_contentType = iss.str().erase(0, 12);
+		if (iss.str() == "\n")
+			break;
+	}
+
+	std::getline(iss, this->_body );
+}
+
+const std::string Post::createResponse(Config conf)
+{
 	std::string resp;
 	std::ofstream newFile;
 	Request dataError;
 	std::string path;
+	std::string boundary;
 
-	(void)_contentLength;
-	path = this->_host + this->_location;
+	dataError._protocol = this->_protocol;
+	dataError._host = this->_host;
+	dataError._location = this->_location;
+// TODO: A continuer et decommenter le moment venu...
+	//if (this->_contentType.find("multipart/form-data") < this->_contentType.size())
+	//{
+	//	boundary = extractBoundary(this->_contentType);
+	//	handlePostFile(&resp, boundary);
+	//	return (resp);
+	//}
+	path = conf.getDirRoot(conf.getSitesName()[0]) + conf.getSitesName()[0] + this->_location;
+	if (path.find(".") > path.length())
+		path.append(conf.getDefaultFile(conf.getSitesName()[0]));
 	newFile.open(path.c_str(), std::ios::app);
 	if (!newFile.is_open())
-		throw(ResponseError(500, "Can't open new file or create it", dataError));
+		throw (ResponseError(401, "Unauthorized", dataError));
 	if (!addContentType(&resp, this->_contentType))
 		throw(ResponseError(500, "Can't add content type", dataError));
 	if (!addContentToFile(this->_body, &newFile)) // need some test
 		throw(ResponseError(500, "Can't add content file", dataError));
 	if (!addLocation(&resp, this->_host, this->_location))
 		throw(ResponseError(500, "Can't add Location", dataError));
+	resp.append("\n");
 	if (!addStartLine(&resp, this->_protocol, 201, "Created"))
 		throw(ResponseError(500, "Can't add start line", dataError));
 	if (!addBody(&resp, this->_body))

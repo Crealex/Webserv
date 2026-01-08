@@ -4,18 +4,44 @@
   --rose: #ff79c6;
   --purple: #bd93f9;
   --current-line: #6272a4;
+  --green: #50fa7b;
+  --red: #ff5555;
 }
 
-body {
-  font-family: Cursive;
+body,
+html {
+  font-family: "Consolas", "Monaco", "Courier New", monospace, Cursive;
   width: 100%;
+  height: 100%;
   background: var(--main-bg);
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 main {
-  width: 75%;
+  flex-grow: 1;
+  width: 85%;
   margin: 0 auto;
   text-align: center;
+}
+
+header {
+  width: 100%;
+}
+.title {
+  text-align: center;
+  display: block;
+  margin: 10px;
+  font-size: 3rem;
+  font-weight: bolder;
+  border: 2px solid var(--rose);
+  border-radius: 5px;
+  background: linear-gradient(90deg, var(--rose) 0%, var(--purple) 100%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .intro {
@@ -32,6 +58,12 @@ main {
   background: var(--rose);
   border-radius: 10px;
   padding: 10px;
+  box-shadow: 2px 2px 10px var(--purple);
+}
+.btn-container {
+  width: fit-content;
+  margin: auto;
+  height: auto;
 }
 
 .card button {
@@ -39,15 +71,64 @@ main {
   border: 1px solid var(--current-line);
   border-radius: 15px;
   padding: 5px;
-  transition: 100ms ease-in-out;
+  transition: 200ms ease-in-out;
 }
 
-.btn-container {
-  width: fit-content;
-  margin: 0 auto;
+.card button:hover {
+  border: 2px solid var(--current-line);
+  cursor: pointer;
+  transform: scale(1.05);
+  -webkit-box-shadow: 0px 0px 30px 10px rgba(190, 147, 249, 0.55);
+  -moz-box-shadow: 0px 0px 30px 10px rgba(190, 147, 249, 0.55);
+  box-shadow: 0px 0px 30px 10px rgba(190, 147, 249, 0.55);
 }
 
-.card .btn-container:hover button {
-  transform: rotate(1800deg);
-  border: 3px solid var(--current-line);
+.card button:active {
+  color: var(--purple);
+  background-color: var(--rose);
+  transform: scale(1.2);
+}
+
+::file-selector-button {
+  background: var(--purple);
+  border: 1px solid var(--current-line);
+  border-radius: 15px;
+  padding: 5px;
+  transition: 200ms ease-in-out;
+  cursor: pointer;
+}
+
+::file-selector-button:hover {
+  border: 2px solid var(--current-line);
+  cursor: pointer;
+  transform: scale(1.05);
+  -webkit-box-shadow: 0px 0px 30px 10px rgba(190, 147, 249, 0.55);
+  -moz-box-shadow: 0px 0px 30px 10px rgba(190, 147, 249, 0.55);
+  box-shadow: 0px 0px 30px 10px rgba(190, 147, 249, 0.55);
+}
+
+.result {
+  display: block;
+  margin-top: 10px;
+  border-radius: 14px;
+  text-align: left;
+  padding: 5px;
+}
+
+.body {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+}
+
+footer {
+  background: radial-gradient(
+    circle,
+    var(--foregrund) 0%,
+    var(--current-line) 100%
+  );
+  text-align: center;
+  border-radius: 5px;
+  margin-top: 20px;
 }

@@ -25,6 +25,7 @@ std::map<std::string, std::string> MimeTypes::initMap()
 	m["avi"] = "video/x-msvideo";
 	m["avif"] = "image/avif";
 	m["txt"] = "text/plain";
+	m[""] = "multipart/form-data";
 	return (m);
 }
 
