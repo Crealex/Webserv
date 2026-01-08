@@ -160,7 +160,7 @@ static std::map<std::string, std::string*> createMap(Request &req)
 }
 
 /**
- * @brief Parse the client request and create a Request structure
+ * @brief Parse the client remultipart/form-dataquest and create a Request structure
  * 
  * @param buffer the client request
  * @return The created Request object

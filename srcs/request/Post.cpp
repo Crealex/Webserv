@@ -34,12 +34,16 @@ static bool addContentToFile(std::string body, std::ofstream *newFile)
 
 void Post::handlePostFile(std::string *resp, std::string boundary)
 {
-	std::string body = this->_body;
 	std::stringstream iss;
-	while (std::getline(iss, body))
+	while (std::getline(iss, this->_body))
 	{
-		if (iss.str().compare(0, 10, "content-type"))
+		if (iss.str().compare(0, 12, "content-type"))
+			this->_contentType = iss.str().erase(0, 12);
+		if (iss.str() == "\n")
+			break;
 	}
+
+	std::getline(iss, this->_body );
 }
 
 const std::string Post::createResponse(Config conf)
