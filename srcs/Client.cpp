@@ -27,6 +27,11 @@ sockaddr_in const	Client::getSockadd() const
 	return (this->_sockadd);
 }
 
+bool const			Client::getEndOfFile() const
+{
+	return (this->_endOfFile);
+}
+
 // SETTERS
 void	Client::setFdClient(int newFd)
 {
@@ -44,4 +49,9 @@ void	Client::setBuf(char *newBuf)
 void	Client::setSockadd(sockaddr_in newSockadd)
 {
 	this->_sockadd = newSockadd;
+}
+
+void	Client::setEndOfFile(bool newEndOfFile)
+{
+	this->_endOfFile = newEndOfFile;
 }

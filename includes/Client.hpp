@@ -20,10 +20,12 @@ class Client
 		int const			getFdClient() const;
 		std::string const	getBuf() const;
 		sockaddr_in const	getSockadd() const;
+		bool const			getEndOfFile() const;
 
 		void	setFdClient(int newFd);
 		void	setBuf(char *newBuf);
 		void	setSockadd(sockaddr_in newSockadd);
+		void	setEndOfFile(bool newEndOfFile);
 };
 
 #endif
