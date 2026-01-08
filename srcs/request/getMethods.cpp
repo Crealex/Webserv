@@ -7,10 +7,10 @@
  * @param buffer the client request
  * @return Methods* 
  */
-Methods* createMethod(char *buffer)
+Methods* createMethod(char *buffer, size_t maxSize)
 {
 	std::string method;
-	Request req = createRequest(buffer);
+	Request req = createRequest(buffer, maxSize);
 
 	if (req._method == "GET")
 		return new Get(req);

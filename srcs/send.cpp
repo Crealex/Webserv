@@ -4,14 +4,14 @@
 #include "../includes/requests/methodsClass.hpp"
 #include "../includes/requests/ResponseError.hpp"
 
-void sendResponse(unsigned int socket, char *buff)
+void sendResponse(unsigned int socket, char *buff, Config conf)
 {
 	std::string response;
 	
 	try
 	{
 		Methods *request;
-		request = createMethod(buff);
+		request = createMethod(buff, conf.getMaxSize());
 		response = request->createResponse();
 		delete request;
 	}
