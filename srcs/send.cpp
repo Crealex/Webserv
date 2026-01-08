@@ -12,7 +12,7 @@ void sendResponse(unsigned int socket, char *buff, Config conf)
 	{
 		Methods *request;
 		request = createMethod(buff, conf.getMaxSize());
-		response = request->createResponse();
+		response = request->createResponse(conf);
 		delete request;
 	}
 	catch(ResponseError& e)
