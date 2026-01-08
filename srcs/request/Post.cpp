@@ -32,8 +32,11 @@ static bool addContentToFile(std::string body, std::ofstream *newFile)
 	return (true);
 }
 
+// TODO: A continuer le moment venu...
 void Post::handlePostFile(std::string *resp, std::string boundary)
 {
+	(void)resp;
+	(void)boundary;
 	std::stringstream iss;
 	while (std::getline(iss, this->_body))
 	{
@@ -57,12 +60,13 @@ const std::string Post::createResponse(Config conf)
 	dataError._protocol = this->_protocol;
 	dataError._host = this->_host;
 	dataError._location = this->_location;
-	if (this->_contentType.find("multipart/form-data") < this->_contentType.size())
-	{
-		boundary = extractBoundary(this->_contentType);
-		handlePostFile(&resp, boundary);
-		return (resp);
-	}
+// TODO: A continuer et decommenter le moment venu...
+	//if (this->_contentType.find("multipart/form-data") < this->_contentType.size())
+	//{
+	//	boundary = extractBoundary(this->_contentType);
+	//	handlePostFile(&resp, boundary);
+	//	return (resp);
+	//}
 	path = conf.getDirRoot(conf.getSitesName()[0]) + conf.getSitesName()[0] + this->_location;
 	if (path.find(".") > path.length())
 		path.append(conf.getDefaultFile(conf.getSitesName()[0]));
