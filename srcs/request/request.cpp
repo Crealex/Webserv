@@ -1,6 +1,17 @@
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseError.hpp"
 
+std::string Request::getStrContentLength()
+{
+	std::stringstream ss;
+	std::string ret;
+
+	ss << _ContentLength;
+	ss >> ret;
+
+	return ret;
+}
+
 /**
  * @brief return a hard vector with the different accepted Content-Type
  * 
