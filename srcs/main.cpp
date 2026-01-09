@@ -27,9 +27,9 @@ int main (int argc, char **argv)
 			return (-2);
 		}
 		printSocketListen(sockets);
-		Epoll	epoll(sockets, nbSockets);
-		while (1)
-			handleClient(sockets, configTest, epoll);
+		// Epoll	epoll(sockets, nbSockets);
+		// while (1)
+			// handleClient(sockets, configTest, epoll);
 	}
 	catch (std::exception &e) 
 	{

@@ -24,7 +24,6 @@ class Server
 	Server(std::string pathServer);
 	~Server();
 
-	
 	// GETTER
 	std::string const							&getHostname() const;
 	std::vector<addPort_t> const				&getAddressPort() const;
