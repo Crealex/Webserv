@@ -1,4 +1,16 @@
 #include "../../includes/configStruct.hpp"
+#include <cstddef>
+#include <fstream>
+
+void checkEmptyElem(server *serverStruct)
+{
+	return ;
+}
+
+static void addLine(std::string line, server *serverStruct, bool *inServer, std::size_t cline)
+{
+	return ;
+}
 
 server CreateStruct(std::string configPath)
 {
@@ -6,7 +18,7 @@ server CreateStruct(std::string configPath)
 	std::ifstream configFile;
 	std::string line;
 	bool inServer;
-	unsigned int cLine;
+	std::size_t cLine;
 
 	configFile.open(configPath.c_str());
 	if (!configFile.is_open())
