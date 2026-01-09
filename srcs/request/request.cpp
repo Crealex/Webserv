@@ -10,6 +10,14 @@ static std::vector<std::string> acceptedType()
 {
 	std::vector<std::string> v;
 
+	// TODO
+	// v = {
+	// 	truc1,
+	// 	truc2,
+	// 	truc3.
+	// 	etc...,
+	// }
+
 	v.push_back("*/*");
 	v.push_back("text/html");
 	v.push_back("text/css");
