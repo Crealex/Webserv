@@ -16,17 +16,17 @@ int main (int argc, char **argv)
 	}
 	try 
 	{
-		int		nbSockets;
+		// int		nbSockets;
 		Config	configTest(argv[1]);
 
 		printConfigClass(configTest);
-		sockets = createSocket(configTest, nbSockets);
-		if (sockets.size() == 0)
-		{
-			std::cerr << RED << "Error : no socket for the webserv" << std::endl << RESET;
-			return (-2);
-		}
-		printSocketListen(sockets);
+		// sockets = createSocket(configTest, nbSockets);
+		// if (sockets.size() == 0)
+		// {
+		// 	std::cerr << RED << "Error : no socket for the webserv" << std::endl << RESET;
+		// 	return (-2);
+		// }
+		// printSocketListen(sockets);
 		// Epoll	epoll(sockets, nbSockets);
 		// while (1)
 			// handleClient(sockets, configTest, epoll);

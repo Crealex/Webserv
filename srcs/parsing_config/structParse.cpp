@@ -174,7 +174,7 @@ static std::string	checkAddress(std::string addressPort, size_t colon)
  * @param data strings of the address:port
  * @return std::vector<addPort_t> vect of pair address and port
  */
-static std::vector<addPort_t>	parseAddressPort(std::vector<std::string> data)
+static std::vector<addPort_t>	parseAddressPortOld(std::vector<std::string> data)
 {
 	std::vector<addPort_t>		result;
 	std::string					address;
@@ -224,7 +224,7 @@ std::vector<serverData>	parseServer(std::vector<hostname> data)
 		if (infos.size() != 2)
 			throw std::invalid_argument(RED "Error : invalid hostname" RESET);
 		tempData.name = infos[1];
-		tempData.addressPort = parseAddressPort(data[i].addressPort);
+		tempData.addressPort = parseAddressPortOld(data[i].addressPort);
 		result.push_back(tempData);
 	}
 	return (result);

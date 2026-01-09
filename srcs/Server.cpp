@@ -1,5 +1,5 @@
 #include "../includes/includes.hpp"
-#include "../includes/structParse.hpp"
+#include "../includes/configStruct.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/printDebug.hpp"
 #include <exception>
@@ -8,7 +8,7 @@
 
 Server::Server(std::string pathServer)
 {
-	structParse data;
+	server data;
 
 	try 
 	{
@@ -68,4 +68,20 @@ std::vector<Location> const	&Server::getLocations() const
 std::pair<std::string, std::string>	const	&Server::getCgiHandler() const
 {
 	return (this->_cgiHandler);
+}
+
+void	Server::parseElt(server data)
+{
+	// this->errorPath = parseErrorPath();
+
+	// for (std::vector<siteParse>::iterator it = data.site.begin();
+	// 	it != data.site.end();
+	// 	it++)
+	// {
+	// 	siteParsing((*it));
+	// }
+	this->_hostname = parseHostname(data.hostname);
+	this->_addressPort = parseAddressPort(data.listen);
+	this->_errorPage = parseErrorPage(data.errorPages);
+	this->_maxSize = parseMaxSize(data.maxSize);
 }
