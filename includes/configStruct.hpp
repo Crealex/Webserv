@@ -6,7 +6,7 @@
 
 struct location {
 	std::string autoIndex;
-	std::vector<std::string> allowedMethods;
+	std::string allowedMethods;
 	std::string index;
 	std::string ret;
 	std::vector<std::string> cgi;
