@@ -12,19 +12,18 @@ class Server
 	std::string							_hostname;
 	std::vector<addPort_t>				_addressPort;	// port (maybe can be a array)
 	std::string							_root;
-	unsigned int						_maxSize;		// max size bodies request
+	unsigned int						_maxSize;		// max size body's request
 	std::map<unsigned int, std::string>	_errorPage;		// all the error codes
 	std::vector<Location>				_locations;
 	std::pair<std::string, std::string>	_cgiHandler;
 
 	void 	siteParsing(struct siteParse site);
-	void	parseElt(struct structParse);
+	void	parseElt(server data);
 
   public:
 	Server(std::string pathServer);
 	~Server();
 
-	
 	// GETTER
 	std::string const							&getHostname() const;
 	std::vector<addPort_t> const				&getAddressPort() const;

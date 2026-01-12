@@ -81,6 +81,7 @@ static void checkGET(Request req)
 static void checkPost(Request req, unsigned int maxSize)
 {
 	int leave = 0;
+	(void) maxSize;
 	std::cout << "in checkPost" << std::endl;
 	if (req._ContentType.empty() || 
 		req._body.empty())

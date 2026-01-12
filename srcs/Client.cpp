@@ -12,22 +12,22 @@ Client::~Client()
 }
 
 // GETTERS
-int const		Client::getFdClient() const
+int const	&Client::getFdClient() const
 {
 	return (this->_fdSocket);
 }
 
-std::string const	Client::getBuf() const
+std::string const	&Client::getBuf() const
 {
 	return (this->_buf);
 }
 
-sockaddr_in const	Client::getSockadd() const
+sockaddr_in const	&Client::getSockadd() const
 {
 	return (this->_sockadd);
 }
 
-bool const			Client::getEndOfFile() const
+bool const	&Client::getEndOfFile() const
 {
 	return (this->_endOfFile);
 }

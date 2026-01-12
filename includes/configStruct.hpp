@@ -23,4 +23,11 @@ struct server {
 	std::vector<location> locations;
 };
 
+typedef std::pair<std::string, unsigned int> addPort_t;
+
+std::string							parseHostname(std::string data);
+std::vector<addPort_t>				parseAddressPort(std::vector<std::string> data);
+unsigned int						parseMaxSize(std::string data);
+std::map<unsigned int, std::string>	parseErrorPage(std::vector<std::string> data);
+
 #endif // !CONFIG_STRUCT_HPP
