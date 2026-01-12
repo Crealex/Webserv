@@ -2,6 +2,7 @@
 #include "../includes/configStruct.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/printDebug.hpp"
+#include "../includes/Location.hpp"
 #include <exception>
 
 // Constructor & Destructor
@@ -84,4 +85,5 @@ void	Server::parseElt(server data)
 	this->_addressPort = parseAddressPort(data.listen);
 	this->_errorPage = parseErrorPage(data.errorPages);
 	this->_maxSize = parseMaxSize(data.maxSize);
+	this->_locations = createLocations(data)
 }
