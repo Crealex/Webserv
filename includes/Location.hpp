@@ -1,7 +1,7 @@
 #include "includes.hpp"
 #include "configStruct.hpp"
 
-#define pairString std::pair<std::string, std::string>
+#define pairString std::string, std::string
 
 class Location {
 
@@ -13,7 +13,7 @@ class Location {
 		std::string					_uploadPath;
 		std::string					_path;
 		std::vector<std::string>	_allowedMethods;
-		std::vector<pairString>		_cgiHandler;
+		std::map<pairString>		_cgiHandler;
 
 	public:
 
@@ -28,7 +28,10 @@ class Location {
 		std::string getUploadPath() const;
 		std::string getPath() const;
 		std::vector<std::string> getAllowedMethods() const;
-		std::vector<pairString> getCgiHandler() const;
+		std::map<pairString> getCgiHandler() const;
+
+		void print() const;
 };
 
 std::vector<Location> createLocations(server serv);
+std::ostream operator<<(std::iostream stream, std::map<pairString>);

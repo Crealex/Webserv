@@ -90,15 +90,13 @@ static std::string retPath(std::string str, std::string root)
 	return str;
 }
 
-static std::vector<pairString> retCgi(std::vector<std::string> v)
+static std::map<pairString> retCgi(std::vector<std::string> v)
 {
-	std::vector<pairString> ret;
+	std::map<pairString> ret;
 
 	for (std::vector<std::string>::iterator it = v.begin();
 		it != v.end(); it++)
 	{
-		checkNbrElt(2, *it);
-		removeSemiColon(*it);
 		std::stringstream ss(*it);
 		std::string ext;
 		std::string inter;
@@ -106,7 +104,7 @@ static std::vector<pairString> retCgi(std::vector<std::string> v)
 		ss >> ext;
 		ss >> inter;
 
-		ret.push_back(std::make_pair(ext, inter));
+		ret.insert(std::make_pair(ext, inter));
 	}
 
 	return ret;
@@ -137,7 +135,6 @@ Location::Location(location src, std::string root)
 	_autoIndex = retAutoIndex(src.autoIndex);
 	_ret = retSecond(src.ret);
 	_uploadPath = retSecond(src.uploadPath);
-
 	_path = retSecond(src.path);
 	_index = retSecond(src.index);
 	checkIndex(_index, _path);
@@ -205,9 +202,20 @@ std::vector<std::string> Location::getAllowedMethods() const
 	return _allowedMethods;
 }
 
-std::vector<pairString> Location::getCgiHandler() const
+std::map<pairString> Location::getCgiHandler() const
 {
 	return _cgiHandler;
+}
+
+void Location::print() const
+{
+	std::cout << "Location "  << BOLD << _path << RESET << std::endl
+		<< "\tautoIndex = " << _autoIndex
+		<< "\n\tindex = " << _index
+		<< "\n\tret = " << _ret
+		<< "\n\tuploadPath = " << _uploadPath
+		// do allowed method
+		<< "\n\tcgi = " << _cgiHandler << std::endl;
 }
 
 std::vector<Location> createLocations(server serv)
@@ -221,4 +229,18 @@ std::vector<Location> createLocations(server serv)
 	}
 
 	return ret;
+}
+
+std::ostream& operator<<(std::ostream &os, std::map<std::string, std::string> map)
+{
+	std::map<pairString>::iterator it = map.begin();
+
+	while (it != map.end())
+	{
+		os << "first = " << it->first << ",second = " << it->second;
+		os << "  -  ";
+	}
+	os << std::endl;
+
+	return os;
 }
