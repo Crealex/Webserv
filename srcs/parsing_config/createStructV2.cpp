@@ -27,6 +27,9 @@ std::string extractDirective(std::string &line)
 
 static void updateServerBracket(std::string &line, server *srv, bracketData *brackets)
 {
+	(void)line;
+	(void)srv;
+
 	if (brackets->inServer)
 		brackets->inServer = false;
 	else
@@ -62,9 +65,9 @@ static void addElem(std::string &line, server *srv, bracketData *brackets)
 		else if (!directive.compare(0, 5, "index"))
 			srv->locations[LocI].index = line;
 		else if (!directive.compare(0, 6, "return"))
-			srv->locations[LocI].index = line;
+			srv->locations[LocI].ret = line;
 		else if (!directive.compare(0, 10, "uploadPath"))
-			srv->locations[LocI].index = line;
+			srv->locations[LocI].uploadPath = line;
 		else
 			throw std::invalid_argument("Error with the line: " + line);
 	}
@@ -137,7 +140,7 @@ static std::map<std::string, directiveHandler > createDispatchTable()
 
 void checkEmptyElem(server *serverStruct)
 {
-	
+	(void)serverStruct;
 	return ;
 }
 
@@ -147,7 +150,9 @@ static void addLine(std::string line, server *srv, bracketData *brackets, std::s
 	std::map<std::string, directiveHandler>::iterator it = dispatchTable.begin();
 	std::map<std::string, directiveHandler>::iterator ite = dispatchTable.end();
 	std::string directive = extractDirective(line);
+	std::stringstream numLine;
 
+	numLine	<< cline;
 	if (line.empty())
 		return ;
 	while (it != ite)
@@ -165,7 +170,7 @@ static void addLine(std::string line, server *srv, bracketData *brackets, std::s
 			if (brackets->inServer || ((directive.find("server") < directive.size() && line.find("{") < line.size())))
 				it->second(line, srv, brackets);
 			else
-				throw std::invalid_argument("Directive need to be in a server bracket!");
+				throw std::invalid_argument("Directive need to be in a server bracket! (at line: " + numLine.str());
 			return ;	
 		}
 		if (directive.find("}") < line.size())
