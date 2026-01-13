@@ -246,8 +246,8 @@ void Location::print() const
 		<< "\n\tindex = " << _index
 		<< "\n\tret = " << _ret
 		<< "\n\tuploadPath = " << _uploadPath
+		<< "\n\tallowedMethods = " << _allowedMethods
 		<< "\n\tcgi = " << _cgiHandler << std::endl;
-		// do allowed method
 }
 
 std::vector<Location> createLocations(server serv)
@@ -270,6 +270,20 @@ std::ostream& operator<<(std::ostream &os, std::map<std::string, std::string> ma
 	while (it != map.end())
 	{
 		os << "first = " << it->first << ",second = " << it->second;
+		os << "  -  ";
+	}
+	os << std::endl;
+
+	return os;
+}
+
+std::ostream& operator<<(std::ostream &os, std::map<std::string, bool> map)
+{
+	std::map<std::string, bool>::iterator it = map.begin();
+
+	while (it != map.end())
+	{
+		os << std::boolalpha << "method = " << it->first << ",is allowed = " << it->second;
 		os << "  -  ";
 	}
 	os << std::endl;

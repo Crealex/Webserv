@@ -36,3 +36,4 @@ class Location {
 
 std::vector<Location> createLocations(server serv);
 std::ostream operator<<(std::iostream stream, std::map<pairString>);
+std::ostream& operator<<(std::ostream &os, std::map<std::string, bool> map);
