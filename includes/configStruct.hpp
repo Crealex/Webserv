@@ -2,6 +2,7 @@
 
 #define CONFIG_STRUCT_HPP
 #include <string>
+#include <map>
 #include <vector>
 
 struct location {

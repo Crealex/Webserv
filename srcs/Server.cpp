@@ -1,5 +1,4 @@
 #include "../includes/includes.hpp"
-#include "../includes/configStruct.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/printDebug.hpp"
 #include <exception>
@@ -8,7 +7,7 @@
 
 Server::Server(std::string pathServer)
 {
-	server data;
+	struct server data;
 	(void)pathServer;
 
 	try 
@@ -72,7 +71,7 @@ std::pair<std::string, std::string>	const	&Server::getCgiHandler() const
 	return (this->_cgiHandler);
 }
 
-void	Server::parseElt(server data)
+void	Server::parseElt(struct server data)
 {
 	// this->errorPath = parseErrorPath();
 
@@ -90,18 +89,17 @@ void	Server::parseElt(server data)
 	printAtt();
 }
 
-void const	Server::printAtt() const
+void Server::printAtt() const
 {
 	std::cout << "Hostname : " << this->_hostname << std::endl;
 	int	sizeAddPort = this->_addressPort.size();
 	for (int i = 0; i < sizeAddPort; i++)
-		std::cout << "listen : " << this->_addressPort[i].first << ":" << this->_addressPort.second << std::endl;
+		std::cout << "listen : " << this->_addressPort[i].first << ":" << this->_addressPort[i].second << std::endl;
 	std::cout << "Root : " << this->_root << std::endl;
 	std::cout << "Max size : " << this->_maxSize << std::endl;
-	int	sizeErrorPage = this->_errorPage.size();
-	for (int i = 0; i < sizeErrorPage; i++)
+	for (std::map<unsigned int, std::string>::const_iterator it = this->_errorPage.begin(); it != this->_errorPage.end(); it++)
 	{
 		std::cout << "Error page : " << std::endl;
-		std::cout << "    " << this->_errorPage[i].first << " : " << this->_errorPage[i].second << std::endl;
+		std::cout << "    " << it->first << " : " << it->second << std::endl;
 	}
 }
