@@ -5,8 +5,8 @@ class CGI {
 
 	private:
 
-		int pipeFromCGI[2];
-		int pipeToCGI[2];
+		int _pipeFromCGI[2];
+		int _pipeToCGI[2];
 
 	public:
 
