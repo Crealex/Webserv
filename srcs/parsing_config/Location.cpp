@@ -130,6 +130,32 @@ static void checkPath(std::string str)
 	}
 }
 
+std::map<std::string, bool> retMethods(std::string str)
+{
+	std::map<std::string, bool> ret;
+	ret["GET"] = false;
+	ret["POST"] = false;
+	ret["DELETE"] = false;
+
+	std::stringstream ss(str);
+	std::string word;
+	ss >> word;
+	while (ss >> word)
+	{
+		try
+		{
+			ret.at(word) = true;
+		}
+		catch(...)
+		{
+			std::string error("Error, wrong Method on line");
+			std::invalid_argument(error + str);
+		}
+	}
+
+	return ret;
+}
+
 Location::Location(location src, std::string root)
 {
 	_autoIndex = retAutoIndex(src.autoIndex);
@@ -138,6 +164,7 @@ Location::Location(location src, std::string root)
 	_path = retSecond(src.path);
 	_index = retSecond(src.index);
 	checkIndex(_index, _path);
+	_allowedMethods = retMethods(src.allowedMethods);
 	_cgiHandler = retCgi(src.cgi);
 }
 
@@ -197,7 +224,12 @@ std::string Location::getPath() const
 	return _path;
 }
 
-std::vector<std::string> Location::getAllowedMethods() const
+bool Location::getMethodValue(std::string key) const
+{
+	return _allowedMethods.at(key);
+}
+
+std::map<std::string, bool> Location::getAllowedMethods() const
 {
 	return _allowedMethods;
 }
@@ -214,8 +246,8 @@ void Location::print() const
 		<< "\n\tindex = " << _index
 		<< "\n\tret = " << _ret
 		<< "\n\tuploadPath = " << _uploadPath
-		// do allowed method
 		<< "\n\tcgi = " << _cgiHandler << std::endl;
+		// do allowed method
 }
 
 std::vector<Location> createLocations(server serv)

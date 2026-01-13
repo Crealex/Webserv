@@ -12,7 +12,7 @@ class Location {
 		std::string					_ret;
 		std::string					_uploadPath;
 		std::string					_path;
-		std::vector<std::string>	_allowedMethods;
+		std::map<std::string, bool>	_allowedMethods;
 		std::map<pairString>		_cgiHandler;
 
 	public:
@@ -27,7 +27,8 @@ class Location {
 		std::string getReturn() const;
 		std::string getUploadPath() const;
 		std::string getPath() const;
-		std::vector<std::string> getAllowedMethods() const;
+		bool getMethodValue(std::string key) const;
+		std::map<std::string, bool> getAllowedMethods() const;
 		std::map<pairString> getCgiHandler() const;
 
 		void print() const;
