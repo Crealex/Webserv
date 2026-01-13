@@ -1,5 +1,8 @@
 #include "../../includes/configStruct.hpp"
+#include "../../includes/colors.hpp"
+#include "../../includes/printDebug.hpp"
 #include <cstddef>
+#include <exception>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -7,14 +10,22 @@
 #include <stdexcept>
 
 struct bracketData {
-	bool inServer = false;
-	bool inLocation = false;
+	bool inServer ;
+	bool inLocation ;
 };
 
-typedef void (*directiveHandler)(const std::string &line, server *srv, bracketData *brackets);
+typedef void (*directiveHandler)(std::string &line, server *srv, bracketData *brackets);
 
+std::string extractDirective(std::string &line)
+{
+	std::stringstream ss(line);
+	std::string ret;
 
-static void updateServerBracket(const std::string &line, server *srv, bracketData *brackets)
+	ss >> ret;
+	return (ret);
+}
+
+static void updateServerBracket(std::string &line, server *srv, bracketData *brackets)
 {
 	if (brackets->inServer)
 		brackets->inServer = false;
@@ -22,27 +33,82 @@ static void updateServerBracket(const std::string &line, server *srv, bracketDat
 		brackets->inServer = true;
 }
 
-static void updateLocationBracket(const std::string &line, server *srv, bracketData *brackets)
+static void updateLocationBracket(std::string &line, server *srv, bracketData *brackets)
 {
-	unsigned int locI = srv->locations.size();
+	static unsigned int locI = -1;
 
 	if (brackets->inLocation)
 		brackets->inLocation = false;
 	else
 	{
+		locI++;
 		brackets->inLocation = true;
+		srv->locations.push_back(location());
 		srv->locations.at(locI).path = line;
 	}
 }
 
-static void addElem(const std::string &line, server *srv, bracketData *brackets)
+static void addElem(std::string &line, server *srv, bracketData *brackets)
 {
-	return;
+	std::string directive = extractDirective(line);
+	unsigned int LocI = srv->locations.size() - 1;
+
+	if (brackets->inLocation)
+	{
+		if (!directive.compare(0, 9, "autoIndex"))
+			srv->locations[LocI].autoIndex = line;
+		else if (!directive.compare(0, 13, "method"))
+			srv->locations[LocI].allowedMethods = line;
+		else if (!directive.compare(0, 5, "index"))
+			srv->locations[LocI].index = line;
+		else if (!directive.compare(0, 6, "return"))
+			srv->locations[LocI].index = line;
+		else if (!directive.compare(0, 10, "uploadPath"))
+			srv->locations[LocI].index = line;
+		else
+			throw std::invalid_argument("Error with the line: " + line);
+	}
+	else if (brackets->inServer)
+	{
+		if (!directive.compare(0, 8, "hostname"))
+			srv->hostname = line;
+		else if (!directive.compare(0, 4, "root"))
+			srv->root = line;
+		else if (!directive.compare(0, 7, "maxSize"))
+			srv->maxSize = line;
+		else
+			throw std::invalid_argument("Error with the line: " + line);
+	}
+	else 
+	{
+			throw std::invalid_argument("Error with the line: " + line);
+	}
 }
 
-static void addVect(const std::string &line, server *srv, bracketData *brackets)
+static void addVect(std::string &line, server *srv, bracketData *brackets)
 {
-	return;
+	std::string directive = extractDirective(line);
+	unsigned int locI = srv->locations.size() - 1;
+
+	if (brackets->inLocation)
+	{
+		if (!directive.compare(0, 3, "cgi"))
+			srv->locations[locI].cgi.push_back(line);
+		else
+			throw std::invalid_argument("Error, impossible to add this line: " + line);
+		
+	}
+	else if (brackets->inServer)
+	{
+		if (!directive.compare(0, 6, "listen"))
+			srv->listen.push_back(line);
+		else if (!directive.compare(0, 10, "errorPage"))
+			srv->errorPages.push_back(line);
+		else
+			throw std::invalid_argument("Error, impossible to add this line: " + line);
+	}
+	else
+			throw std::invalid_argument("Error, impossible to add this line: " + line);
 }
 
 static std::map<std::string, directiveHandler > createDispatchTable()
@@ -54,10 +120,10 @@ static std::map<std::string, directiveHandler > createDispatchTable()
 	dispatchTable["listen"] = &addVect;
 	dispatchTable["root"] = &addElem;
 	dispatchTable["maxSize"] = &addElem;
-	dispatchTable["errorPages"] = &addVect;
+	dispatchTable["errorPage"] = &addVect;
 	dispatchTable["location"] = &updateLocationBracket;
 	dispatchTable["autoIndex"]= &addElem;
-	dispatchTable["allowedMethods"] = &addElem;
+	dispatchTable["method"] = &addElem;
 	dispatchTable["index"] = &addElem;
 	dispatchTable["return"] = &addElem;
 	dispatchTable["cgi"] = &addVect;
@@ -71,17 +137,10 @@ static std::map<std::string, directiveHandler > createDispatchTable()
 
 void checkEmptyElem(server *serverStruct)
 {
+	
 	return ;
 }
 
-std::string extractDirective(std::string &line)
-{
-	std::stringstream ss(line);
-	std::string ret;
-
-	ss >> ret;
-	return (ret);
-}
 
 static void addLine(std::string line, server *srv, bracketData *brackets, std::size_t cline, std::map<std::string, directiveHandler> dispatchTable)
 {
@@ -89,15 +148,21 @@ static void addLine(std::string line, server *srv, bracketData *brackets, std::s
 	std::map<std::string, directiveHandler>::iterator ite = dispatchTable.end();
 	std::string directive = extractDirective(line);
 
+	if (line.empty())
+		return ;
 	while (it != ite)
 	{
 		if (directive.find(it->first) < line.size())
 		{
-			if (directive.find("location") < directive.size() && line.find("{") < line.size())
-				brackets->inLocation = true;
-			if (directive.find("server") < directive.size() && line.find("{") < line.size())
-				brackets->inServer = true;
-			if (brackets->inServer)
+			//if (directive.find("location") < directive.size() && line.find("{") < line.size())
+			//	brackets->inLocation = true;
+			//if (directive.find("server") < directive.size() && line.find("{") < line.size())
+			//{
+			//	std::cout << "in condition" << std::endl;
+			//	brackets->inServer = true;
+			//}
+			std::cout << "directive: " << directive << ", in server: " << brackets->inServer << std::endl;
+			if (brackets->inServer || ((directive.find("server") < directive.size() && line.find("{") < line.size())))
 				it->second(line, srv, brackets);
 			else
 				throw std::invalid_argument("Directive need to be in a server bracket!");
@@ -107,10 +172,11 @@ static void addLine(std::string line, server *srv, bracketData *brackets, std::s
 		{
 			if (brackets->inLocation)
 				brackets->inLocation = false;
-			if (brackets->inServer)
+			else if (brackets->inServer)
 				brackets->inServer = false;
 			return ;
 		}
+		it++;
 	}
 	throw std::invalid_argument("Invalid directive: " + directive);
 }
@@ -120,7 +186,7 @@ server CreateStruct(std::string configPath)
 	server configStruct;
 	std::ifstream configFile;
 	std::string line;
-	bracketData brackets;
+	bracketData *brackets = new bracketData();
 	std::size_t cLine;
 	std::map<std::string, directiveHandler> dispatchTable;
 
@@ -129,21 +195,16 @@ server CreateStruct(std::string configPath)
 		throw std::invalid_argument("Error, invalid path for the config file");
 	dispatchTable = createDispatchTable();
 	cLine = 1;
-	while (1)
+	while (std::getline(configFile, line))
 	{
-		std::getline(configFile, line);
-		if (line == "\0")
-			break;
-		if (line.empty())
-			throw(std::invalid_argument("Error, empty line in the file"));
-
-		addLine(line, &configStruct, &brackets, cLine, dispatchTable);
+		addLine(line, &configStruct, brackets, cLine, dispatchTable);
 		cLine++;
 	}
 	configFile.close();
-	checkEmptyElem(&configStruct);
-	if (brackets.inServer)
+	//checkEmptyElem(&configStruct);
+	if (brackets->inServer)
 		throw(std::invalid_argument("Error, missing closing bracket '}' at the end of file"));
+	delete brackets;
 	return (configStruct);
 
 }
@@ -151,7 +212,13 @@ server CreateStruct(std::string configPath)
 int main(void)
 {
 	std::string test = "                 je suis un test";
-	std::string result = extractDirective(test);
-
-	std::cout << "test extract line: " << result << std::endl;
+	try 
+	{
+		server testStruct = CreateStruct("../../newGood.conf");
+		printStructV2(testStruct);
+	} 
+	catch (std::exception &e) 
+	{
+		std::cout << RED << e.what() << RESET << std::endl;
+	}
 }
