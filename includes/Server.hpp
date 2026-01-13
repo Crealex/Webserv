@@ -14,11 +14,13 @@ class Server
 	std::string							_root;
 	unsigned int						_maxSize;		// max size body's request
 	std::map<unsigned int, std::string>	_errorPage;		// all the error codes
-	std::vector<Location>				_locations;
+	// std::vector<Location>				_locations;
 	std::pair<std::string, std::string>	_cgiHandler;
 
 	void 	siteParsing(struct siteParse site);
 	void	parseElt(server data);
+
+	void const	printAtt() const;
 
   public:
 	Server(std::string pathServer);
@@ -30,7 +32,7 @@ class Server
 	std::string const							&getRoot() const;
 	unsigned int const							&getMaxSize() const;
 	std::map<unsigned int, std::string> const	&getErrorPage() const;
-	std::vector<Location> const					&getLocations() const;
+	// std::vector<Location> const					&getLocations() const;
 	std::pair<std::string, std::string>	const	&getCgiHandler() const;
 };
 
