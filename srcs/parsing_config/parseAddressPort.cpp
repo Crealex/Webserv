@@ -127,7 +127,7 @@ std::vector<addPort_t>	parseAddressPort(std::vector<std::string> data)
 	size = data.size();
 	for (int i = 0; i < size; i++)
 	{
-		infos = getValue(removeSemicolon(data[i]));
+		infos = getValue(data[i]);
 		if (infos.size() != 2)
 			throw std::invalid_argument(RED "Error : missing or multiple address / port" RESET);
 		colon = infos[1].find(':');

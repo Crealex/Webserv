@@ -13,7 +13,7 @@ std::map<unsigned int, std::string>	parseErrorPage(std::vector<std::string> data
 	nbError = data.size();
 	for (unsigned int i = 0; i < nbError; i++)
 	{
-		infos = getValue(removeSemicolon(data[i]));
+		infos = getValue(data[i]);
 		if (infos.size() != 3)
 			throw std::invalid_argument(RED "Error : missing path / code or multiple path / code for error pages" RESET);
 		code = checkDigitValue(infos[1], false);

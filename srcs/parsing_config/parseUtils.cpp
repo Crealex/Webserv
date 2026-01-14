@@ -1,23 +1,6 @@
 #include "../../includes/parseUtils.hpp"
 
 /**
- * @brief verify if there's only one semicolon at the end and remove it
- * 
- * @param str string with value
- * @return std::string string value without the semicolon
- */
-std::string	removeSemicolon(std::string str)
-{
-	size_t		indexSemicolon;
-	std::string	result;
-
-	indexSemicolon = str.rfind(';');
-	if (indexSemicolon == std::string::npos || indexSemicolon != str.size() - 1 || indexSemicolon != str.find(';'))
-		throw std::invalid_argument(RED "Error : missing or multiple semicolon" RESET);
-	result = str.substr(0, str.size() - 1);
-	return (result);
-}
-/**
  * @brief Get the elt of data in a vector of string
  * 
  * @param data string with the name and the values
