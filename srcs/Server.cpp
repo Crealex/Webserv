@@ -81,8 +81,10 @@ void	Server::parseElt(struct server data)
 	// }
 	this->_hostname = parseHostname(data.hostname);
 	this->_root = parseRoot(data.root);
+	std::cout << "euhhh" << std::endl;
 	this->_addressPort = parseAddressPort(data.listen);
-	this->_errorPage = parseErrorPage(data.errorPages);
+	// this->_errorPage = parseErrorPage(data.errorPages);
+	std::cout << "euhhh" << std::endl;
 	this->_maxSize = parseMaxSize(data.maxSize);
 	printAtt();
 }

@@ -7,7 +7,7 @@ std::map<unsigned int, std::string>	parseErrorPage(std::vector<std::string> data
 	unsigned int									code;
 	std::string										pathError;
 	unsigned int									nbError;
-	std::fstream									file;
+	int												isAccessible;
 	std::map<unsigned int, std::string>::iterator	it;
 
 	nbError = data.size();
@@ -23,10 +23,9 @@ std::map<unsigned int, std::string>	parseErrorPage(std::vector<std::string> data
 		if (it == result.end())
 		{
 			pathError = infos[2];
-			file.open(pathError.c_str(), std::ios::in);
-			if (!file.is_open())
+			isAccessible = access(pathError.c_str(), F_OK & R_OK);
+			if (isAccessible == -1)
 				throw std::invalid_argument(RED "Error : invalid path for error pages" RESET);
-			file.close();
 			result[code] = pathError;
 		}
 	}
