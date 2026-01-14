@@ -26,6 +26,8 @@ struct server {
 
 typedef std::pair<std::string, unsigned int> addPort_t;
 
+server createStruct(std::string configPath);
+
 std::string							parseHostname(std::string data);
 std::vector<addPort_t>				parseAddressPort(std::vector<std::string> data);
 unsigned int						parseMaxSize(std::string data);

@@ -189,7 +189,7 @@ static void addLine(std::string line, server *srv, bracketData *brackets, std::s
 	throw std::invalid_argument("Invalid directive: " + directive);
 }
 
-server CreateStruct(std::string configPath)
+server createStruct(std::string configPath)
 {
 	server configStruct;
 	std::ifstream configFile;
@@ -216,15 +216,15 @@ server CreateStruct(std::string configPath)
 
 }
 
-int main(void)
-{
-	try 
-	{
-		server testStruct = CreateStruct("../../newGood.conf");
-		printStructV2(testStruct);
-	} 
-	catch (std::exception &e) 
-	{
-		std::cout << RED << e.what() << RESET << std::endl;
-	}
-}
+// int main(void)
+// {
+// 	try 
+// 	{
+// 		server testStruct = CreateStruct("../../newGood.conf");
+// 		printStructV2(testStruct);
+// 	} 
+// 	catch (std::exception &e) 
+// 	{
+// 		std::cout << RED << e.what() << RESET << std::endl;
+// 	}
+// }

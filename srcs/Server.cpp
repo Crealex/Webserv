@@ -8,14 +8,12 @@
 Server::Server(std::string pathServer)
 {
 	struct server data;
-	(void)pathServer;
 
 	try 
 	{
 		std::cout << "in create" << std::endl;
-		// data = createStruct(pathServer);
-		// printConfigStruct(data);
-		parseElt(data);
+		data = createStruct(pathServer);
+		printStructV2(data);
 	}
 	catch (std::exception &e)
 	{

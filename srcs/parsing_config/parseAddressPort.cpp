@@ -96,6 +96,19 @@ static std::string	checkAddress(std::string addressPort, size_t colon)
 	return (result);
 }
 
+static bool	isDuplicate(std::string add, unsigned int port, std::vector<addPort_t> res)
+{
+	int	sizeRes;
+
+	sizeRes = res.size();
+	for (int i = 0; i < sizeRes; i++)
+	{
+		if (res[i].first == add && res[i].second == port)
+			return (true);
+	}
+	return (false);
+}
+
 /**
  * @brief parsing for the address and the port
  * 
@@ -127,7 +140,8 @@ std::vector<addPort_t>	parseAddressPort(std::vector<std::string> data)
 			port = checkDigitValue(infos[1].substr(colon + 1, infos[1].size() - colon - 1), false);
 		if (port > 65535)
 			throw std::invalid_argument(RED "Error : invalid port value" RESET);
-		result.push_back(std::make_pair(address, port));
+		if (!isDuplicate(address, port, result))
+			result.push_back(std::make_pair(address, port));
 	}
 	return (result);
 }
