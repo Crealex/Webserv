@@ -221,8 +221,8 @@ int main(void)
 {
 	try 
 	{
-		server testStruct = CreateStruct("../../newGood.conf");
-		Location test(testStruct.locations[0], "./www/danalexian/");
+		server testStruct = CreateStruct("./newGood.conf");
+		Location test(testStruct.locations[0], "./www/danalexian");
 		// printStructV2(testStruct);
 		test.print();
 	} 

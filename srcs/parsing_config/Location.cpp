@@ -14,7 +14,7 @@ static bool checkNbrElt(size_t n, std::string str)
 	std::stringstream ss(str);
 	int i = 0;
 	std::string check;
-	while (ss >> check);
+	while (ss >> check)
 		i++;
 	if (i != n)
 	{
@@ -26,7 +26,7 @@ static bool checkNbrElt(size_t n, std::string str)
 
 static bool retAutoIndex(std::string str)
 {
-	checkNbrElt(1, str);
+	checkNbrElt(2, str);
 
 	std::stringstream ss(str);
 	str.clear();
@@ -39,15 +39,16 @@ static bool retAutoIndex(std::string str)
 		return true;
 }
 
-static std::string retSecond(std::string str)
+static std::string retSecond(std::string str, size_t n)
 {
-	checkNbrElt(1, str);
+	checkNbrElt(n, str);
 
 	std::stringstream ss(str);
 	str.clear();
-	while (ss >> str)
-	{
-	}
+
+	ss >> str;
+	ss >> str;
+
 	return str;
 }
 
@@ -76,11 +77,12 @@ static std::map<pairString> retCgi(std::vector<std::string> v)
 	for (std::vector<std::string>::iterator it = v.begin();
 	it != v.end(); it++)
 	{
-		checkNbrElt(2, *it);
+		checkNbrElt(3, *it);
 		std::stringstream ss(*it);
 		std::string ext;
 		std::string inter;
 
+		ss >> ext;
 		ss >> ext;
 		ss >> inter;
 
@@ -90,11 +92,23 @@ static std::map<pairString> retCgi(std::vector<std::string> v)
 	return ret;
 }
 
+static std::pair<std::string, size_t> retReturn(std::string str)
+{
+	checkNbrElt(3, str);
+	std::stringstream ss(str);
+	size_t		status;
+	std::string	redir;
+
+	ss >> status;
+	ss >> status;
+	ss >> redir;
+
+	return std::make_pair(redir, status);
+}
+
 static void checkIndex(std::string index, std::string path)
 {
 	std::ifstream ifs(path + index);
-
-	std::cout << "path = " << path << " - " << index << std::endl;
 
 	if (!ifs.is_open())
 	{
@@ -105,7 +119,7 @@ static void checkIndex(std::string index, std::string path)
 
 static void checkPath(std::string str)
 {
-	if (!access(str.c_str(), F_OK))
+	if (access(str.c_str(), F_OK) != 0)
 	{
 		std::string error("Error: could not open Dir:\n\t");
 		throw std::invalid_argument(error + str);
@@ -130,22 +144,24 @@ std::map<std::string, bool> retMethods(std::string str)
 		}
 		catch(...)
 		{
-			std::string error("Error, wrong Method on line");
-			std::invalid_argument(error + str);
+			std::string error("Error, wrong Method on line:\n");
+			throw std::invalid_argument(error + str);
 		}
 	}
 
 	return ret;
 }
 
+
 Location::Location(location src, std::string root)
 {
 	_autoIndex = retAutoIndex(src.autoIndex);
-	_ret = retSecond(src.ret);
-	_uploadPath = retSecond(src.uploadPath);
-	_path = retSecond(src.path);
-	_index = retSecond(src.index);
-	checkIndex(_index, _path);
+	_ret = retReturn(src.ret);
+	_uploadPath = retSecond(src.uploadPath, 2);
+	checkPath(_uploadPath);
+	_path = retSecond(src.path, 3);
+	_index = retSecond(src.index, 2);
+	checkIndex(_index, root + _path);
 	_allowedMethods = retMethods(src.allowedMethods);
 	_cgiHandler = retCgi(src.cgi);
 }
@@ -191,7 +207,7 @@ std::string Location::getIndex() const
 	return _index;
 }
 
-std::string Location::getReturn() const
+std::pair<std::string, size_t> Location::getReturn() const
 {
 	return _ret;
 }
@@ -226,7 +242,7 @@ void Location::print() const
 	std::cout << "Location "  << BOLD << _path << RESET << std::endl
 		<< "\tautoIndex = " << _autoIndex
 		<< "\n\tindex = " << _index
-		<< "\n\tret = " << _ret
+		<< "\n\tret = " << _ret.first << ", " << _ret.second
 		<< "\n\tuploadPath = " << _uploadPath
 		<< "\n\tallowedMethods = " << _allowedMethods
 		<< "\n\tcgi = " << _cgiHandler << std::endl;
@@ -253,6 +269,7 @@ std::ostream& operator<<(std::ostream &os, std::map<pairString> map)
 	{
 		os << "first = " << it->first << ",second = " << it->second;
 		os << "  -  ";
+		it++;
 	}
 	os << std::endl;
 
@@ -267,6 +284,7 @@ std::ostream& operator<<(std::ostream &os, std::map<std::string, bool> map)
 	{
 		os << std::boolalpha << "method = " << it->first << ",is allowed = " << it->second;
 		os << "  -  ";
+		it++;
 	}
 	os << std::endl;
 
