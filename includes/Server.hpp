@@ -17,6 +17,7 @@ class Server
 	std::map<unsigned int, std::string>	_errorPage;		// all the error codes
 	// std::vector<Location>				_locations;
 	std::pair<std::string, std::string>	_cgiHandler;
+	std::vector<SocketData *>			_socketsServer;
 
 	void 	siteParsing(struct siteParse site);
 	void	parseElt(struct server data);
@@ -24,7 +25,7 @@ class Server
 	void printAtt() const;
 
   public:
-	Server(std::string pathServer);
+	Server(struct server data);
 	~Server();
 
 	// GETTER
@@ -35,6 +36,7 @@ class Server
 	std::map<unsigned int, std::string> const	&getErrorPage() const;
 	// std::vector<Location> const					&getLocations() const;
 	std::pair<std::string, std::string>	const	&getCgiHandler() const;
+	
 };
 
 #endif

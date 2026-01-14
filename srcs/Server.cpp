@@ -1,25 +1,22 @@
 #include "../includes/includes.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/printDebug.hpp"
-#include <exception>
 
 // Constructor & Destructor
 
-Server::Server(std::string pathServer)
+Server::Server(struct server data)
 {
-	struct server data;
-
-	try 
-	{
-		std::cout << "in create" << std::endl;
-		data = createStruct(pathServer);
-		printStructV2(data);
-	}
-	catch (std::exception &e)
-	{
-		std::cerr << RED << "in createStruct: " << e.what() << RESET << std::endl;
-		return ;
-	}
+	// try 
+	// {
+	// 	std::cout << "in create" << std::endl;
+	// 	data = createStruct(pathServer);
+	// 	printStructV2(data);
+	// }
+	// catch (std::exception &e)
+	// {
+	// 	std::cerr << RED << "in createStruct: " << e.what() << RESET << std::endl;
+	// 	return ;
+	// }
 	parseElt(data);
 
 	//std::cout << GREEN << "Default Server constructor called" << RESET << std::endl;
