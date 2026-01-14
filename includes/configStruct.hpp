@@ -1,8 +1,7 @@
 #ifndef CONFIG_STRUCT_HPP
 
 #define CONFIG_STRUCT_HPP
-#include <string>
-#include <vector>
+#include "includes.hpp"
 
 struct location {
 	std::string autoIndex;

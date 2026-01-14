@@ -20,6 +20,7 @@ int main (int argc, char **argv)
 		Config	configTest(argv[1]);
 
 		printConfigClass(configTest);
+		
 		// sockets = createSocket(configTest, nbSockets);
 		// if (sockets.size() == 0)
 		// {

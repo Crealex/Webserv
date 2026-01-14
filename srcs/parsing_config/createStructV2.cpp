@@ -8,6 +8,7 @@
 #include <map>
 #include <sstream>
 #include <stdexcept>
+#include "../../includes/Location.hpp"
 
 struct bracketData {
 	bool inServer ;
@@ -215,7 +216,9 @@ int main(void)
 	try 
 	{
 		server testStruct = CreateStruct("../../newGood.conf");
-		printStructV2(testStruct);
+		Location test(testStruct.locations[0], "./www/danalexian/");
+		// printStructV2(testStruct);
+		test.print();
 	} 
 	catch (std::exception &e) 
 	{

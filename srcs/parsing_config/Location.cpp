@@ -1,25 +1,6 @@
 #include "../../includes/Location.hpp"
 
 /**
- * @brief Check if there is a semicolon at the end of the string 
- * and erase it, if not throw an error
- * 
- * @param str 
- */
-static void removeSemiColon(std::string &str)
-{
-	std::string::iterator ite = str.end();
-	ite--;
-	if (*ite == ';')
-		str.erase(ite);
-	else
-	{
-		std::string error("Error: no semicolon on line:\n\t");
-		throw std::invalid_argument(error + str);
-	}
-}
-
-/**
  * @brief check if the number of element after the first in
  * the str string is equal to n. if not throw an error
  * 
@@ -45,8 +26,7 @@ static bool checkNbrElt(size_t n, std::string str)
 
 static bool retAutoIndex(std::string str)
 {
-	checkNbrElt(2, str);
-	removeSemiColon(str);
+	checkNbrElt(1, str);
 
 	std::stringstream ss(str);
 	str.clear();
@@ -61,8 +41,7 @@ static bool retAutoIndex(std::string str)
 
 static std::string retSecond(std::string str)
 {
-	checkNbrElt(2, str);
-	removeSemiColon(str);
+	checkNbrElt(1, str);
 
 	std::stringstream ss(str);
 	str.clear();
@@ -74,7 +53,7 @@ static std::string retSecond(std::string str)
 
 static std::string retPath(std::string str, std::string root)
 {
-	checkNbrElt(3, str);
+	checkNbrElt(2, str);
 	std::stringstream ss(str);
 	str.clear();
 	ss >> str;
@@ -93,10 +72,11 @@ static std::string retPath(std::string str, std::string root)
 static std::map<pairString> retCgi(std::vector<std::string> v)
 {
 	std::map<pairString> ret;
-
+	
 	for (std::vector<std::string>::iterator it = v.begin();
-		it != v.end(); it++)
+	it != v.end(); it++)
 	{
+		checkNbrElt(2, *it);
 		std::stringstream ss(*it);
 		std::string ext;
 		std::string inter;
@@ -113,6 +93,8 @@ static std::map<pairString> retCgi(std::vector<std::string> v)
 static void checkIndex(std::string index, std::string path)
 {
 	std::ifstream ifs(path + index);
+
+	std::cout << "path = " << path << " - " << index << std::endl;
 
 	if (!ifs.is_open())
 	{
@@ -263,7 +245,7 @@ std::vector<Location> createLocations(server serv)
 	return ret;
 }
 
-std::ostream& operator<<(std::ostream &os, std::map<std::string, std::string> map)
+std::ostream& operator<<(std::ostream &os, std::map<pairString> map)
 {
 	std::map<pairString>::iterator it = map.begin();
 
