@@ -1,6 +1,7 @@
 #ifndef CONFIG_STRUCT_HPP
 
 #define CONFIG_STRUCT_HPP
+#include "includes.hpp"
 #include <string>
 #include <map>
 #include <vector>

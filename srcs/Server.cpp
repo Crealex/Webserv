@@ -1,6 +1,7 @@
 #include "../includes/includes.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/printDebug.hpp"
+#include "../includes/Location.hpp"
 #include <exception>
 
 // Constructor & Destructor
@@ -86,6 +87,7 @@ void	Server::parseElt(struct server data)
 	// this->_errorPage = parseErrorPage(data.errorPages);
 	std::cout << "euhhh" << std::endl;
 	this->_maxSize = parseMaxSize(data.maxSize);
+	this->_locations = createLocations(data)
 	printAtt();
 }
 

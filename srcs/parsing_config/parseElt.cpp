@@ -161,7 +161,7 @@ static std::string returnRoot(std::string str)
 	ss >> ret;
 	ss >> ret;
 
-	if (access(ret.c_str(), F_OK) == -1)
+	if (access(ret.c_str(), R_OK) == -1)
 	{
 		std::string error("Error: could not open RootDir:\n\t");
 		throw std::invalid_argument(error + str);
@@ -263,7 +263,7 @@ static std::string returnCGI(std::string str)
 	ss >> ret;
 	ss >> ret;
 	
-	if (access(ret.c_str(), F_OK) == -1)
+	if (access(ret.c_str(), R_OK) == -1)
 	{
 		std::string error("Error: invalid file path:\n\t");
 		throw std::invalid_argument(error + str);
