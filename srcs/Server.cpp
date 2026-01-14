@@ -1,22 +1,24 @@
 #include "../includes/includes.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/printDebug.hpp"
+#include <exception>
 
 // Constructor & Destructor
 
-Server::Server(struct server data)
+Server::Server(std::string pathServer)
 {
-	// try 
-	// {
-	// 	std::cout << "in create" << std::endl;
-	// 	data = createStruct(pathServer);
-	// 	printStructV2(data);
-	// }
-	// catch (std::exception &e)
-	// {
-	// 	std::cerr << RED << "in createStruct: " << e.what() << RESET << std::endl;
-	// 	return ;
-	// }
+	struct server	data;
+	try 
+	{
+		std::cout << "in create" << std::endl;
+		data = createStruct(pathServer);
+		printStructV2(data);
+	}
+	catch (std::exception &e)
+	{
+		std::cerr << RED << "in createStruct: " << e.what() << RESET << std::endl;
+		return ;
+	}
 	parseElt(data);
 
 	//std::cout << GREEN << "Default Server constructor called" << RESET << std::endl;
@@ -56,26 +58,25 @@ std::map<unsigned int, std::string> const	&Server::getErrorPage() const
 	return (this->_errorPage);
 }
 
-// std::vector<Location> const	&Server::getLocations() const
-// {
-// 	return (this->_locations);
-// }
+std::vector<Location> const	&Server::getLocations() const
+{
+	return (this->_locations);
+}
 
 std::pair<std::string, std::string>	const	&Server::getCgiHandler() const
 {
 	return (this->_cgiHandler);
 }
 
+std::vector<SocketData *> const				&Server::getSocketsServer() const
+{
+	return (this->_socketsServer);
+}
+
+// METHODS
+// PRIVATE
 void	Server::parseElt(struct server data)
 {
-	// this->errorPath = parseErrorPath();
-
-	// for (std::vector<siteParse>::iterator it = data.site.begin();
-	// 	it != data.site.end();
-	// 	it++)
-	// {
-	// 	siteParsing((*it));
-	// }
 	this->_hostname = parseHostname(data.hostname);
 	this->_root = parseRoot(data.root);
 	std::cout << "euhhh" << std::endl;
@@ -83,6 +84,7 @@ void	Server::parseElt(struct server data)
 	// this->_errorPage = parseErrorPage(data.errorPages);
 	std::cout << "euhhh" << std::endl;
 	this->_maxSize = parseMaxSize(data.maxSize);
+	this->_locations = createLocations(data);
 	printAtt();
 }
 

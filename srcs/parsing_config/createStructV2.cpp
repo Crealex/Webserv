@@ -8,6 +8,7 @@
 #include <map>
 #include <sstream>
 #include <stdexcept>
+#include "../../includes/Location.hpp"
 
 struct bracketData {
 	bool inServer ;

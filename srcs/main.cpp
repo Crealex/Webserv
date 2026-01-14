@@ -8,7 +8,6 @@
 
 int main (int argc, char **argv) 
 {
-	// std::vector<Socket *>	sockets;
 	if (argc > 2)
 	{
 		std::cerr << RED << "Invalid number of arguments, you need the executable and maybe a config file" << RESET << std::endl;
