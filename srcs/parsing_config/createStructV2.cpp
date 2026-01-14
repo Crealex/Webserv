@@ -25,6 +25,16 @@ std::string extractDirective(std::string &line)
 	return (ret);
 }
 
+void rmWhiteSpaces(std::string *line)
+{
+	if (line->empty())
+		return ;
+	while (line->at(0) == '	' || line->at(0) == ' ')
+	{
+		line->erase(0, 1);
+	}
+}
+
 static void updateServerBracket(std::string &line, server *srv, bracketData *brackets)
 {
 	(void)line;
@@ -153,20 +163,13 @@ static void addLine(std::string line, server *srv, bracketData *brackets, std::s
 	std::stringstream numLine;
 
 	numLine	<< cline;
+	rmWhiteSpaces(&line);
 	if (line.empty())
 		return ;
 	while (it != ite)
 	{
 		if (directive.find(it->first) < line.size())
 		{
-			//if (directive.find("location") < directive.size() && line.find("{") < line.size())
-			//	brackets->inLocation = true;
-			//if (directive.find("server") < directive.size() && line.find("{") < line.size())
-			//{
-			//	std::cout << "in condition" << std::endl;
-			//	brackets->inServer = true;
-			//}
-			std::cout << "directive: " << directive << ", in server: " << brackets->inServer << std::endl;
 			if (brackets->inServer || ((directive.find("server") < directive.size() && line.find("{") < line.size())))
 				it->second(line, srv, brackets);
 			else
@@ -191,7 +194,7 @@ server CreateStruct(std::string configPath)
 	server configStruct;
 	std::ifstream configFile;
 	std::string line;
-	bracketData *brackets = new bracketData();
+	bracketData brackets;
 	std::size_t cLine;
 	std::map<std::string, directiveHandler> dispatchTable;
 
@@ -202,21 +205,19 @@ server CreateStruct(std::string configPath)
 	cLine = 1;
 	while (std::getline(configFile, line))
 	{
-		addLine(line, &configStruct, brackets, cLine, dispatchTable);
+		addLine(line, &configStruct, &brackets, cLine, dispatchTable);
 		cLine++;
 	}
 	configFile.close();
 	//checkEmptyElem(&configStruct);
-	if (brackets->inServer)
+	if (brackets.inServer)
 		throw(std::invalid_argument("Error, missing closing bracket '}' at the end of file"));
-	delete brackets;
 	return (configStruct);
 
 }
 
 int main(void)
 {
-	std::string test = "                 je suis un test";
 	try 
 	{
 		server testStruct = CreateStruct("../../newGood.conf");

@@ -45,8 +45,6 @@ void rmWhiteSpaces(std::string *line)
 	while (line->at(0) == '	' || line->at(0) == ' ')
 	{
 		line->erase(0, 1);
-		if (line->empty())
-			throw(std::invalid_argument("Error, empty line after removing whites spaces"));
 	}
 }
 
