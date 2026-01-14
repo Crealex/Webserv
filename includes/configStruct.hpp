@@ -2,6 +2,9 @@
 
 #define CONFIG_STRUCT_HPP
 #include "includes.hpp"
+#include <string>
+#include <map>
+#include <vector>
 
 struct location {
 	std::string autoIndex;
@@ -24,9 +27,12 @@ struct server {
 
 typedef std::pair<std::string, unsigned int> addPort_t;
 
+server createStruct(std::string configPath);
+
 std::string							parseHostname(std::string data);
 std::vector<addPort_t>				parseAddressPort(std::vector<std::string> data);
 unsigned int						parseMaxSize(std::string data);
 std::map<unsigned int, std::string>	parseErrorPage(std::vector<std::string> data);
+std::string 						parseRoot(std::string data);
 
 #endif // !CONFIG_STRUCT_HPP

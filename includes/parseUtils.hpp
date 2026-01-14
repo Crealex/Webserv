@@ -7,7 +7,6 @@
 #include <sstream>
 #include <fstream>
 
-std::string					removeSemicolon(std::string str);
 std::vector<std::string>	getValue(std::string data);
 unsigned int				checkDigitValue(std::string str, bool isMaxSize);
 
