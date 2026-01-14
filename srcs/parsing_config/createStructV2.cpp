@@ -46,6 +46,8 @@ static void updateLocationBracket(std::string &line, server *srv, bracketData *b
 {
 	static unsigned int locI = -1;
 
+	if (brackets->inLocation == true)
+		throw std::invalid_argument("Error, missing closing bracket for the previous location");
 	locI++;
 	brackets->inLocation = true;
 	srv->locations.push_back(location());
@@ -209,22 +211,22 @@ server createStruct(std::string configPath)
 		cLine++;
 	}
 	configFile.close();
-	//checkEmptyElem(&configStruct);
+	checkEmptyElem(&configStruct);
 	if (brackets.inServer)
 		throw(std::invalid_argument("Error, missing closing bracket '}' at the end of file"));
 	return (configStruct);
 
 }
 
-int main(void)
-{
-	try 
-	{
-		server testStruct = createStruct("../../newGood.conf");
-		printStructV2(testStruct);
-	} 
-	catch (std::exception &e) 
-	{
-		std::cout << RED << e.what() << RESET << std::endl;
-	}
-}
+//int main(void)
+//{
+//	try 
+//	{
+//		server testStruct = createStruct("../../notgood.conf");
+//		printStructV2(testStruct);
+//	} 
+//	catch (std::exception &e) 
+//	{
+//		std::cout << RED << e.what() << RESET << std::endl;
+//	}
+//}
