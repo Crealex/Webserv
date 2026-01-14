@@ -2,17 +2,17 @@
 #include "../../includes/epoll/Epoll.hpp"
 #include "../../includes/Client.hpp"
 
-static bool	isServerSocket(int fd, std::vector<Socket *> sockets)
-{
-	int			sizeRecv;
+// static bool	isServerSocket(int fd, std::vector<Socket *> sockets)
+// {
+// 	int			sizeRecv;
 
-	sizeRecv = -1;
-	sizeRecv = recv(fdClient, bufRecv, conf.getMaxSize() - 1, 0);
-	if (sizeRecv == -1)
-		std::cerr << "erreur avec recv" << std::endl;
-	bufRecv[sizeRecv] = '\0';
-	return (bufRecv);
-}
+// 	sizeRecv = -1;
+// 	sizeRecv = recv(fd, bufRecv, conf.getMaxSize() - 1, 0);
+// 	if (sizeRecv == -1)
+// 		std::cerr << "erreur avec recv" << std::endl;
+// 	bufRecv[sizeRecv] = '\0';
+// 	return (bufRecv);
+// }
 
 static void	acceptClient(std::vector<Socket *> &sockets, size_t i, size_t j)
 {
@@ -27,6 +27,21 @@ static void	acceptClient(std::vector<Socket *> &sockets, size_t i, size_t j)
 	sockets[i]->setFdClient(fdClient, j);
 }
 
+static char *receiveRequest(int fd)
+{
+	int		sizeRecv;
+	char	*buffer;
+
+	sizeRecv = -1;
+	buffer = NULL;
+	sizeRecv = recv(fd, buffer, 10000, 0);
+	if (sizeRecv == -1 || sizeRecv < 10000)
+	{
+		std::cout << "HELP" << std::endl;
+	}
+	return (buffer);
+}
+
 void	handleClient(std::vector<Socket *> &sockets, Config conf)
 {
 	size_t	sizeSockets;
@@ -37,11 +52,11 @@ void	handleClient(std::vector<Socket *> &sockets, Config conf)
 	std::cout << BOLD << "in handleClient" << RESET << std::endl;
 	for (size_t i = 0; i < sizeSockets; i++)
 	{
-		nbSockData = sockets[i]->getSockData().size();
-		for (int j = 0; j < nbSockData; j++)
+		sizeSocketData = sockets[i]->getSockData().size();
+		for (size_t j = 0; j < sizeSocketData; j++)
 		{
 			acceptClient(sockets, i, j);
-			bufRecv = receiveRequest(conf, sockets[i]->getSockData()[j]->getFdClient(), bufRecv);
+			bufRecv = receiveRequest(sockets[i]->getSockData()[j]->getFdClient());
 			std::cout << "Request: " << bufRecv << std::endl;
 			sendResponse(sockets[i]->getSockData()[j]->getFdClient(), bufRecv, conf);
 			close(sockets[i]->getSockData()[j]->getFdClient()); // INFO: Temporaire pour faires mes test (Alex)

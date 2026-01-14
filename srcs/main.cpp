@@ -1,5 +1,5 @@
 #include "../includes/colors.hpp"
-#include "../includes/Config.hpp"
+#include "../includes/Server.hpp"
 #include "../includes/printDebug.hpp"
 #include "../includes/includes.hpp"
 #include "../includes/socket/includeSocket.hpp"
@@ -8,7 +8,7 @@
 
 int main (int argc, char **argv) 
 {
-	std::vector<Socket *>	sockets;
+	// std::vector<Socket *>	sockets;
 	if (argc > 2)
 	{
 		std::cerr << RED << "Invalid number of arguments, you need the executable and maybe a config file" << RESET << std::endl;
@@ -16,20 +16,20 @@ int main (int argc, char **argv)
 	}
 	try 
 	{
-		int		nbSockets;
-		Config	configTest(argv[1]);
+		// int		nbSockets;
+		Server	configTest(argv[1]);
 
-		printConfigClass(configTest);
-		sockets = createSocket(configTest, nbSockets);
-		if (sockets.size() == 0)
-		{
-			std::cerr << RED << "Error : no socket for the webserv" << std::endl << RESET;
-			return (-2);
-		}
-		printSocketListen(sockets);
-		Epoll	epoll(sockets, nbSockets);
-		while (1)
-			handleClient(sockets, configTest, epoll);
+		// printConfigClass(configTest);
+		// sockets = createSocket(configTest, nbSockets);
+		// if (sockets.size() == 0)
+		// {
+		// 	std::cerr << RED << "Error : no socket for the webserv" << std::endl << RESET;
+		// 	return (-2);
+		// }
+		// printSocketListen(sockets);
+		// Epoll	epoll(sockets, nbSockets);
+		// while (1)
+			// handleClient(sockets, configTest, epoll);
 	}
 	catch (std::exception &e) 
 	{

@@ -1,7 +1,7 @@
 NAME	= webServ
-SRCS	= $(addprefix srcs/, Config.cpp main.cpp printDebug.cpp send.cpp Client.cpp) 
-PARSING	= $(addprefix srcs/parsing_config/, createStruct.cpp parseElt.cpp structParse.cpp)
-SOCKET  = $(addprefix srcs/socket/, createSocket.cpp Socket.cpp SocketData.cpp handleClient.cpp printSocket.cpp)
+SRCS	= $(addprefix srcs/, Server.cpp main.cpp printDebug.cpp send.cpp Client.cpp) 
+PARSING	= $(addprefix srcs/parsing_config/, createStruct.cpp parseElt.cpp parseRoot.cpp parseAddressPort.cpp parseErrorPage.cpp parseMaxSize.cpp parseHostname.cpp parseUtils.cpp)
+SOCKET  = $(addprefisrcs/socket/, createSocket.cpp Socket.cpp SocketData.cpp handleClient.cpp printSocket.cpp)
 REQUEST = $(addprefix srcs/request/, addLineToResp.cpp Delete.cpp Get.cpp getMethods.cpp MethodsClass.cpp MimeTypes.cpp Post.cpp request.cpp ResponseError.cpp)
 EPOLL   = $(addprefix srcs/epoll/, Epoll.cpp addEpollFd.cpp)
 OBJS	= ${SRCS:%.cpp=${OBJDIR}/%.o}
