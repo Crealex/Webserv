@@ -78,7 +78,7 @@
 
 void printStructV2(server srv)
 {
-	int i = 0;
+	unsigned int i = 0;
 	std::cout << BOLD << BLUE << "server: " << std::endl;
 	std::cout << BOLD << "	hostname: " << RESET << srv.hostname << std::endl;
 	std::cout << BOLD << "	root: " << RESET << srv.root << std::endl;
@@ -100,11 +100,13 @@ void printStructV2(server srv)
 	i = 0;
 	while (srv.locations.size() > i)
 	{
+		std::cout << "--------------------------------------------------------------------------------" << std::endl;
+		std::cout << BOLD << "		path: " << RESET << srv.locations.at(i).path << std::endl;
 		std::cout << BOLD << "		autoIndex: " << RESET << srv.locations.at(i).autoIndex << std::endl;
 		std::cout << BOLD << "		allowedMethods: " << RESET << srv.locations.at(i).allowedMethods << std::endl;
 		std::cout << BOLD << "		index: " << RESET << srv.locations.at(i).index<< std::endl;
 		std::cout << BOLD << "		return: " << RESET << srv.locations.at(i).ret << std::endl;
-		int j = 0;
+		unsigned int j = 0;
 		std::cout << BOLD << YELLOW << "		cgi:" << RESET << std::endl;
 		while (srv.locations.at(i).cgi.size() > j)
 		{
@@ -112,7 +114,6 @@ void printStructV2(server srv)
 			j++;
 		}
 		std::cout << BOLD << "		uploadPath: " << RESET << srv.locations.at(i).uploadPath << std::endl;
-		std::cout << BOLD << "		path: " << RESET << srv.locations.at(i).path << std::endl;
 		i++;
 	}
 }
