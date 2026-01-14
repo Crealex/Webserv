@@ -9,7 +9,7 @@
  * @return true 
  * @return false 
  */
-static bool checkNbrElt(size_t n, std::string str)
+static void checkNbrElt(size_t n, std::string str)
 {
 	std::stringstream ss(str);
 	int i = 0;
@@ -21,11 +21,12 @@ static bool checkNbrElt(size_t n, std::string str)
 		std::string error("Error: wrong number of argument on line:\n\t");
 		throw std::invalid_argument(error + str);
 	}
-	return true;
 }
 
 static bool retAutoIndex(std::string str)
 {
+	if (str.empty())
+		return false;
 	checkNbrElt(2, str);
 
 	std::stringstream ss(str);
@@ -33,14 +34,17 @@ static bool retAutoIndex(std::string str)
 	while (ss >> str)
 	{
 	}
-	if (str == "false")
+	if (str == "off")
 		return false;
-	else
+	else if (str == "on")
 		return true;
+	throw std::invalid_argument("Error, wrong argument for autoIndex on line:\n" + str);
 }
 
 static std::string retSecond(std::string str, size_t n)
 {
+	if (str.empty())
+		return str;
 	checkNbrElt(n, str);
 
 	std::stringstream ss(str);
@@ -54,6 +58,8 @@ static std::string retSecond(std::string str, size_t n)
 
 static std::string retPath(std::string str, std::string root)
 {
+	if (str.empty())
+		return str;
 	checkNbrElt(2, str);
 	std::stringstream ss(str);
 	str.clear();
@@ -61,7 +67,7 @@ static std::string retPath(std::string str, std::string root)
 	ss >> str;
 
 	str = root + str;
-	if (access(str.c_str(), F_OK) == -1)
+	if (access(str.c_str(), R_OK) == -1)
 	{
 		std::string error("Error: could not open Dir:\n\t");
 		throw std::invalid_argument(error + str);
@@ -73,6 +79,8 @@ static std::string retPath(std::string str, std::string root)
 static std::map<pairString> retCgi(std::vector<std::string> v)
 {
 	std::map<pairString> ret;
+	if (v.empty())
+		return ret;
 	
 	for (std::vector<std::string>::iterator it = v.begin();
 	it != v.end(); it++)
@@ -94,12 +102,14 @@ static std::map<pairString> retCgi(std::vector<std::string> v)
 
 static std::pair<std::string, size_t> retReturn(std::string str)
 {
+	if (str.empty())
+		return std::make_pair("", 0);
 	checkNbrElt(3, str);
 	std::stringstream ss(str);
 	size_t		status;
 	std::string	redir;
 
-	ss >> status;
+	ss >> redir;
 	ss >> status;
 	ss >> redir;
 
@@ -108,6 +118,14 @@ static std::pair<std::string, size_t> retReturn(std::string str)
 
 static void checkIndex(std::string index, std::string path)
 {
+	if (index.empty())
+		return ;
+	if (index.compare(index.size() - 5, 5, ".html"))
+	{
+		std::string error("Error: wrong index extension\n\t");
+		throw std::invalid_argument(error + path + index);
+	}
+
 	std::ifstream ifs(path + index);
 
 	if (!ifs.is_open())
@@ -117,21 +135,14 @@ static void checkIndex(std::string index, std::string path)
 	}
 }
 
-static void checkPath(std::string str)
-{
-	if (access(str.c_str(), F_OK) != 0)
-	{
-		std::string error("Error: could not open Dir:\n\t");
-		throw std::invalid_argument(error + str);
-	}
-}
-
 std::map<std::string, bool> retMethods(std::string str)
 {
 	std::map<std::string, bool> ret;
 	ret["GET"] = false;
 	ret["POST"] = false;
 	ret["DELETE"] = false;
+	if (str.empty())
+		return ret;
 
 	std::stringstream ss(str);
 	std::string word;
@@ -152,18 +163,17 @@ std::map<std::string, bool> retMethods(std::string str)
 	return ret;
 }
 
-
 Location::Location(location src, std::string root)
 {
 	_autoIndex = retAutoIndex(src.autoIndex);
 	_ret = retReturn(src.ret);
 	_uploadPath = retSecond(src.uploadPath, 2);
-	checkPath(_uploadPath);
 	_path = retSecond(src.path, 3);
 	_index = retSecond(src.index, 2);
 	checkIndex(_index, root + _path);
 	_allowedMethods = retMethods(src.allowedMethods);
 	_cgiHandler = retCgi(src.cgi);
+	checkValidity();
 }
 
 Location::Location(const Location& cpy)
@@ -240,12 +250,28 @@ std::map<pairString> Location::getCgiHandler() const
 void Location::print() const
 {
 	std::cout << "Location "  << BOLD << _path << RESET << std::endl
-		<< "\tautoIndex = " << _autoIndex
+		<< "\tautoIndex = " << std::boolalpha << _autoIndex
 		<< "\n\tindex = " << _index
 		<< "\n\tret = " << _ret.first << ", " << _ret.second
 		<< "\n\tuploadPath = " << _uploadPath
 		<< "\n\tallowedMethods = " << _allowedMethods
 		<< "\n\tcgi = " << _cgiHandler << std::endl;
+}
+
+void Location::checkValidity()
+{
+	if (!_ret.first.empty() && 
+			(_allowedMethods.at("GET") == true || 
+			_allowedMethods.at("POST") == true ||
+			_allowedMethods.at("DELETE") == true))
+	{
+		throw std::invalid_argument("Error, redirection and method on the location: " + _path);
+	}
+
+	if (!_index.empty() && _autoIndex)
+	{
+		throw std::invalid_argument("Error, index and auto index on the location: " + _path);
+	}
 }
 
 std::vector<Location> createLocations(server serv)
@@ -257,6 +283,16 @@ std::vector<Location> createLocations(server serv)
 	{
 		ret.push_back(Location(*it, serv.root));
 	}
+
+	int check = 0;
+	for (std::vector<Location>::iterator it = ret.begin();
+		it != ret.end(); it++)
+	{
+		if (it->getPath() == serv.root + "/")
+			check = 1;
+	}
+	if (check == 0)
+		throw std::invalid_argument("Error, no '/' root location in config file.");
 
 	return ret;
 }

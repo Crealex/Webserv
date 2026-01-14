@@ -32,6 +32,7 @@ class Location {
 		std::pair<std::string, size_t> getReturn() const;
 
 		void print() const;
+		void checkValidity();
 };
 
 std::vector<Location> createLocations(server serv);
