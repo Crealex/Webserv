@@ -38,13 +38,12 @@ void rmWhiteSpaces(std::string *line)
 
 static void updateLocationBracket(std::string &line, server *srv, bracketData *brackets)
 {
-	static unsigned int locI = -1;
-
+	unsigned int locI;
 	if (brackets->inLocation == true)
 		throw std::invalid_argument("Error, missing closing bracket for the previous location");
-	locI++;
 	brackets->inLocation = true;
 	srv->locations.push_back(location());
+	locI = srv->locations.size() - 1;
 	srv->locations.at(locI).path = line;
 }
 
@@ -189,7 +188,7 @@ server createStruct(std::ifstream *configFile, bool *eof)
 	server configStruct;
 	std::string line;
 	bracketData brackets;
-	std::size_t cLine;
+	static std::size_t cLine;
 	std::map<std::string, directiveHandler> dispatchTable;
 
 	dispatchTable = createDispatchTable();
@@ -227,6 +226,9 @@ std::vector<server> createVectStructSrv(std::string configPath)
 	{
 		if (line == "server {")
 			vectSrv.push_back(createStruct(&configFile, &eof));
+		else if (line.empty()) {
+			continue;
+		}
 		else
 			throw std::invalid_argument("Error, invalid directive, excpected: server { , reality: " + line);
 	}
