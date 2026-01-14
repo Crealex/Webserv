@@ -8,9 +8,10 @@
 #include <map>
 #include <sstream>
 #include <stdexcept>
+#include <vector>
 
 struct bracketData {
-	bool inServer ;
+	bool inServer = true;
 	bool inLocation ;
 };
 
@@ -33,13 +34,6 @@ void rmWhiteSpaces(std::string *line)
 	{
 		line->erase(0, 1);
 	}
-}
-
-static void updateServerBracket(std::string &line, server *srv, bracketData *brackets)
-{
-	(void)line;
-	(void)srv;
-	brackets->inServer = true;
 }
 
 static void updateLocationBracket(std::string &line, server *srv, bracketData *brackets)
@@ -121,7 +115,6 @@ static std::map<std::string, directiveHandler > createDispatchTable()
 {
 	std::map<std::string, directiveHandler> dispatchTable;
 
-	dispatchTable["server"] = &updateServerBracket;
 	dispatchTable["hostname"] = &addElem;
 	dispatchTable["listen"] = &addVect;
 	dispatchTable["root"] = &addElem;
@@ -191,42 +184,71 @@ static void addLine(std::string line, server *srv, bracketData *brackets, std::s
 	throw std::invalid_argument("Invalid directive: " + directive);
 }
 
-server createStruct(std::string configPath)
+server createStruct(std::ifstream *configFile, bool *eof)
 {
 	server configStruct;
-	std::ifstream configFile;
 	std::string line;
 	bracketData brackets;
 	std::size_t cLine;
 	std::map<std::string, directiveHandler> dispatchTable;
 
-	configFile.open(configPath.c_str());
-	if (!configFile.is_open())
-		throw std::invalid_argument("Error, invalid path for the config file");
 	dispatchTable = createDispatchTable();
 	cLine = 1;
-	while (std::getline(configFile, line))
+	while (std::getline(*configFile, line))
 	{
 		addLine(line, &configStruct, &brackets, cLine, dispatchTable);
 		cLine++;
+		if (brackets.inServer == false && !configFile->eof())
+		{
+			return (configStruct);
+		}
 	}
-	configFile.close();
+	configFile->close();
 	checkEmptyElem(&configStruct);
 	if (brackets.inServer)
 		throw(std::invalid_argument("Error, missing closing bracket '}' at the end of file"));
+	if (configFile->eof())
+		*eof = true;
 	return (configStruct);
 
 }
 
-// int main(void)
-// {
-// 	try 
-// 	{
-// 		server testStruct = CreateStruct("../../newGood.conf");
-// 		printStructV2(testStruct);
-// 	} 
-// 	catch (std::exception &e) 
-// 	{
-// 		std::cout << RED << e.what() << RESET << std::endl;
-// 	}
-// }
+std::vector<server> createVectStructSrv(std::string configPath)
+{
+	std::vector<server> vectSrv;
+	std::ifstream configFile;
+	std::string line;
+	bool eof;
+
+	configFile.open(configPath.c_str());
+	if (!configFile.is_open())
+		throw std::invalid_argument("Error, invalid path for the config file");
+	while (std::getline(configFile, line))
+	{
+		if (line == "server {")
+			vectSrv.push_back(createStruct(&configFile, &eof));
+		else
+			throw std::invalid_argument("Error, invalid directive, excpected: server { , reality: " + line);
+	}
+	return (vectSrv);
+}
+
+
+int main(void)
+{
+	try 
+	{
+		std::vector<server> testStruct = createVectStructSrv("../../newGood.conf");
+		unsigned int i = 0;
+		while (i < testStruct.size())
+		{
+			std::cout << BOLD << MAGENTA << "Server " << i << ":" << RESET << std::endl;
+			printStructV2(testStruct.at(i));
+			i++;
+		}
+	} 
+	catch (std::exception &e) 
+	{
+		std::cout << RED << e.what() << RESET << std::endl;
+	}
+}
