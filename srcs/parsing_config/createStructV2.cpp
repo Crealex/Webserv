@@ -29,7 +29,7 @@ void rmWhiteSpaces(std::string *line)
 {
 	if (line->empty())
 		return ;
-	while (line->at(0) == '	' || line->at(0) == ' ')
+	while (!line->empty() && (line->at(0) == '	' || line->at(0) == ' '))
 	{
 		line->erase(0, 1);
 	}
@@ -39,26 +39,17 @@ static void updateServerBracket(std::string &line, server *srv, bracketData *bra
 {
 	(void)line;
 	(void)srv;
-
-	if (brackets->inServer)
-		brackets->inServer = false;
-	else
-		brackets->inServer = true;
+	brackets->inServer = true;
 }
 
 static void updateLocationBracket(std::string &line, server *srv, bracketData *brackets)
 {
 	static unsigned int locI = -1;
 
-	if (brackets->inLocation)
-		brackets->inLocation = false;
-	else
-	{
-		locI++;
-		brackets->inLocation = true;
-		srv->locations.push_back(location());
-		srv->locations.at(locI).path = line;
-	}
+	locI++;
+	brackets->inLocation = true;
+	srv->locations.push_back(location());
+	srv->locations.at(locI).path = line;
 }
 
 static void addElem(std::string &line, server *srv, bracketData *brackets)
@@ -68,26 +59,26 @@ static void addElem(std::string &line, server *srv, bracketData *brackets)
 
 	if (brackets->inLocation)
 	{
-		if (!directive.compare(0, 9, "autoIndex"))
+		if (directive == "autoIndex")
 			srv->locations[LocI].autoIndex = line;
-		else if (!directive.compare(0, 13, "method"))
+		else if (directive == "method")
 			srv->locations[LocI].allowedMethods = line;
-		else if (!directive.compare(0, 5, "index"))
+		else if (directive == "index")
 			srv->locations[LocI].index = line;
-		else if (!directive.compare(0, 6, "return"))
+		else if (directive == "return")
 			srv->locations[LocI].ret = line;
-		else if (!directive.compare(0, 10, "uploadPath"))
+		else if (directive == "uploadPath")
 			srv->locations[LocI].uploadPath = line;
 		else
 			throw std::invalid_argument("Error with the line: " + line);
 	}
 	else if (brackets->inServer)
 	{
-		if (!directive.compare(0, 8, "hostname"))
+		if (directive == "hostname")
 			srv->hostname = line;
-		else if (!directive.compare(0, 4, "root"))
+		else if (directive == "root")
 			srv->root = line;
-		else if (!directive.compare(0, 7, "maxSize"))
+		else if (directive == "maxSize")
 			srv->maxSize = line;
 		else
 			throw std::invalid_argument("Error with the line: " + line);
@@ -105,7 +96,7 @@ static void addVect(std::string &line, server *srv, bracketData *brackets)
 
 	if (brackets->inLocation)
 	{
-		if (!directive.compare(0, 3, "cgi"))
+		if (directive == "cgi")
 			srv->locations[locI].cgi.push_back(line);
 		else
 			throw std::invalid_argument("Error, impossible to add this line: " + line);
@@ -113,9 +104,9 @@ static void addVect(std::string &line, server *srv, bracketData *brackets)
 	}
 	else if (brackets->inServer)
 	{
-		if (!directive.compare(0, 6, "listen"))
+		if (directive == "listen")
 			srv->listen.push_back(line);
-		else if (!directive.compare(0, 10, "errorPage"))
+		else if (directive == "errorPage")
 			srv->errorPages.push_back(line);
 		else
 			throw std::invalid_argument("Error, impossible to add this line: " + line);
@@ -148,9 +139,18 @@ static std::map<std::string, directiveHandler > createDispatchTable()
 
 }
 
-void checkEmptyElem(server *serverStruct)
+void checkEmptyElem(server *srv)
 {
-	(void)serverStruct;
+	if (srv->maxSize.empty())
+		throw std::invalid_argument("Error, missing maxSize");
+	if (srv->locations.size() == 0)
+		throw std::invalid_argument("Error, missing locations");
+	if (srv->root.empty())
+		throw std::invalid_argument("Error, missing root");
+	if (srv->listen.size() == 0)
+		throw std::invalid_argument("Error, missing listen");
+	if (srv->hostname.empty())
+		throw std::invalid_argument("Error, missing hostname");
 	return ;
 }
 
@@ -189,7 +189,7 @@ static void addLine(std::string line, server *srv, bracketData *brackets, std::s
 	throw std::invalid_argument("Invalid directive: " + directive);
 }
 
-server CreateStruct(std::string configPath)
+server createStruct(std::string configPath)
 {
 	server configStruct;
 	std::ifstream configFile;
@@ -220,7 +220,7 @@ int main(void)
 {
 	try 
 	{
-		server testStruct = CreateStruct("../../newGood.conf");
+		server testStruct = createStruct("../../newGood.conf");
 		printStructV2(testStruct);
 	} 
 	catch (std::exception &e) 
