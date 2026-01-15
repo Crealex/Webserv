@@ -2,7 +2,7 @@
 #include "../../includes/epoll/Epoll.hpp"
 #include "../../includes/Client.hpp"
 
-static bool	isServerSocket(int fd, std::vector<Socket *> sockets)
+static bool	isServerSocket(int fd, std::vector<Socket *> sockets, std::string &hostnameOfSrvSock)
 {
 	int	sizeSockets;
 	int	nbSockData;
@@ -14,7 +14,10 @@ static bool	isServerSocket(int fd, std::vector<Socket *> sockets)
 		for (int j = 0; j < nbSockData; j++)
 		{
 			if (fd == sockets[i]->getSockData()[j]->getFdServer())
+			{
+				hostnameOfSrvSock = sockets[i]->getHostname();
 				return (true);
+			}
 		}
 	}
 	return (false);
@@ -37,12 +40,12 @@ static bool	isClientSocket(int fd, std::vector<Client> clients, int &idClient)
 }
 
 
-static int	acceptClient(int fd, std::vector<Client> &clients, Epoll &epoll)
+static int	acceptClient(int fd, std::vector<Client> &clients, Epoll &epoll, std::string hostnameOfSrvSock)
 {
 	int 		fdClient;
 	Client		newClient;
 	sockaddr_in	newSockadd;
-	socklen_t addrlen;
+	socklen_t	addrlen;
 	
 	
 	fdClient = -1;
@@ -50,7 +53,6 @@ static int	acceptClient(int fd, std::vector<Client> &clients, Epoll &epoll)
 	fdClient = accept(fd, (sockaddr *)&newSockadd, &addrlen);
 	if (fdClient == -1)
 		return (-1);
-	// sockets[i]->setFdClient(fdClient, j);
 	sockOptNonBlocking(fdClient);
 	newClient.setFdClient(fdClient);
 	newClient.setSockadd(newSockadd);
@@ -73,12 +75,13 @@ static void	receiveRequest(Config &conf, Client client)
 	client.setBuf(buffer);
 }
 
-void	handleClient(std::vector<Socket *> &sockets, Config conf, Epoll &epoll)
+void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, Epoll &epoll)
 {
 	int					epollCounterWait;
 	int					idClient;
 	size_t				sizeSockets;
 	size_t				sizeSocketData;
+	std::string			hostnameOfSrvSock;
 	std::vector<Client>	clients;
 	epoll_event			events[epoll.getNbSockets()];
 
@@ -91,16 +94,16 @@ void	handleClient(std::vector<Socket *> &sockets, Config conf, Epoll &epoll)
 		return ;
 	for (int indexEvent = 0; indexEvent < epollCounterWait; indexEvent++)
 	{
-		if (events[indexEvent].events == EPOLLIN && isServerSocket(events[indexEvent].data.fd, sockets))
+		if (events[indexEvent].events == EPOLLIN && isServerSocket(events[indexEvent].data.fd, sockets, hostnameOfSrvSock))
 		{
-			if (acceptClient(events[indexEvent].data.fd, clients, epoll) < 0)
+			if (acceptClient(events[indexEvent].data.fd, clients, epoll, hostnameOfSrvSock) < 0)
 				continue ;
 		}
 		else if (isClientSocket(events[indexEvent].data.fd, clients, idClient))
 		{
 			if (events[indexEvent].events == EPOLLIN)
 			{
-				receiveRequest(conf, clients[idClient]);
+				receiveRequest(servers, clients[idClient]);
 			}
 			else
 			{

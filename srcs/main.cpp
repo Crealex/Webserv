@@ -59,7 +59,7 @@ int main (int argc, char **argv)
 		printSocketListen(sockets);
 		Epoll	epoll(sockets, nbSockets);
 		while (1)
-			handleClient(sockets, configTest, epoll);
+			handleClient(sockets, servers, epoll);
 	}
 	catch (std::exception &e) 
 	{
