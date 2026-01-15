@@ -3,7 +3,7 @@
 #define SOCKETDATA_HPP
 
 #include "../includes.hpp"
-#include "../Config.hpp"
+#include "../Server.hpp"
 #include <netinet/in.h>
 
 class SocketData
