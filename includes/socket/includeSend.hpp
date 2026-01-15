@@ -4,7 +4,8 @@
 
 #include "../includes.hpp"
 #include "../epoll/Epoll.hpp"
-#include "../Config.hpp"
+#include "../Server.hpp"
+#include "../Client.hpp"
 #include "Socket.hpp"
 
 #include <sys/socket.h>

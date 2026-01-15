@@ -1,6 +1,4 @@
 #include "../../includes/socket/includeSend.hpp"
-#include "../../includes/epoll/Epoll.hpp"
-#include "../../includes/Client.hpp"
 
 static bool	isServerSocket(int fd, std::vector<Socket *> sockets, std::string &hostnameOfSrvSock)
 {
@@ -68,6 +66,7 @@ static void	receiveRequest(Client &client)
 	char	*buffer;
 
 	sizeRecv = -1;
+	buffer = NULL;
 	sizeRecv = recv(client.getFdClient(), buffer, 10000, 0);
 	if (sizeRecv == -1)
 		receiveRequest(client);
@@ -97,8 +96,6 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 {
 	int					epollCounterWait;
 	int					idClient;
-	size_t				sizeSockets;
-	size_t				sizeSocketData;
 	std::string			hostnameOfSrvSock;
 	std::vector<Client>	clients;
 	epoll_event			events[epoll.getNbSockets()];
@@ -106,7 +103,6 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 	epollCounterWait = 0;
 	idClient = 0;
 
-	sizeSockets = sockets.size();
 	epollCounterWait = epoll_wait(epoll.getEpollFd(), events, epoll.getNbSockets(), 2000);
 	if (epollCounterWait < 1)
 		return ;
@@ -125,7 +121,8 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 			}
 			else
 			{
-				sendResponse(clients[idClient], goodServer(Clients[idClient]));
+				std::cout << "here" << std::endl;
+				sendResponse(clients[idClient], goodServer(clients[idClient], servers));
 			}
 		}
 	}

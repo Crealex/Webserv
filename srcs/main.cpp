@@ -1,4 +1,3 @@
-#include "../includes/colors.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/printDebug.hpp"
 #include "../includes/includes.hpp"
@@ -39,6 +38,8 @@ static std::vector<Server>	createServers(std::string path)
 int main (int argc, char **argv) 
 {
 	std::vector<Socket *>	sockets;
+	std::vector<Server>		servers;
+	int						nbSockets;
 	if (argc > 2)
 	{
 		std::cerr << RED << "Invalid number of arguments, you need the executable and maybe a config file" << RESET << std::endl;
@@ -46,8 +47,6 @@ int main (int argc, char **argv)
 	}
 	try 
 	{
-		int		nbSockets;
-		std::vector<Server>	servers;
 
 		servers = createServers(argv[1]);
 		sockets = createSocket(servers, nbSockets);

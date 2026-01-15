@@ -7,16 +7,8 @@
 
 Server::Server(struct server data)
 {
-	try 
-	{
-		printStructV2(data);
-		parseElt(data);
-	}
-	catch (std::exception &e)
-	{
-		std::cerr << RED << e.what() << RESET << std::endl;
-		return ;
-	}
+	printStructV2(data);
+	parseElt(data);
 
 	//std::cout << GREEN << "Default Server constructor called" << RESET << std::endl;
 }
