@@ -1,23 +1,23 @@
 #include "../includes/includes.hpp"
-#include "../includes/socket/Socket.hpp"
-#include "../includes/socket/SocketData.hpp"
+#include "../includes/Server.hpp"
+#include "../includes/Client.hpp"
 #include "../includes/requests/methodsClass.hpp"
 #include "../includes/requests/ResponseError.hpp"
 
-void sendResponse(unsigned int socket, char *buff, Config conf)
+void sendResponse(Client client, Server server)
 {
 	std::string response;
 	
 	try
 	{
 		Methods *request;
-		request = createMethod(buff, conf.getMaxSize());
-		response = request->createResponse(conf);
+		request = createMethod(buff, serv.getMaxSize());
+		response = request->createResponse(serv);
 		delete request;
 	}
 	catch(ResponseError& e)
 	{
-		response = e.createResponse(conf);
+		response = e.createResponse(serv);
 	}
 	
 	std::cout << "response:" << response  << std::endl;
