@@ -168,9 +168,9 @@ Location::Location(location src, std::string root)
 	_autoIndex = retAutoIndex(src.autoIndex);
 	_ret = retReturn(src.ret);
 	_uploadPath = retSecond(src.uploadPath, 2);
-	_path = retSecond(src.path, 3);
+	_path = retSecond(root, 2) + retSecond(src.path, 3);
 	_index = retSecond(src.index, 2);
-	checkIndex(_index, root + _path);
+	checkIndex(_index, _path);
 	_allowedMethods = retMethods(src.allowedMethods);
 	_cgiHandler = retCgi(src.cgi);
 	checkValidity();
@@ -260,12 +260,12 @@ void Location::print() const
 
 void Location::checkValidity()
 {
-	if (!_ret.first.empty() && 
+	if (_ret.first.empty() ^ // XOR condition it accept if only one of the 2 element are true
 			(_allowedMethods.at("GET") == true || 
 			_allowedMethods.at("POST") == true ||
 			_allowedMethods.at("DELETE") == true))
 	{
-		throw std::invalid_argument("Error, redirection and method on the location: " + _path);
+		throw std::invalid_argument("Error, redirection and method on the location or non of them: " + _path);
 	}
 
 	if (!_index.empty() && _autoIndex)
@@ -284,12 +284,20 @@ std::vector<Location> createLocations(server serv)
 		ret.push_back(Location(*it, serv.root));
 	}
 
+	std::cout << serv.root + '/' << std::endl;
 	int check = 0;
 	for (std::vector<Location>::iterator it = ret.begin();
 		it != ret.end(); it++)
 	{
-		if (it->getPath() == serv.root + "/")
+		std::cout << it->getPath() << std::endl;
+		if (it->getPath() == retSecond(serv.root, 2) + "/")
 			check = 1;
+		for (std::vector<Location>::iterator it2 = it + 1;
+			it2 != ret.end(); it2++)
+		{
+			if (it->getPath() == it2->getPath())
+				throw std::invalid_argument("Error, multiple location with same path:" + it->getPath());
+		}
 	}
 	if (check == 0)
 		throw std::invalid_argument("Error, no '/' root location in config file.");

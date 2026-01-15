@@ -217,15 +217,21 @@ server createStruct(std::string configPath)
 
 }
 
-// int main(void)
-// {
-// 	try 
-// 	{
-// 		server testStruct = CreateStruct("../../newGood.conf");
-// 		printStructV2(testStruct);
-// 	} 
-// 	catch (std::exception &e) 
-// 	{
-// 		std::cout << RED << e.what() << RESET << std::endl;
-// 	}
-// }
+int main(void)
+{
+	try 
+	{
+		server testStruct = createStruct("newGood.conf");
+		// printStructV2(testStruct);
+		std::vector<Location> test = createLocations(testStruct);
+		for (std::vector<Location>::iterator it = test.begin();
+			it != test.end(); it++)
+		{
+			it->print();
+		}
+	}
+	catch (std::exception &e) 
+	{
+		std::cout << RED << e.what() << RESET << std::endl;
+	}
+}
