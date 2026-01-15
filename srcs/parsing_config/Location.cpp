@@ -12,7 +12,7 @@
 static void checkNbrElt(size_t n, std::string str)
 {
 	std::stringstream ss(str);
-	int i = 0;
+	unsigned int i = 0;
 	std::string check;
 	while (ss >> check)
 		i++;
@@ -56,25 +56,25 @@ static std::string retSecond(std::string str, size_t n)
 	return str;
 }
 
-static std::string retPath(std::string str, std::string root)
-{
-	if (str.empty())
-		return str;
-	checkNbrElt(2, str);
-	std::stringstream ss(str);
-	str.clear();
-	ss >> str;
-	ss >> str;
-
-	str = root + str;
-	if (access(str.c_str(), R_OK) == -1)
-	{
-		std::string error("Error: could not open Dir:\n\t");
-		throw std::invalid_argument(error + str);
-	}
-
-	return str;
-}
+//static std::string retPath(std::string str, std::string root)
+//{
+//	if (str.empty())
+//		return str;
+//	checkNbrElt(2, str);
+//	std::stringstream ss(str);
+//	str.clear();
+//	ss >> str;
+//	ss >> str;
+//
+//	str = root + str;
+//	if (access(str.c_str(), R_OK) == -1)
+//	{
+//		std::string error("Error: could not open Dir:\n\t");
+//		throw std::invalid_argument(error + str);
+//	}
+//
+//	return str;
+//}
 
 static std::map<pairString> retCgi(std::vector<std::string> v)
 {

@@ -28,22 +28,19 @@ static std::string noContent(std::string protocol, Request dataError)
 	return (resp);
 }
 
-const std::string Delete::createResponse(Config conf)
+const std::string Delete::createResponse(Server srv)
 {
 	std::ifstream	file;
 	std::string		contentFile;
 	std::string		path;
 	std::string		resp;
 	Request			dataError;
-	// TODO: Revoir le path
 
 	dataError._protocol = this->_protocol;
 	dataError._host = this->_host;
 	dataError._location = this->_location;
-	path = conf.getDirRoot(conf.getSitesName()[0]) + conf.getSitesName()[0] + this->_location;
-	if (path.find(".") > path.length())
-		path.append(conf.getDefaultFile(conf.getSitesName()[0]));
-	//std::cout << path << std::endl;
+
+	path = srv.getRoot() + this->_location; // INFO: Peut etre un file ou un dossier
 	if (access(path.c_str(), F_OK) == -1)
 		return (noContent(this->_protocol, dataError));
 	if (!addDate(&resp))

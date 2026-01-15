@@ -65,6 +65,9 @@ re: fclean all
 
 .PHONY: all clean fclean re display_ascii
 
+testalex: 
+	c++ -Werror -Wall -Werror $(addprefix srcs/, request/MethodsClass.cpp parsing_config/createStructV2.cpp request/MimeTypes.cpp parsing_config/Location.cpp parsing_config/pars*.cpp Server.cpp request/Get.cpp request/addLineToResp.cpp request/ResponseError.cpp printDebug.cpp) -o test
+
 display_ascii:
 	@echo "$(BOLD)$(BLACK)"
 	@if [ -f ascii_art.txt ]; then \
