@@ -68,11 +68,6 @@ std::pair<std::string, std::string>	const	&Server::getCgiHandler() const
 	return (this->_cgiHandler);
 }
 
-std::vector<SocketData *> const				&Server::getSocketsServer() const
-{
-	return (this->_socketsServer);
-}
-
 // METHODS
 // PRIVATE
 void	Server::parseElt(struct server data)

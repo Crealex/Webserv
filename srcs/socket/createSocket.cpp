@@ -66,7 +66,7 @@ std::vector<Socket *>	createSocket(Server srv, int &nbSockets)
 	sockets.reserve(sizeAddPort);
 	for (size_t i = 0; i < sizeAddPort; i++)
 	{
-		Socket	*temp = new Socket(srv.getAddressPort()[i]);
+		Socket	*temp = new Socket(srv, i);
 		sockets.push_back(temp);
 	}
 	nbSockets = bindSocket(sockets);

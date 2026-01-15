@@ -13,7 +13,7 @@ class Socket
 
 		void	addingSockets(server data);
 	public:
-		Socket(server data);
+		Socket(Server data, int i);
 		~Socket();
 
 		std::string	const				&getHostname() const;

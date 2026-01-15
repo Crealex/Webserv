@@ -1,8 +1,8 @@
 #include "../../includes/socket/Socket.hpp"
 
-Socket::Socket(Server data)
+Socket::Socket(Server data, int i)
 {
-	this->_hostname = (data.getHos);
+	this->_hostname = (data.getHostname());
 	addingSockets(data);
 }
 
