@@ -11,17 +11,17 @@ void sendResponse(Client client, Server server)
 	try
 	{
 		Methods *request;
-		request = createMethod(buff, serv.getMaxSize());
-		response = request->createResponse(serv);
+		request = createMethod((char *)client.getBuf().c_str(), server.getMaxSize());
+		response = request->createResponse(server);
 		delete request;
 	}
 	catch(ResponseError& e)
 	{
-		response = e.createResponse(serv);
+		response = e.createResponse(server);
 	}
 	
 	std::cout << "response:" << response  << std::endl;
-	while (send(socket, response.c_str(), response.size(), 0) == -1)
+	while (send(client.getFdClient(), response.c_str(), response.size(), 0) == -1)
 	{
 		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
 	}
