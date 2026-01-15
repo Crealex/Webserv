@@ -4,7 +4,7 @@
 #include "../includes/requests/methodsClass.hpp"
 #include "../includes/requests/ResponseError.hpp"
 
-void sendResponse(unsigned int socket, char *buff, Config conf)
+void sendResponse(unsigned int socket, char *buff, Server)
 {
 	std::string response;
 	
