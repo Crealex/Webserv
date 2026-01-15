@@ -45,7 +45,7 @@ unsigned int	checkDigitValue(std::string str, bool isMaxSize)
 	std::stringstream	ss;
 
 	if (isValidDigit(str))
-		throw std::invalid_argument(RED "Error : invalid digital value" RESET);
+		throw std::invalid_argument(RED "Error : invalid digital value : " + str + RESET);
 
 	allDigitsNotZero = "123456789";
 	firstDigitNotZero = str.find_first_of(allDigitsNotZero.c_str(), 0);

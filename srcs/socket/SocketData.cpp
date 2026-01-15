@@ -9,7 +9,6 @@
 SocketData::SocketData(addPort_t addPort)
 {
 	assignmentSocket(addPort);
-	this->_fdClient = -1;
 }
 
 SocketData::~SocketData()
@@ -47,18 +46,6 @@ sockaddr_in const	&SocketData::getSockadd() const
 int const	&SocketData::getFdServer() const
 {
 	return (this->_fdServer);
-}
-
-int const	&SocketData::getFdClient() const
-{
-	return (this->_fdClient);
-}
-
-//SETTERS
-void	SocketData::setFdClient(int newFdClient)
-{
-	this->_fdClient = newFdClient;
-	this->sockOptNonBlocking(this->_fdClient);
 }
 
 // METHODS

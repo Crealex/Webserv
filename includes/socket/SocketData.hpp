@@ -11,7 +11,6 @@ class SocketData
 	private:
 		sockaddr_in	_sockadd;
 		int			_fdServer;
-		int			_fdClient;
 
 		void	assignmentSocket(addPort_t addPort);
 		void	sockOptNonBlocking(int &socketFd);
@@ -21,9 +20,6 @@ class SocketData
 
 		sockaddr_in	const	&getSockadd() const;
 		int	const			&getFdServer() const;
-		int	const			&getFdClient() const;
-
-		void	setFdClient(int newFdClient);
 };
 
 #endif
