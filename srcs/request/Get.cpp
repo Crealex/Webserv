@@ -52,7 +52,7 @@ const std::string Get::createResponse(Server srv)
 	dataError._location = this->_location;
 	dataError._userAgent = this->_userAgent;
 	// root + sitename + (si pas fichier precis) defaultfile
-	path = srv.getRoot() + findTarget(this->_location, srv.getLocations(), dataError);
+	path = srv.getRoot() + "/" + findTarget(this->_location, srv.getLocations(), dataError);
 	target.open(path.c_str());
 	// *************************
 	if (!target.is_open())
@@ -85,27 +85,59 @@ const std::string Get::createResponse(Server srv)
 
 // *** TEST MAIN ***
 
+static bool	isDuplicateServer(Server temp, std::vector<Server> res)
+{
+	int	sizeRes;
+
+	sizeRes = res.size();
+	for (int i = 0; i < sizeRes; i++)
+	{
+		if (res[i].getHostname() == temp.getHostname())
+			return (true);
+	}
+	return (false);
+}
+
+static std::vector<Server>	createServers(std::string path)
+{
+	std::vector<Server>	res;
+	int					sizeStructSrv;
+	std::vector<server>	structServers;
+
+	structServers = createVectStructSrv(path);
+	sizeStructSrv = structServers.size();
+	for (int i = 0; i < sizeStructSrv; i++)
+	{
+		Server	temp(structServers[i]);
+		if (isDuplicateServer(temp, res))
+			throw std::invalid_argument(RED "Error : this server exists already" RESET);
+		res.push_back(temp);
+	}
+	return (res);
+}
+
 int main(void)
 {
 	Request requ;
 
 	requ._accept = "text/html";
 	requ._host = "../../www";
-	requ._location = "/demo/index.html";
-	requ._protocol = "HTTe/1.1";
+	requ._location = "/index.html";
+	requ._protocol = "HTTP/1.1";
 	requ._userAgent = "Firefox";
-	Server srv("../../danalexian.conf");
 
+	std::vector<Server> srvs;
 	try 
 	{
+		srvs = createServers("danalexian.conf");
 		Get		resp(requ);
 		std::cout << "resp: " << std::endl;
-		std::cout << resp.createResponse(srv) << std::endl;
+		std::cout << resp.createResponse(srvs.at(0)) << std::endl;
 
 	}
 	catch (ResponseError &e)
 	{
-		std::cout << e.createResponse(srv) << std::endl;
+		std::cout << e.createResponse(srvs.at(0)) << std::endl;
 	}
 	catch (std::exception &e)
 	{
