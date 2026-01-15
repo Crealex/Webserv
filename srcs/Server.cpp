@@ -1,19 +1,15 @@
 #include "../includes/includes.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/printDebug.hpp"
-#include "../includes/Location.hpp"
 #include <exception>
 
 // Constructor & Destructor
 
-Server::Server(std::string pathServer)
+Server::Server(struct server data)
 {
-	struct server data;
-
 	try 
 	{
 		std::cout << "in create" << std::endl;
-		data = createStruct(pathServer);
 		printStructV2(data);
 	}
 	catch (std::exception &e)
@@ -60,26 +56,20 @@ std::map<unsigned int, std::string> const	&Server::getErrorPage() const
 	return (this->_errorPage);
 }
 
-// std::vector<Location> const	&Server::getLocations() const
-// {
-// 	return (this->_locations);
-// }
+std::vector<Location> const	&Server::getLocations() const
+{
+	return (this->_locations);
+}
 
 std::pair<std::string, std::string>	const	&Server::getCgiHandler() const
 {
 	return (this->_cgiHandler);
 }
 
+// METHODS
+// PRIVATE
 void	Server::parseElt(struct server data)
 {
-	// this->errorPath = parseErrorPath();
-
-	// for (std::vector<siteParse>::iterator it = data.site.begin();
-	// 	it != data.site.end();
-	// 	it++)
-	// {
-	// 	siteParsing((*it));
-	// }
 	this->_hostname = parseHostname(data.hostname);
 	this->_root = parseRoot(data.root);
 	std::cout << "euhhh" << std::endl;

@@ -4,6 +4,7 @@
 
 #include "includes.hpp"
 #include "configStruct.hpp"
+#include "socket/SocketData.hpp"
 #include "Location.hpp"
 
 typedef std::pair<std::string, unsigned int> addPort_t;
@@ -19,13 +20,12 @@ class Server
 	std::vector<Location>				_locations;
 	std::pair<std::string, std::string>	_cgiHandler;
 
-	void 	siteParsing(struct siteParse site);
 	void	parseElt(struct server data);
 
 	void printAtt() const;
 
   public:
-	Server(std::string pathServer);
+	Server(struct server data);
 	~Server();
 
 	// GETTER

@@ -1,5 +1,5 @@
 #include "../../includes/includes.hpp"
-#include "../../includes/Config.hpp"
+#include "../../includes/Server.hpp"
 #include "../../includes/socket/Socket.hpp"
 #include <arpa/inet.h>
 
@@ -57,16 +57,16 @@ static int	bindSocket(std::vector<Socket *> &sockets)
 	return (nbSockets);
 }
 
-std::vector<Socket *>	createSocket(Config conf, int &nbSockets)
+std::vector<Socket *>	createSocket(std::vector<Server> srvs, int &nbSockets)
 {
 	std::vector<Socket *>	sockets;
-	size_t				sizeAddPort;
+	size_t					sizeSrvs;
 
-	sizeAddPort = conf.getAddressPort().size();
-	sockets.reserve(sizeAddPort);
-	for (size_t i = 0; i < sizeAddPort; i++)
+	sizeSrvs = srvs.size();
+	sockets.reserve(sizeSrvs);
+	for (size_t i = 0; i < sizeSrvs; i++)
 	{
-		Socket	*temp = new Socket(conf.getAddressPort()[i]);
+		Socket	*temp = new Socket(srvs[i]);
 		sockets.push_back(temp);
 	}
 	nbSockets = bindSocket(sockets);

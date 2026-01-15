@@ -12,6 +12,11 @@ Client::~Client()
 }
 
 // GETTERS
+std::string const	&Client::getHostname() const
+{
+	return (this->_hostname);
+}
+
 int const	&Client::getFdClient() const
 {
 	return (this->_fdSocket);
@@ -33,6 +38,11 @@ bool const	&Client::getEndOfFile() const
 }
 
 // SETTERS
+void	Client::setHostname(std::string newHostname)
+{
+	
+}
+
 void	Client::setFdClient(int newFd)
 {
 	this->_fdSocket = newFd;
