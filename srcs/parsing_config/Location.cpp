@@ -126,7 +126,7 @@ static void checkIndex(std::string index, std::string path)
 		throw std::invalid_argument(error + path + index);
 	}
 
-	std::ifstream ifs(path + index);
+	std::ifstream ifs((path + index).c_str());
 
 	if (!ifs.is_open())
 	{
