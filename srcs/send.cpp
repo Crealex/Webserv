@@ -11,13 +11,13 @@ void sendResponse(Client client, Server server)
 	try
 	{
 		Methods *request;
-		request = createMethod(buff, conf.getMaxSize());
-		response = request->createResponse(conf);
+		request = createMethod(buff, serv.getMaxSize());
+		response = request->createResponse(serv);
 		delete request;
 	}
 	catch(ResponseError& e)
 	{
-		response = e.createResponse(conf);
+		response = e.createResponse(serv);
 	}
 	
 	std::cout << "response:" << response  << std::endl;
