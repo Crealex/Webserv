@@ -11,6 +11,6 @@
 
 void	sockOptNonBlocking(int &socketFd);
 void	addEpollFd(int fd, int nbPollFd, Epoll &epoll);
-void	sendResponse(unsigned int socket, char *buff, Config conf);
+void	sendResponse(Client client, Server server);
 
 #endif

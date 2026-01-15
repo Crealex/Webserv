@@ -40,7 +40,7 @@ bool const	&Client::getEndOfFile() const
 // SETTERS
 void	Client::setHostname(std::string newHostname)
 {
-	
+	this->_hostname = newHostname;
 }
 
 void	Client::setFdClient(int newFd)

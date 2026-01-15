@@ -27,7 +27,7 @@ struct server {
 
 typedef std::pair<std::string, unsigned int> addPort_t;
 
-std::vector<server> createVectStructSrv(std::string configPath)
+std::vector<server> createVectStructSrv(std::string configPath);
 
 std::string							parseHostname(std::string data);
 std::vector<addPort_t>				parseAddressPort(std::vector<std::string> data);

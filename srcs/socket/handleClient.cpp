@@ -56,23 +56,41 @@ static int	acceptClient(int fd, std::vector<Client> &clients, Epoll &epoll, std:
 	sockOptNonBlocking(fdClient);
 	newClient.setFdClient(fdClient);
 	newClient.setSockadd(newSockadd);
+	newClient.setHostname(hostnameOfSrvSock);
 	clients.push_back(newClient);
 	addEpollFd(newClient.getFdClient(), epoll.getNbSockets(), epoll);
 	return (0);
 }
 
-static void	receiveRequest(Config &conf, Client client)
+static void	receiveRequest(Client &client)
 {
 	int		sizeRecv;
 	char	*buffer;
 
 	sizeRecv = -1;
 	sizeRecv = recv(client.getFdClient(), buffer, 10000, 0);
-	if (sizeRecv == -1 || sizeRecv < 10000)
+	if (sizeRecv == -1)
+		receiveRequest(client);
+	if (sizeRecv < 10000)
 	{
-		client.
+		client.setEndOfFile(true);
 	}
 	client.setBuf(buffer);
+}
+
+static Server	goodServer(Client client, std::vector<Server> servers)
+{
+	int sizeSrv;
+	int	goodIndex;
+
+	sizeSrv = servers.size();
+	goodIndex = 0;
+	for (int i = 0; i < sizeSrv; i++)
+	{
+		if (client.getHostname() == servers[i].getHostname())
+			goodIndex = i;
+	}
+	return (servers[goodIndex]);
 }
 
 void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, Epoll &epoll)
@@ -103,11 +121,11 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 		{
 			if (events[indexEvent].events == EPOLLIN)
 			{
-				receiveRequest(servers, clients[idClient]);
+				receiveRequest(clients[idClient]);
 			}
 			else
 			{
-				sendResponse(sockets[i]->getSockData()[j]->getFdClient(), bufRecv, conf.getMaxSize());
+				sendResponse(clients[idClient], goodServer(Clients[idClient]));
 			}
 		}
 	}

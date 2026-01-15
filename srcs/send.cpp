@@ -1,10 +1,10 @@
 #include "../includes/includes.hpp"
-#include "../includes/socket/Socket.hpp"
-#include "../includes/socket/SocketData.hpp"
+#include "../includes/Server.hpp"
+#include "../includes/Client.hpp"
 #include "../includes/requests/methodsClass.hpp"
 #include "../includes/requests/ResponseError.hpp"
 
-void sendResponse(unsigned int socket, char *buff, Server serv)
+void sendResponse(Client client, Server server)
 {
 	std::string response;
 	
