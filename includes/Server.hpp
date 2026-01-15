@@ -21,7 +21,6 @@ class Server
 	std::pair<std::string, std::string>	_cgiHandler;
 	std::vector<SocketData *>			_socketsServer;
 
-	void 	siteParsing(struct siteParse site);
 	void	parseElt(struct server data);
 
 	void printAtt() const;
