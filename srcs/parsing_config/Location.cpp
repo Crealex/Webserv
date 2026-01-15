@@ -168,9 +168,9 @@ Location::Location(location src, std::string root)
 	_autoIndex = retAutoIndex(src.autoIndex);
 	_ret = retReturn(src.ret);
 	_uploadPath = retSecond(src.uploadPath, 2);
-	_path = retSecond(root, 2) + retSecond(src.path, 3);
+	_path = retSecond(src.path, 3);
 	_index = retSecond(src.index, 2);
-	checkIndex(_index, _path);
+	checkIndex(_index, retSecond(root, 2) + _path);
 	_allowedMethods = retMethods(src.allowedMethods);
 	_cgiHandler = retCgi(src.cgi);
 	checkValidity();
@@ -289,14 +289,13 @@ std::vector<Location> createLocations(server serv)
 	for (std::vector<Location>::iterator it = ret.begin();
 		it != ret.end(); it++)
 	{
-		std::cout << it->getPath() << std::endl;
-		if (it->getPath() == retSecond(serv.root, 2) + "/")
+		if (it->getPath() == "/")
 			check = 1;
 		for (std::vector<Location>::iterator it2 = it + 1;
 			it2 != ret.end(); it2++)
 		{
 			if (it->getPath() == it2->getPath())
-				throw std::invalid_argument("Error, multiple location with same path:" + it->getPath());
+				throw std::invalid_argument("Error, multiple location with same path:\n\t" + it->getPath());
 		}
 	}
 	if (check == 0)
