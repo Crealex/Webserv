@@ -10,6 +10,6 @@ class Delete: public Methods
 		
     public:
         Delete(Request requ); 
-		const std::string createResponse(Config conf);
+		const std::string createResponse(Server srv);
 };
 #endif // !DELETE_HPP

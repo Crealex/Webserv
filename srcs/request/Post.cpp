@@ -49,7 +49,7 @@ void Post::handlePostFile(std::string *resp, std::string boundary)
 	std::getline(iss, this->_body );
 }
 
-const std::string Post::createResponse(Config conf)
+const std::string Post::createResponse(Server srv)
 {
 	std::string resp;
 	std::ofstream newFile;
@@ -67,9 +67,7 @@ const std::string Post::createResponse(Config conf)
 	//	handlePostFile(&resp, boundary);
 	//	return (resp);
 	//}
-	path = conf.getDirRoot(conf.getSitesName()[0]) + conf.getSitesName()[0] + this->_location;
-	if (path.find(".") > path.length())
-		path.append(conf.getDefaultFile(conf.getSitesName()[0]));
+	path = srv.getRoot() + this->_location; // INFO: Peut etre un file ou un dossier, a voir pour utiliser la meme fonction que get
 	newFile.open(path.c_str(), std::ios::app);
 	if (!newFile.is_open())
 		throw (ResponseError(401, "Unauthorized", dataError));

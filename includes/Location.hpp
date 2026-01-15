@@ -1,3 +1,7 @@
+#ifndef LOCATION_HPP
+
+# define LOCATION_HPP
+
 #include "includes.hpp"
 #include "configStruct.hpp"
 
@@ -38,3 +42,5 @@ class Location {
 std::vector<Location> createLocations(server serv);
 std::ostream& operator<<(std::ostream &os, std::map<pairString> map);
 std::ostream& operator<<(std::ostream &os, std::map<std::string, bool> map);
+
+#endif

@@ -13,7 +13,7 @@ class Post: public Methods
 		void handlePostFile(std::string *resp, std::string boundary);
     public:
 		Post(Request requ);
-		const std::string	createResponse(Config conf);
+		const std::string	createResponse(Server srv);
 };
 
 #endif // !POST_HPP
