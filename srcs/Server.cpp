@@ -9,15 +9,14 @@ Server::Server(struct server data)
 {
 	try 
 	{
-		std::cout << "in create" << std::endl;
 		printStructV2(data);
+		parseElt(data);
 	}
 	catch (std::exception &e)
 	{
-		std::cerr << RED << "in createStruct: " << e.what() << RESET << std::endl;
+		std::cerr << RED << e.what() << RESET << std::endl;
 		return ;
 	}
-	parseElt(data);
 
 	//std::cout << GREEN << "Default Server constructor called" << RESET << std::endl;
 }
@@ -72,10 +71,8 @@ void	Server::parseElt(struct server data)
 {
 	this->_hostname = parseHostname(data.hostname);
 	this->_root = parseRoot(data.root);
-	std::cout << "euhhh" << std::endl;
 	this->_addressPort = parseAddressPort(data.listen);
 	// this->_errorPage = parseErrorPage(data.errorPages);
-	std::cout << "euhhh" << std::endl;
 	this->_maxSize = parseMaxSize(data.maxSize);
 	this->_locations = createLocations(data);
 	printAtt();
