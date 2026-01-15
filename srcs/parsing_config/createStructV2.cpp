@@ -8,10 +8,10 @@
 #include <map>
 #include <sstream>
 #include <stdexcept>
-#include "../../includes/Location.hpp"
+#include <vector>
 
 struct bracketData {
-	bool inServer ;
+	bool inServer = true;
 	bool inLocation ;
 };
 
@@ -30,36 +30,21 @@ void rmWhiteSpaces(std::string *line)
 {
 	if (line->empty())
 		return ;
-	while (line->at(0) == '	' || line->at(0) == ' ')
+	while (!line->empty() && (line->at(0) == '	' || line->at(0) == ' '))
 	{
 		line->erase(0, 1);
 	}
 }
 
-static void updateServerBracket(std::string &line, server *srv, bracketData *brackets)
-{
-	(void)line;
-	(void)srv;
-
-	if (brackets->inServer)
-		brackets->inServer = false;
-	else
-		brackets->inServer = true;
-}
-
 static void updateLocationBracket(std::string &line, server *srv, bracketData *brackets)
 {
-	static unsigned int locI = -1;
-
-	if (brackets->inLocation)
-		brackets->inLocation = false;
-	else
-	{
-		locI++;
-		brackets->inLocation = true;
-		srv->locations.push_back(location());
-		srv->locations.at(locI).path = line;
-	}
+	unsigned int locI;
+	if (brackets->inLocation == true)
+		throw std::invalid_argument("Error, missing closing bracket for the previous location");
+	brackets->inLocation = true;
+	srv->locations.push_back(location());
+	locI = srv->locations.size() - 1;
+	srv->locations.at(locI).path = line;
 }
 
 static void addElem(std::string &line, server *srv, bracketData *brackets)
@@ -69,26 +54,26 @@ static void addElem(std::string &line, server *srv, bracketData *brackets)
 
 	if (brackets->inLocation)
 	{
-		if (!directive.compare(0, 9, "autoIndex"))
+		if (directive == "autoIndex")
 			srv->locations[LocI].autoIndex = line;
-		else if (!directive.compare(0, 13, "method"))
+		else if (directive == "method")
 			srv->locations[LocI].allowedMethods = line;
-		else if (!directive.compare(0, 5, "index"))
+		else if (directive == "index")
 			srv->locations[LocI].index = line;
-		else if (!directive.compare(0, 6, "return"))
+		else if (directive == "return")
 			srv->locations[LocI].ret = line;
-		else if (!directive.compare(0, 10, "uploadPath"))
+		else if (directive == "uploadPath")
 			srv->locations[LocI].uploadPath = line;
 		else
 			throw std::invalid_argument("Error with the line: " + line);
 	}
 	else if (brackets->inServer)
 	{
-		if (!directive.compare(0, 8, "hostname"))
+		if (directive == "hostname")
 			srv->hostname = line;
-		else if (!directive.compare(0, 4, "root"))
+		else if (directive == "root")
 			srv->root = line;
-		else if (!directive.compare(0, 7, "maxSize"))
+		else if (directive == "maxSize")
 			srv->maxSize = line;
 		else
 			throw std::invalid_argument("Error with the line: " + line);
@@ -106,7 +91,7 @@ static void addVect(std::string &line, server *srv, bracketData *brackets)
 
 	if (brackets->inLocation)
 	{
-		if (!directive.compare(0, 3, "cgi"))
+		if (directive == "cgi")
 			srv->locations[locI].cgi.push_back(line);
 		else
 			throw std::invalid_argument("Error, impossible to add this line: " + line);
@@ -114,9 +99,9 @@ static void addVect(std::string &line, server *srv, bracketData *brackets)
 	}
 	else if (brackets->inServer)
 	{
-		if (!directive.compare(0, 6, "listen"))
+		if (directive == "listen")
 			srv->listen.push_back(line);
-		else if (!directive.compare(0, 10, "errorPage"))
+		else if (directive == "errorPage")
 			srv->errorPages.push_back(line);
 		else
 			throw std::invalid_argument("Error, impossible to add this line: " + line);
@@ -129,7 +114,6 @@ static std::map<std::string, directiveHandler > createDispatchTable()
 {
 	std::map<std::string, directiveHandler> dispatchTable;
 
-	dispatchTable["server"] = &updateServerBracket;
 	dispatchTable["hostname"] = &addElem;
 	dispatchTable["listen"] = &addVect;
 	dispatchTable["root"] = &addElem;
@@ -149,9 +133,18 @@ static std::map<std::string, directiveHandler > createDispatchTable()
 
 }
 
-void checkEmptyElem(server *serverStruct)
+void checkEmptyElem(server *srv)
 {
-	(void)serverStruct;
+	if (srv->maxSize.empty())
+		throw std::invalid_argument("Error, missing maxSize");
+	if (srv->locations.size() == 0)
+		throw std::invalid_argument("Error, missing locations");
+	if (srv->root.empty())
+		throw std::invalid_argument("Error, missing root");
+	if (srv->listen.size() == 0)
+		throw std::invalid_argument("Error, missing listen");
+	if (srv->hostname.empty())
+		throw std::invalid_argument("Error, missing hostname");
 	return ;
 }
 
@@ -190,42 +183,74 @@ static void addLine(std::string line, server *srv, bracketData *brackets, std::s
 	throw std::invalid_argument("Invalid directive: " + directive);
 }
 
-server createStruct(std::string configPath)
+server createStruct(std::ifstream *configFile, bool *eof)
 {
 	server configStruct;
-	std::ifstream configFile;
 	std::string line;
 	bracketData brackets;
-	std::size_t cLine;
+	static std::size_t cLine;
 	std::map<std::string, directiveHandler> dispatchTable;
 
-	configFile.open(configPath.c_str());
-	if (!configFile.is_open())
-		throw std::invalid_argument("Error, invalid path for the config file");
 	dispatchTable = createDispatchTable();
 	cLine = 1;
-	while (std::getline(configFile, line))
+	while (std::getline(*configFile, line))
 	{
 		addLine(line, &configStruct, &brackets, cLine, dispatchTable);
 		cLine++;
+		if (brackets.inServer == false && !configFile->eof())
+		{
+			return (configStruct);
+		}
 	}
-	configFile.close();
-	//checkEmptyElem(&configStruct);
+	configFile->close();
+	checkEmptyElem(&configStruct);
 	if (brackets.inServer)
 		throw(std::invalid_argument("Error, missing closing bracket '}' at the end of file"));
+	if (configFile->eof())
+		*eof = true;
 	return (configStruct);
 
 }
 
-// int main(void)
-// {
-// 	try 
-// 	{
-// 		server testStruct = CreateStruct("../../newGood.conf");
-// 		printStructV2(testStruct);
-// 	} 
-// 	catch (std::exception &e) 
-// 	{
-// 		std::cout << RED << e.what() << RESET << std::endl;
-// 	}
-// }
+std::vector<server> createVectStructSrv(std::string configPath)
+{
+	std::vector<server> vectSrv;
+	std::ifstream configFile;
+	std::string line;
+	bool eof;
+
+	configFile.open(configPath.c_str());
+	if (!configFile.is_open())
+		throw std::invalid_argument("Error, invalid path for the config file");
+	while (std::getline(configFile, line))
+	{
+		if (line == "server {")
+			vectSrv.push_back(createStruct(&configFile, &eof));
+		else if (line.empty()) {
+			continue;
+		}
+		else
+			throw std::invalid_argument("Error, invalid directive, excpected: server { , reality: " + line);
+	}
+	return (vectSrv);
+}
+
+
+//int main(void)
+//{
+//	try 
+//	{
+//		std::vector<server> testStruct = createVectStructSrv("../../newGood.conf");
+//		unsigned int i = 0;
+//		while (i < testStruct.size())
+//		{
+//			std::cout << BOLD << MAGENTA << "Server " << i << ":" << RESET << std::endl;
+//			printStructV2(testStruct.at(i));
+//			i++;
+//		}
+//	} 
+//	catch (std::exception &e) 
+//	{
+//		std::cout << RED << e.what() << RESET << std::endl;
+//	}
+//}
