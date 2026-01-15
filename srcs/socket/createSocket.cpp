@@ -57,16 +57,16 @@ static int	bindSocket(std::vector<Socket *> &sockets)
 	return (nbSockets);
 }
 
-std::vector<Socket *>	createSocket(Server srv, int &nbSockets)
+std::vector<Socket *>	createSocket(std::vector<Server> srvs, int &nbSockets)
 {
 	std::vector<Socket *>	sockets;
-	size_t				sizeAddPort;
+	size_t					sizeSrvs;
 
-	sizeAddPort = srv.getAddressPort().size();
-	sockets.reserve(sizeAddPort);
-	for (size_t i = 0; i < sizeAddPort; i++)
+	sizeSrvs = srvs.size();
+	sockets.reserve(sizeSrvs);
+	for (size_t i = 0; i < sizeSrvs; i++)
 	{
-		Socket	*temp = new Socket(srv, i);
+		Socket	*temp = new Socket(srvs[i]);
 		sockets.push_back(temp);
 	}
 	nbSockets = bindSocket(sockets);

@@ -11,9 +11,9 @@ class Socket
 		std::string					_hostname;
 		std::vector<SocketData *>	_sockData;
 
-		void	addingSockets(server data);
+		void	addingSockets(Server data);
 	public:
-		Socket(Server data, int i);
+		Socket(Server data);
 		~Socket();
 
 		std::string	const				&getHostname() const;

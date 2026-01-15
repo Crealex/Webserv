@@ -5,13 +5,11 @@
 
 // Constructor & Destructor
 
-Server::Server(std::string pathServer)
+Server::Server(struct server data)
 {
-	struct server	data;
 	try 
 	{
 		std::cout << "in create" << std::endl;
-		data = createStruct(pathServer);
 		printStructV2(data);
 	}
 	catch (std::exception &e)

@@ -25,7 +25,7 @@ class Server
 	void printAtt() const;
 
   public:
-	Server(std::string pathServer);
+	Server(struct server data);
 	~Server();
 
 	// GETTER
