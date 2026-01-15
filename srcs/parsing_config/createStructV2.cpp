@@ -236,21 +236,21 @@ std::vector<server> createVectStructSrv(std::string configPath)
 }
 
 
-int main(void)
-{
-	try 
-	{
-		std::vector<server> testStruct = createVectStructSrv("../../newGood.conf");
-		unsigned int i = 0;
-		while (i < testStruct.size())
-		{
-			std::cout << BOLD << MAGENTA << "Server " << i << ":" << RESET << std::endl;
-			printStructV2(testStruct.at(i));
-			i++;
-		}
-	} 
-	catch (std::exception &e) 
-	{
-		std::cout << RED << e.what() << RESET << std::endl;
-	}
-}
+//int main(void)
+//{
+//	try 
+//	{
+//		std::vector<server> testStruct = createVectStructSrv("../../newGood.conf");
+//		unsigned int i = 0;
+//		while (i < testStruct.size())
+//		{
+//			std::cout << BOLD << MAGENTA << "Server " << i << ":" << RESET << std::endl;
+//			printStructV2(testStruct.at(i));
+//			i++;
+//		}
+//	} 
+//	catch (std::exception &e) 
+//	{
+//		std::cout << RED << e.what() << RESET << std::endl;
+//	}
+//}
