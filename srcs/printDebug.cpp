@@ -1,8 +1,6 @@
 
 #include <iostream>
 #include "../includes/colors.hpp"
-#include "../includes/structParse.hpp"
-#include "../includes/Config.hpp"
 #include "../includes/configStruct.hpp"
 
 //void	printConfigStruct(structParse config)

@@ -22,10 +22,9 @@ void sendResponse(Client client, Server server)
 	{
 		response = e.createResponse(server);
 	}
-	
-	std::cout << "response:" << response  << std::endl;
 	while (send(client.getFdClient(), response.c_str(), response.size(), 0) == -1)
 	{
 		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
 	}
+	std::cout << "TEEEEEEEEEEEST" << std::endl;
 }

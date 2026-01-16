@@ -1,5 +1,4 @@
 #include "../../includes/includes.hpp"
-#include "../../includes/Config.hpp"
 #include "../../includes/socket/Socket.hpp"
 #include <arpa/inet.h>
 #include <cstdio>

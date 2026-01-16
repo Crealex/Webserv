@@ -2,7 +2,6 @@
 
 #define EPOLL_HPP
 
-#include "../Config.hpp"
 #include "../socket/Socket.hpp"
 #include <sys/epoll.h>
 
