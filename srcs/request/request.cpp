@@ -21,6 +21,15 @@ static std::vector<std::string> acceptedType()
 {
 	std::vector<std::string> v;
 
+	// TODO
+	// v = {
+	// 	truc1,
+	// 	truc2,
+	// 	truc3.
+	// 	etc...,
+	// }
+
+	v.push_back("*/*");
 	v.push_back("text/html");
 	v.push_back("text/css");
 	v.push_back("image/png");
@@ -39,8 +48,82 @@ static std::vector<std::string> acceptedType()
 	v.push_back("application/octet-stream");
 	v.push_back("video/x-msvideo");
 	v.push_back("image/avif");
+	v.push_back("text/plain"); // INFO: ajouter par alex
+	v.push_back("multipart/form-data"); // INFO: ajouté par alex
 
 	return v;
+}
+
+static void checkGET(Request req)
+{
+	std::cout << "in checkGET" << std::endl;
+	if (req._userAgent.empty() || 
+		req._accept.empty())
+	{
+		throw ResponseError(411, "Error: Missing value", req);
+	}
+
+	int leave = 0;
+	std::vector<std::string> v = acceptedType();
+	for (std::vector<std::string>::iterator it = v.begin();
+	it != v.end(); it++)
+	{
+		std::istringstream iss(req._accept);
+		std::string str;
+		while (std::getline(iss, str, ','))
+		{
+		std::cout << "*it: " << *it << ", str: " << str << std::endl;
+			if (str.compare(*it) == 0)
+			{
+				std::cout << "is egal" << std::endl;
+				leave = 1;
+				break ;
+			}
+		}
+
+		if (leave == 1)
+			break ;
+
+		if (it + 1 == v.end())
+			throw ResponseError(415, "Error: Unsupported Media Type", req);
+	}
+}
+
+static void checkPost(Request req, unsigned int maxSize)
+{
+	int leave = 0;
+	(void) maxSize;
+	std::cout << "in checkPost" << std::endl;
+	if (req._ContentType.empty() || 
+		req._body.empty())
+	{
+		throw ResponseError(411, "Error: Missing value", req);
+	}
+
+	std::vector<std::string> v = acceptedType();
+	for (std::vector<std::string>::iterator it = v.begin(); // INFO: Toutes la boucle for complémentent modif (par alex avec l'aval de kiki)
+	it != v.end(); it++)
+	{
+		std::istringstream iss(req._accept);
+		std::string str;
+		while (std::getline(iss, str, ','))
+		{
+		std::cout << "*it: " << *it << ", str: " << str << std::endl;
+			if (str.compare(*it) == 0)
+			{
+				std::cout << "is egal" << std::endl;
+				leave = 1;
+				break ;
+			}
+		}
+
+		if (leave == 1)
+			break ;
+
+		if (it + 1 == v.end())
+			throw ResponseError(415, "Error: Unsupported Media Type", req);
+	}
+	// TODO check if content length < maxSize
 }
 
 /**
@@ -92,8 +175,33 @@ static std::map<std::string, std::string*> createMap(Request &req)
 	ret.insert(std::make_pair(std::string("User-Agent:"), &req._userAgent));
 	ret.insert(std::make_pair(std::string("Accept:"), &req._accept));
 	ret.insert(std::make_pair(std::string("Content-Type:"), &req._ContentType));
-
+	
 	return ret;
+}
+
+/**
+ * @brief extract all the body properly and return it
+ * 
+ * @param str 
+ * @return std::string 
+ */
+std::string retBody(std::string str, size_t maxSize, Request req)
+{
+	std::stringstream target(str);
+
+	target.seekg(0, std::ios::end);
+	size_t size = target.tellg();
+	if (size > maxSize)
+	{
+		throw ResponseError(413, "Error, content too large", req);
+	}
+	target.seekg(0, std::ios::beg);
+	char* buffer = new char[size];
+	target.read(buffer, size);
+	std::string file(buffer, size);
+	delete[] buffer;
+
+	return file;
 }
 
 /**
@@ -102,10 +210,11 @@ static std::map<std::string, std::string*> createMap(Request &req)
  * @param buffer the client request
  * @return The created Request object
  */
-Request createRequest(char* buffer)
+Request createRequest(char* buffer, size_t maxSize)
 {
 	Request ret;
 	std::map<std::string, std::string*> ptrMap = createMap(ret);
+	std::cout << "Test requ" << std::endl;
 	std::istringstream iss(buffer);
 	std::string line;
 
@@ -113,9 +222,12 @@ Request createRequest(char* buffer)
 	setHeader(line, ret);
 	while (std::getline(iss, line)) 
 	{
+		if (!line.empty() && line[line.size() - 1] == '\r') // INFO: Ajouter par Alex (pour gerer les \r)
+        line.erase(line.size() - 1);
 		// extract and parse the different element of the request
 		if (line.empty())
 			break ;
+
 		std::stringstream ss(line);
 		std::string word;
 		ss >> word;
@@ -129,12 +241,14 @@ Request createRequest(char* buffer)
 		try
 		{
 			std::string* strPtr = ptrMap.at(word);
-			ss >> word;
-			*strPtr = word;
+			std::string str;
+			while (ss >> word)
+				str.append(word + ' ');
+			str.erase(str.end() - 1);
+			*strPtr = str;
 		}
 		catch(...)
 		{
-			throw ResponseError(411, "Error, unvalid variable", ret);
 		}
 	}
 
@@ -143,34 +257,36 @@ Request createRequest(char* buffer)
 	ret._query = ret._location.substr(pos + 1);
 
 	// extract the body of the request
-	std::string body;
-	while (std::getline(iss, body))
+	std::string buff(buffer);
+	size_t pos = buff.find("\n\n");
+	if (pos != std::string::npos)
 	{
-		body += '\n';
-		ret._body += body;
+		pos += 2;
+		std::string body = buff.substr(pos, buff.size() - pos);
+		ret._body = retBody(body, maxSize, ret);
 	}
-	
+
 	// verify the different extracted element
-	std::string verif = ret._ContentType;
-	std::vector<std::string> v = acceptedType();
-	for (std::vector<std::string>::iterator it = v.begin();
-		it != v.end(); it++)
-	{
-		if (verif == *it)
-			break ;
-		if (it + 1 == v.end())
-		{
-			throw ResponseError(415, "Error: Unsupported Media Type", ret);
-		}
-	}
+	// if (ret._host.empty() || access(ret._host.c_str(), F_OK) != 0)
+	// {
+	// 	throw ResponseError(400, "Error: Host cannot be accessed", ret);
+	// }
 
-	if (ret._host.empty() || access(ret._host.c_str(), F_OK) != 0)
-	{
-		throw ResponseError(400, "Error: Host cannot be accessed", ret);
-	}
+	if (ret._method == "POST")
+		checkPost(ret, maxSize);
+	else if (ret._method == "GET")
+		checkGET(ret);
 
-	if (ret._method == "POST" && ret._ContentLength == 0)
-			throw ResponseError(411, "Error: Content length isnt specified", ret);
+	std::cout << std::endl << std::endl
+		<< "method = " << ret._method
+		<< "\nlocation = " << ret._location
+		<< "\nprotocol = " << ret._protocol
+		<< "\nhost = " << ret._host
+		<< "\nuserAgent = " << ret._userAgent
+		<< "\naccept = " << ret._accept
+		<< "\ncontent type = " << ret._ContentType
+		<< "\ncontent length = " << ret._ContentLength
+		<< "\nbody = \n" << ret._body << std::endl;
 
 	return ret;
 }

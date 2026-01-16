@@ -12,6 +12,6 @@ class Get: public Methods
 
     public:
         Get(Request requ);
-		const std::string	createResponse();
+		const std::string	createResponse(Server srv);
 };
 #endif // !GET_HPP

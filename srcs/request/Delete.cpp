@@ -17,45 +17,52 @@ Delete::Delete(Request requ) : Methods(requ)
  *
  * @param protocol
  */
-static std::string noContent(std::string protocol, Request dataRequ)
+static std::string noContent(std::string protocol, Request dataError)
 {
 	std::string resp;
 
 	resp.append(protocol + " 204 " + "No content" + "\n");
 	if (!addDate(&resp))
-		throw (ResponseError(500, "can't add start line", dataRequ));
-	resp.append("Server: webserv");
+		throw (ResponseError(500, "can't add start line\n", dataError));
+	resp.append("Server: webserv\n\n");
 	return (resp);
 }
 
-const std::string Delete::createResponse()
+const std::string Delete::createResponse(Server srv)
 {
 	std::ifstream	file;
 	std::string		contentFile;
 	std::string		path;
 	std::string		resp;
-	Request			dataRequ;
+	std::string		target;
+	Request			dataError;
 
-	path = this->_host + this->_location;
-	//std::cout << path << std::endl;
+	dataError._protocol = this->_protocol;
+	dataError._host = this->_host;
+	dataError._location = this->_location;
+
+
+	target = findTarget(this->_location, srv.getLocations(), dataError, "DELETE");
+	// TODO: Verif si target est un file ou un dossier ou une redirection;
+	path = srv.getRoot() + this->_location; // INFO: Peut etre un file ou un dossier
 	if (access(path.c_str(), F_OK) == -1)
-		return (noContent(this->_protocol, dataRequ));
+		return (noContent(this->_protocol, dataError));
 	if (!addDate(&resp))
-		throw (ResponseError(500, "can't add date", dataRequ));
+		throw (ResponseError(500, "can't add date", dataError));
 	if (!addContentType(&resp, "*/*", this->_location))
-		throw (ResponseError(500, "can't add content type", dataRequ));
+		throw (ResponseError(500, "can't add content type", dataError));
 	file.open(path.c_str());
 	if (!file.is_open())
-		throw (ResponseError(500, "can't open the file", dataRequ));
+		throw (ResponseError(401, "Unauthorized", dataError));
 	std::getline(file, contentFile, '\0');
 	if (!addContentLenght(&resp, contentFile))
-		throw (ResponseError(500, "can't add content lenght", dataRequ));
+		throw (ResponseError(500, "can't add content lenght", dataError));
 	if (!addBody(&resp, contentFile))
-		throw (ResponseError(500, "can't add body", dataRequ));
+		throw (ResponseError(500, "can't add body", dataError));
 	if (std::remove(path.c_str()))
-		throw (ResponseError(500, "can't remove content", dataRequ));
+		throw (ResponseError(500, "can't remove content", dataError));
 	if (!addStartLine(&resp, this->_protocol, 200, "content deleted"))
-		throw (ResponseError(500, "can't remove content", dataRequ));
+		throw (ResponseError(500, "can't remove content", dataError));
 
 	return (resp);
 }

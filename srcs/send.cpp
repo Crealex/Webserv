@@ -1,26 +1,30 @@
 #include "../includes/includes.hpp"
-#include "../includes/socket/Socket.hpp"
-#include "../includes/socket/SocketData.hpp"
+#include "../includes/Server.hpp"
+#include "../includes/Client.hpp"
 #include "../includes/requests/methodsClass.hpp"
 #include "../includes/requests/ResponseError.hpp"
 
-void sendResponse(unsigned int socket, char *buff)
+void sendResponse(Client client, Server server)
 {
 	std::string response;
 	
 	try
 	{
+		std::cout << MAGENTA << BOLD << "REQUESTS: " << RESET << std::endl;
+		std::cout << client.getBuf() << std::endl;
+		std::cout << "-------------------------------------------------------" << std::endl;
 		Methods *request;
-		request = createMethod(buff);
-		response = request->createResponse();
+		request = createMethod((char *)client.getBuf().c_str(), server.getMaxSize());
+		response = request->createResponse(server);
 		delete request;
 	}
 	catch(ResponseError& e)
 	{
-		response = e.createResponse();
+		response = e.createResponse(server);
 	}
 	
-	while (send(socket, response.c_str(), response.size(), 0) == -1)
+	std::cout << "response:" << response  << std::endl;
+	while (send(client.getFdClient(), response.c_str(), response.size(), 0) == -1)
 	{
 		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
 	}

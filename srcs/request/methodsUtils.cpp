@@ -5,10 +5,43 @@
 #include <exception>
 #include <fstream>
 #include <sstream>
+#include <string>
 #include <sys/stat.h>
+#include "../../includes/requests/Request.hpp"
+#include "../../includes/requests/ResponseError.hpp"
 
 
 // INFO: All prototypes are in methodClass.hpp
+
+// UTILS
+
+std::string findTarget(std::string locPath, std::vector<Location> loc, Request dataError, std::string method)
+{
+	unsigned int i = 0;
+
+	while (loc.size() > i)
+	{
+		if (loc.at(i).getPath() == locPath)
+		{
+			if (!loc.at(i).getMethodValue(method))
+				throw ResponseError(405, "Method not allowed", dataError);
+			if (loc.at(i).getAutoIndex())
+				return loc.at(i).getPath();
+			else if (!loc.at(i).getIndex().empty())
+				return (loc.at(i).getIndex());
+			else if (!loc.at(i).getReturn().first.empty())
+				return (loc.at(i).getReturn().first);
+			else
+				throw ResponseError(404, "Not found", dataError);
+		}
+		i++;
+	}
+	throw ResponseError(404, "Not found", dataError);
+	return std::string();
+}
+
+
+// *** ADDING LINE TO RESPONSE
 
 //	HTTP/1.1 200 OK
 bool addStartLine(std::string *resp, std::string protocol, unsigned int code, std::string mess)
@@ -37,13 +70,20 @@ std::string findMimeType(std::string file)
 bool addContentType(std::string *resp, std::string accept, std::string file)
 {
 	std::string contentType;
+	std::stringstream acceptSs(accept);
+	std::string type;
 
 	contentType = findMimeType(file);
-	if (contentType != accept && accept != "*/*")
-		return (false);
-
-	resp->append("Content-Type: " + contentType + "\n");
-	return (true);
+	while (std::getline(acceptSs, type,  ','))
+	{
+		//std::cout << "type: " << type << ", Content-Type: " << contentType << std::endl;
+		if (contentType == type || type == "*/*")
+		{
+			resp->append("Content-Type: " + contentType + "\n");
+			return (true);
+		}
+	}
+	return (false);
 }
 
 // For post.cpp
@@ -98,15 +138,17 @@ bool addLastModif(std::string *resp, std::string pathTarget)
 }
 
 //	Content-Length: 1234
-bool addContentLenght(std::string *resp, std::string file)
+bool addContentLenght(std::string *resp, std::string path)
 {
 	unsigned int size;
 	std::stringstream ss;
+	struct stat buff;
 
-	size = file.size();
+	stat(path.c_str(), &buff);
+	size = buff.st_size;
 	ss << size;
 	try {
-		resp->append("Content-Lenght: " + ss.str() + "\n");
+		resp->append("Content-Length: " + ss.str() + "\n");
 	} catch (std::exception &e) {
 		return (false);
 	}
@@ -117,7 +159,7 @@ bool addContentLenght(std::string *resp, std::string file)
 //	<!-- Contenu HTML -->
 bool addBody(std::string *resp, std::string file)
 {
-	resp->append("\n" + file);
+	resp->append("\n" + file + "\n\n");
 	return (true);
 }
 

@@ -3,11 +3,15 @@
 #define INCLUDESEND_HPP
 
 #include "../includes.hpp"
-#include "../Config.hpp"
+#include "../epoll/Epoll.hpp"
+#include "../Server.hpp"
+#include "../Client.hpp"
 #include "Socket.hpp"
 
 #include <sys/socket.h>
 
-void sendResponse(unsigned int socket, char *buff);
+void	sockOptNonBlocking(int &socketFd);
+void	addEpollFd(int fd, int nbPollFd, Epoll &epoll, uint32_t event);
+void	sendResponse(Client client, Server server);
 
 #endif
