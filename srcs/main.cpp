@@ -66,5 +66,6 @@ int main (int argc, char **argv)
 	{
 		std::cout << RED << e.what() << RESET << std::endl;
 	}
+	std::cout << RED << "help end" << std::endl;
 	return 0;
 }
