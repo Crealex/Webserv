@@ -23,7 +23,7 @@ void sendResponse(Client &client, Server server)
 	{
 		response = e.createResponse(server);
 	}
-	client.set
+	client.setKeepAlive(ret);
 	std::cout << "response:" << response  << std::endl;
 	while (send(client.getFdClient(), response.c_str(), response.size(), 0) == -1)
 	{
