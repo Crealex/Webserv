@@ -103,7 +103,9 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 	epollCounterWait = 0;
 	idClient = 0;
 
+	std::cout << "meh : " << epoll.getEpollFd() << ", " << epoll.getNbSockets() << std::endl;
 	epollCounterWait = epoll_wait(epoll.getEpollFd(), events, epoll.getNbSockets(), 2000);
+	std::cout << "epollCounter : " << epollCounterWait << std::endl;
 	if (epollCounterWait < 1)
 		return ;
 	for (int indexEvent = 0; indexEvent < epollCounterWait; indexEvent++)
