@@ -45,7 +45,6 @@ static int	acceptClient(int fd, std::vector<Client> &clients, Epoll &epoll, std:
 	sockaddr_in	newSockadd;
 	socklen_t	addrlen;
 	
-	
 	fdClient = -1;
 	addrlen = sizeof(newSockadd);
 	fdClient = accept(fd, (sockaddr *)&newSockadd, &addrlen);
@@ -56,20 +55,23 @@ static int	acceptClient(int fd, std::vector<Client> &clients, Epoll &epoll, std:
 	newClient.setSockadd(newSockadd);
 	newClient.setHostname(hostnameOfSrvSock);
 	clients.push_back(newClient);
-	addEpollFd(newClient.getFdClient(), epoll.getNbSockets(), epoll);
+	std::vector<Client>::iterator it = clients.end();
+	it--;
+	addEpollFd(newClient.getFdClient(), epoll.getNbSockets(), epoll, EPOLLIN|EPOLLOUT);
 	return (0);
 }
 
 static void	receiveRequest(Client &client)
 {
 	int		sizeRecv;
-	char	*buffer;
+	char	buffer[10000];
 
 	sizeRecv = -1;
-	buffer = NULL;
-	sizeRecv = recv(client.getFdClient(), buffer, 10000, 0);
+	sizeRecv = recv(client.getFdClient(), buffer, sizeof(buffer), 0);
 	if (sizeRecv == -1)
-		receiveRequest(client);
+	{
+		return ;
+	}
 	if (sizeRecv < 10000)
 	{
 		client.setEndOfFile(true);
@@ -92,12 +94,11 @@ static Server	goodServer(Client client, std::vector<Server> servers)
 	return (servers[goodIndex]);
 }
 
-void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, Epoll &epoll)
+void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, Epoll &epoll, std::vector<Client> &clients)
 {
 	int					epollCounterWait;
 	int					idClient;
 	std::string			hostnameOfSrvSock;
-	std::vector<Client>	clients;
 	epoll_event			events[epoll.getNbSockets()];
 
 	epollCounterWait = 0;
@@ -113,17 +114,13 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 			if (acceptClient(events[indexEvent].data.fd, clients, epoll, hostnameOfSrvSock) < 0)
 				continue ;
 		}
-		else if (isClientSocket(events[indexEvent].data.fd, clients, idClient))
+		if (events[indexEvent].events == (EPOLLIN|EPOLLOUT) && isClientSocket(events[indexEvent].data.fd, clients, idClient))
 		{
-			if (events[indexEvent].events == EPOLLIN)
-			{
-				receiveRequest(clients[idClient]);
-			}
-			else
-			{
-				std::cout << "here" << std::endl;
-				sendResponse(clients[idClient], goodServer(clients[idClient], servers));
-			}
+			receiveRequest(clients[idClient]);
+		}
+		else if (events[indexEvent].events == EPOLLOUT && clients[idClient].getEndOfFile())
+		{
+			sendResponse(clients[idClient], goodServer(clients[idClient], servers));
 		}
 	}
 }

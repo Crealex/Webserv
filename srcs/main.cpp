@@ -3,6 +3,7 @@
 #include "../includes/includes.hpp"
 #include "../includes/socket/includeSocket.hpp"
 #include "../includes/socket/includeClient.hpp"
+#include "../includes/Client.hpp"
 
 static bool	isDuplicateServer(Server temp, std::vector<Server> res)
 {
@@ -39,6 +40,7 @@ int main (int argc, char **argv)
 {
 	std::vector<Socket *>	sockets;
 	std::vector<Server>		servers;
+	std::vector<Client>		clients;
 	int						nbSockets;
 	if (argc > 2)
 	{
@@ -58,7 +60,7 @@ int main (int argc, char **argv)
 		printSocketListen(sockets);
 		Epoll	epoll(sockets, nbSockets);
 		while (1)
-			handleClient(sockets, servers, epoll);
+			handleClient(sockets, servers, epoll, clients);
 	}
 	catch (std::exception &e) 
 	{

@@ -72,7 +72,6 @@ epoll_event	*Epoll::addEpollServer(std::vector<Socket *> &sockets, int sizeRes, 
 	int			sizeSockData;
 	int			count;
 
-	std::cout << "nb sockets : " << sizeRes << std::endl;
 	res = new epoll_event[sizeRes];
 	sizeSocket = sockets.size();
 	count = 0;
@@ -82,13 +81,14 @@ epoll_event	*Epoll::addEpollServer(std::vector<Socket *> &sockets, int sizeRes, 
 		for (int j = 0; j < sizeSockData; j++)
 		{
 			res[count].data.fd = sockets[i]->getSockData()[j]->getFdServer();
-			res[count].events = EPOLLOUT;
+			res[count].events = EPOLLIN;
 			if (epoll_ctl(epollFd, EPOLL_CTL_ADD, res[count].data.fd, &res[count]) < 0)
 			{
 				if (res)
 					delete[] res;
 				return (addEpollServer(sockets, sizeRes, epollFd));
 			}
+			count++;
 		}
 	}
 	return (res);
