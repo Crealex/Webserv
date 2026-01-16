@@ -121,7 +121,7 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 		else if (events[indexEvent].events == EPOLLOUT && clients[idClient].getEndOfFile())
 		{
 			sendResponse(clients[idClient], goodServer(clients[idClient], servers));
+			std::cout << "end handle client" << std::endl;
 		}
 	}
-	std::cout << "end handle client" << std::endl;
 }
