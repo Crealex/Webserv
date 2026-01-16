@@ -21,12 +21,6 @@ std::vector<SocketData *> const	&Socket::getSockData() const
 	return (this->_sockData);
 }
 
-// SETTER
-void	Socket::setFdClient(int newFdClient, size_t indexSocketData)
-{
-	this->_sockData[indexSocketData]->setFdClient(newFdClient);
-}
-
 // METHODS
 // PRIVATE
 void	Socket::addingSockets(Server data)

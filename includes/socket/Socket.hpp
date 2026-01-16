@@ -19,8 +19,6 @@ class Socket
 		std::string	const				&getHostname() const;
 		std::vector<SocketData *> const	&getSockData() const;
 
-		void	setFdClient(int newFdClient,size_t indexSocketData);
-
 		std::vector<SocketData *>::iterator	getBegin();
 		std::vector<SocketData *>::iterator	getEnd();
 		void								eraseSocket(int i);

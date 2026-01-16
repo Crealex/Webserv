@@ -11,7 +11,7 @@
 #include <vector>
 
 struct bracketData {
-	bool inServer = true;
+	bool inServer;
 	bool inLocation ;
 };
 
@@ -193,6 +193,7 @@ server createStruct(std::ifstream *configFile, bool *eof)
 
 	dispatchTable = createDispatchTable();
 	cLine = 1;
+	brackets.inServer = true;
 	while (std::getline(*configFile, line))
 	{
 		addLine(line, &configStruct, &brackets, cLine, dispatchTable);
