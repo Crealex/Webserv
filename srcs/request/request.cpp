@@ -138,6 +138,10 @@ Request createRequest(char* buffer)
 		}
 	}
 
+	ret._URI = ret._host + ret._location;
+	size_t pos = ret._location.find_first_of('?', 0);
+	ret._query = ret._location.substr(pos + 1);
+
 	// extract the body of the request
 	std::string body;
 	while (std::getline(iss, body))

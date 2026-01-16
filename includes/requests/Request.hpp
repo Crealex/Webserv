@@ -18,6 +18,8 @@ struct Request
 	std::string		_ContentType;
 	unsigned int	_ContentLength;
 	std::string		_body;
+	std::string		_URI;
+	std::string		_query;
 
 	std::string getStrContentLength();
 };
