@@ -24,6 +24,9 @@ void sendResponse(Client &client, Server server)
 		response = e.createResponse(server);
 	}
 	client.setKeepAlive(ret);
+	if (!client.getKeepAlive())
+		return ;
+	std::cout << std::boolalpha << client.getKeepAlive() << std::endl;
 	std::cout << "response:" << response  << std::endl;
 	while (send(client.getFdClient(), response.c_str(), response.size(), 0) == -1)
 	{

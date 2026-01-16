@@ -151,6 +151,7 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 		{
 			std::cout << "chez kilian" << std::endl;
 			sendResponse(clients[idClient], goodServer(clients[idClient], servers));
+			std::cout << RED << "IFFFFFFFFFFFFFFFFFFFFFFFF" << clients[idClient].getKeepAlive() << std::endl;
 			if (!clients[idClient].getKeepAlive())
 				closeClient(clients, idClient, epoll);
 		}
