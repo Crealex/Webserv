@@ -25,4 +25,5 @@ void sendResponse(Client client, Server server)
 	{
 		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
 	}
+	std::cout << RED << "JSHDBICDSBIFCNDFNSD" << std::endl << RESET;
 }
