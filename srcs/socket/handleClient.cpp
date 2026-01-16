@@ -100,6 +100,7 @@ static void	closeClient(std::vector<Client> &clients, int idClient, Epoll &epoll
 	int	sizeEpollEvents;
 
 	indexFdEPoll = 0;
+	std::cout << "nb socket epoll before : " << epoll.getNbSockets() << std::endl;
 	sizeEpollEvents = epoll.getNbSockets();
 	for (int i = 0; i < sizeEpollEvents; i++)
 	{
@@ -111,10 +112,13 @@ static void	closeClient(std::vector<Client> &clients, int idClient, Epoll &epoll
 	}
 	epoll_ctl(epoll.getEpollFd(), EPOLL_CTL_DEL, epoll.getEvents()[indexFdEPoll].data.fd, &epoll.getEvents()[indexFdEPoll]);
 	epoll.setNbSockets(sizeEpollEvents - 1);
+	std::cout << "nb socket epoll after : " << epoll.getNbSockets() << std::endl;
 
+	std::cout << "nb client before : " << clients.size() << std::endl;
 	if (clients[idClient].getFdClient() > -1)
 		close(clients[idClient].getFdClient());
 	clients.erase(clients.begin() + idClient);
+	std::cout << "nb client after : " << clients.size() << std::endl;
 }
 
 void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, Epoll &epoll, std::vector<Client> &clients)
@@ -140,13 +144,15 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 		}
 		if (events[indexEvent].events == (EPOLLIN|EPOLLOUT) && isClientSocket(events[indexEvent].data.fd, clients, idClient))
 		{
+			std::cout << "receive" << std::endl;
 			receiveRequest(clients[idClient]);
 		}
 		else if (events[indexEvent].events == EPOLLOUT && clients[idClient].getEndOfFile())
 		{
 			std::cout << "chez kilian" << std::endl;
 			sendResponse(clients[idClient], goodServer(clients[idClient], servers));
-			closeClient(clients, idClient, epoll);
+			if (!clients[idClient].getKeepAlive())
+				(clients, idClient, epoll);
 		}
 	}
 }

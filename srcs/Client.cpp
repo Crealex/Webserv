@@ -5,6 +5,7 @@ Client::Client()
 {
 	this->_fdSocket = -1;
 	this->_endOfFile = false;
+	this->_keepAlive = true;
 }
 
 Client::~Client()
