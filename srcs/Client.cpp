@@ -38,6 +38,11 @@ bool const	&Client::getEndOfFile() const
 	return (this->_endOfFile);
 }
 
+bool const			&Client::getKeepAlive() const
+{
+	return (this->_keepAlive);
+}
+
 // SETTERS
 void	Client::setHostname(std::string newHostname)
 {
@@ -65,4 +70,9 @@ void	Client::setSockadd(sockaddr_in newSockadd)
 void	Client::setEndOfFile(bool newEndOfFile)
 {
 	this->_endOfFile = newEndOfFile;
+}
+
+void	Client::setKeepAlive(bool newKeepAlive)
+{
+	this->_keepAlive = newKeepAlive;
 }
