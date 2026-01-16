@@ -227,6 +227,13 @@ Request createRequest(char* buffer, size_t maxSize)
 			ret._ContentLength = cLength;
 			continue ;
 		}
+		if (word == "Connection:")
+		{
+			ss >> word;
+			if (word == "keep-alive")
+				ret._keepAlive = false;
+			continue ;
+		}
 		try
 		{
 			std::string* strPtr = ptrMap.at(word);
