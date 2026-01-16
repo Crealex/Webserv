@@ -56,6 +56,7 @@ const std::string Post::createResponse(Server srv)
 	Request dataError;
 	std::string path;
 	std::string boundary;
+	std::string target;
 
 	dataError._protocol = this->_protocol;
 	dataError._host = this->_host;
@@ -67,7 +68,9 @@ const std::string Post::createResponse(Server srv)
 	//	handlePostFile(&resp, boundary);
 	//	return (resp);
 	//}
-	path = srv.getRoot() + this->_location; // INFO: Peut etre un file ou un dossier, a voir pour utiliser la meme fonction que get
+	target = findTarget(this->_location, srv.getLocations(), dataError, "POST");
+	// TODO: Verif si target est un file ou un dossier ou une redirection;
+	path = srv.getRoot() + target;
 	newFile.open(path.c_str(), std::ios::app);
 	if (!newFile.is_open())
 		throw (ResponseError(401, "Unauthorized", dataError));

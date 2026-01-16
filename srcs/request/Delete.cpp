@@ -34,12 +34,16 @@ const std::string Delete::createResponse(Server srv)
 	std::string		contentFile;
 	std::string		path;
 	std::string		resp;
+	std::string		target;
 	Request			dataError;
 
 	dataError._protocol = this->_protocol;
 	dataError._host = this->_host;
 	dataError._location = this->_location;
 
+
+	target = findTarget(this->_location, srv.getLocations(), dataError, "DELETE");
+	// TODO: Verif si target est un file ou un dossier ou une redirection;
 	path = srv.getRoot() + this->_location; // INFO: Peut etre un file ou un dossier
 	if (access(path.c_str(), F_OK) == -1)
 		return (noContent(this->_protocol, dataError));

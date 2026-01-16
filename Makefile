@@ -2,7 +2,7 @@ NAME	= webServ
 SRCS	= $(addprefix srcs/, Server.cpp main.cpp printDebug.cpp send.cpp Client.cpp) 
 PARSING	= $(addprefix srcs/parsing_config/, createStructV2.cpp parseElt.cpp parseRoot.cpp parseAddressPort.cpp parseErrorPage.cpp parseMaxSize.cpp parseHostname.cpp parseUtils.cpp Location.cpp)
 SOCKET  = $(addprefix srcs/socket/, createSocket.cpp Socket.cpp SocketData.cpp handleClient.cpp printSocket.cpp)
-REQUEST = $(addprefix srcs/request/, addLineToResp.cpp Delete.cpp Get.cpp getMethods.cpp MethodsClass.cpp MimeTypes.cpp Post.cpp request.cpp ResponseError.cpp)
+REQUEST = $(addprefix srcs/request/, methodsUtils.cpp Delete.cpp Get.cpp getMethods.cpp MethodsClass.cpp MimeTypes.cpp Post.cpp request.cpp ResponseError.cpp)
 EPOLL   = $(addprefix srcs/epoll/, Epoll.cpp addEpollFd.cpp)
 OBJS	= ${SRCS:%.cpp=${OBJDIR}/%.o}
 OBJPARS	= ${PARSING:%.cpp=${OBJDIR}/%.o}
@@ -66,7 +66,7 @@ re: fclean all
 .PHONY: all clean fclean re display_ascii
 
 testalex: 
-	c++ -Werror -Wall -Werror $(addprefix srcs/, request/MethodsClass.cpp parsing_config/createStructV2.cpp request/MimeTypes.cpp parsing_config/Location.cpp parsing_config/pars*.cpp Server.cpp request/Get.cpp request/addLineToResp.cpp request/ResponseError.cpp printDebug.cpp) -o test
+	c++ -Werror -Wall -Werror $(addprefix srcs/, request/MethodsClass.cpp parsing_config/createStructV2.cpp request/MimeTypes.cpp parsing_config/Location.cpp parsing_config/pars*.cpp Server.cpp request/Get.cpp request/methodsUtils.cpp request/ResponseError.cpp printDebug.cpp) -o test
 
 display_ascii:
 	@echo "$(BOLD)$(BLACK)"

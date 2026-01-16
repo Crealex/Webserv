@@ -123,4 +123,5 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 			sendResponse(clients[idClient], goodServer(clients[idClient], servers));
 		}
 	}
+	std::cout << "end handle client" << std::endl;
 }

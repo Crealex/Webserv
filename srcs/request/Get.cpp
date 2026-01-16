@@ -14,56 +14,38 @@ Get::Get(Request requ): Methods(requ), _userAgent(requ._userAgent), _accept(requ
     std::cout << GREEN << "Default Get constructor called" << RESET << std::endl;
 }
 
-std::string findTarget(std::string locPath, std::vector<Location> loc, Request dataError)
-{
-	unsigned int i = 0;
-
-	while (loc.size() > i)
-	{
-		if (loc.at(i).getPath() == locPath)
-		{
-			if (loc.at(i).getAutoIndex())
-				return loc.at(i).getPath();
-			else if (!loc.at(i).getIndex().empty())
-				return (loc.at(i).getIndex());
-			else if (!loc.at(i).getReturn().first.empty())
-				return (loc.at(i).getReturn().first);
-			else
-				throw ResponseError(404, "Not found", dataError);
-		}
-		i++;
-	}
-	throw ResponseError(404, "Not found", dataError);
-	return std::string();
-}
 
 // *** Create response
 
 const std::string Get::createResponse(Server srv)
 {
 	std::string		resp;
-	std::ifstream	target;
+	std::ifstream	file;
 	std::string		path;
 	Request			dataError;
+	std::string		target;
 	
 	dataError._protocol = this->_protocol;
 	dataError._host = this->_host;
 	dataError._accept = this->_accept;
 	dataError._location = this->_location;
 	dataError._userAgent = this->_userAgent;
-	// root + sitename + (si pas fichier precis) defaultfile
-	path = srv.getRoot() + "/" + findTarget(this->_location, srv.getLocations(), dataError);
-	target.open(path.c_str());
+
+	target = findTarget(this->_location, srv.getLocations(), dataError, "GET");
+	// TODO: Verif si target est un file ou un dossier ou une redirection;
+	path = srv.getRoot() + "/" + target;
+	std::cout << "complete path to get: " << path << std::endl;
+	file.open(path.c_str());
 	// *************************
-	if (!target.is_open())
+	if (!file.is_open())
 		throw ResponseError(404, "Not found", dataError);
 
-	target.seekg(0, std::ios::end);
-	size_t size = target.tellg();
-	target.seekg(0, std::ios::beg);
+	file.seekg(0, std::ios::end);
+	size_t size = file.tellg();
+	file.seekg(0, std::ios::beg);
 	char* buffer = new char[size];
-	target.read(buffer, size);
-	std::string file(buffer, size);
+	file.read(buffer, size);
+	std::string fileStr(buffer, size);
 	delete[] buffer;
 
 	if (!addContentType(&resp, this->_accept, path))
@@ -74,11 +56,12 @@ const std::string Get::createResponse(Server srv)
 		throw ResponseError(500, "can't add last modif", dataError);
 	if (!addContentLenght(&resp, path))
 		throw ResponseError(500, "can't add content lenght", dataError);
-	if (!addBody(&resp, file))
+	if (!addBody(&resp, fileStr))
 		throw ResponseError(500, "can't add body", dataError);
 	if (!addStartLine(&resp, this->_protocol, 200, "OK"))
 		throw ResponseError(500, "can't add start line", dataError);
 
+	std::cout << "end of get" << std::endl;
 	return (resp);
 }
 
@@ -88,7 +71,7 @@ const std::string Get::createResponse(Server srv)
 // static bool	isDuplicateServer(Server temp, std::vector<Server> res)
 // {
 // 	int	sizeRes;
-
+//
 // 	sizeRes = res.size();
 // 	for (int i = 0; i < sizeRes; i++)
 // 	{
@@ -97,13 +80,13 @@ const std::string Get::createResponse(Server srv)
 // 	}
 // 	return (false);
 // }
-
+//
 // static std::vector<Server>	createServers(std::string path)
 // {
 // 	std::vector<Server>	res;
 // 	int					sizeStructSrv;
 // 	std::vector<server>	structServers;
-
+//
 // 	structServers = createVectStructSrv(path);
 // 	sizeStructSrv = structServers.size();
 // 	for (int i = 0; i < sizeStructSrv; i++)
@@ -115,17 +98,17 @@ const std::string Get::createResponse(Server srv)
 // 	}
 // 	return (res);
 // }
-
+//
 // int main(void)
 // {
 // 	Request requ;
-
+//
 // 	requ._accept = "text/html";
-// 	requ._host = "../../www";
-// 	requ._location = "/index.html";
+// 	requ._host = "pipou";
+// 	requ._location = "/";
 // 	requ._protocol = "HTTP/1.1";
 // 	requ._userAgent = "Firefox";
-
+//
 // 	std::vector<Server> srvs;
 // 	try 
 // 	{
@@ -133,7 +116,7 @@ const std::string Get::createResponse(Server srv)
 // 		Get		resp(requ);
 // 		std::cout << "resp: " << std::endl;
 // 		std::cout << resp.createResponse(srvs.at(0)) << std::endl;
-
+//
 // 	}
 // 	catch (ResponseError &e)
 // 	{
@@ -143,7 +126,7 @@ const std::string Get::createResponse(Server srv)
 // 	{
 // 		std::cout << e.what() << std::endl;
 // 	}
-
+//
 // }
 
 // compile: c++ -Werror -Wall -Werror request/MethodsClass.cpp parsing_config/createStructV2.cpp parsing_config/Location.cpp Server.cpp request/Get.cpp request/ResponseError.cpp
