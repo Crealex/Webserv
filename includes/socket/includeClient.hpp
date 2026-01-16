@@ -3,7 +3,6 @@
 #define INCLUDECLIENT_HPP
 
 #include "../includes.hpp"
-#include "../Config.hpp"
 #include "Socket.hpp"
 #include "../Client.hpp"
 #include "../epoll/Epoll.hpp"
