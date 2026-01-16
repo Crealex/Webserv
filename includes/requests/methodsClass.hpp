@@ -23,7 +23,7 @@ class Methods
 	virtual ~Methods();
 };
 
-// addLineToResp.cpp, all prototypes for build the response in delete.cpp, errorResponse.cpp, get.cpp and post.cpp
+// methodsUtils.cpp, all prototypes for build the response in delete.cpp, errorResponse.cpp, get.cpp and post.cpp
 
 bool	addStartLine(std::string *resp, std::string protocol, unsigned int code, std::string mess);
 bool	addContentType(std::string *resp, std::string accept, std::string file);
@@ -33,6 +33,7 @@ bool	addContentLenght(std::string *resp, std::string path);
 bool	addBody(std::string *resp, std::string file);
 bool	addLocation(std::string *resp, std::string host, std::string location);
 bool	addContentType(std::string *resp, std::string type);
+std::string findTarget(std::string locPath, std::vector<Location> loc, Request dataError, std::string method);
 
 Methods* createMethod(char *buffer, size_t maxSize);
 Request createRequest(char* buffer, size_t maxSize);
