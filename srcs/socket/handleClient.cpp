@@ -149,5 +149,4 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 			closeClient(clients, idClient, epoll);
 		}
 	}
-	std::cout << "end handle client" << std::endl;
 }
