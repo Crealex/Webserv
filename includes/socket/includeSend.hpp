@@ -11,7 +11,7 @@
 #include <sys/socket.h>
 
 void	sockOptNonBlocking(int &socketFd);
-void	addEpollFd(int fd, int nbPollFd, Epoll &epoll);
+void	addEpollFd(int fd, int nbPollFd, Epoll &epoll, uint32_t event);
 void	sendResponse(Client client, Server server);
 
 #endif
