@@ -126,8 +126,9 @@ static void checkIndex(std::string index, std::string path)
 		throw std::invalid_argument(error + path + index);
 	}
 
+	if (path[path.size() - 1] != '/')
+		path += '/';
 	std::ifstream ifs((path + index).c_str());
-
 	if (!ifs.is_open())
 	{
 		std::string error("Error: could not open file:\n\t");
