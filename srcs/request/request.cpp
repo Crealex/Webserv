@@ -252,14 +252,15 @@ Request createRequest(char* buffer, size_t maxSize)
 
 	// extract the body of the request
 	std::string buff(buffer);
-	size_t pos = buff.find("\n\n");
+	size_t pos = buff.find("\r\n\r\n");
+	std::cout << "buffer = " << buff << "pos = " << pos << std::endl;
 	if (pos != std::string::npos)
 	{
-		pos += 2;
+		pos += 4;
 		std::string body = buff.substr(pos, buff.size() - pos);
 		ret._body = retBody(body, maxSize, ret);
 	}
-
+	std::cout << "body = " << ret._body;
 	// verify the different extracted element
 	// if (ret._host.empty() || access(ret._host.c_str(), F_OK) != 0)
 	// {
@@ -280,7 +281,7 @@ Request createRequest(char* buffer, size_t maxSize)
 		<< "\naccept = " << ret._accept
 		<< "\ncontent type = " << ret._ContentType
 		<< "\ncontent length = " << ret._ContentLength
-		<< "\nbody = \n" << ret._body << std::endl;
+		<< "\nbody = " << ret._body << std::endl;
 
 	return ret;
 }
