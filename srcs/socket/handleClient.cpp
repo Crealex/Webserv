@@ -94,6 +94,33 @@ static Server	goodServer(Client client, std::vector<Server> servers)
 	return (servers[goodIndex]);
 }
 
+static void	closeClient(std::vector<Client> &clients, int idClient, Epoll &epoll)
+{
+	int	indexFdEPoll;
+	int	sizeEpollEvents;
+
+	indexFdEPoll = 0;
+	std::cout << "nb socket epoll before : " << epoll.getNbSockets() << std::endl;
+	sizeEpollEvents = epoll.getNbSockets();
+	for (int i = 0; i < sizeEpollEvents; i++)
+	{
+		if (epoll.getEvents()->data.fd == clients[idClient].getFdClient())
+		{
+			indexFdEPoll = i;
+			break ;
+		}
+	}
+	epoll_ctl(epoll.getEpollFd(), EPOLL_CTL_DEL, epoll.getEvents()[indexFdEPoll].data.fd, &epoll.getEvents()[indexFdEPoll]);
+	epoll.setNbSockets(sizeEpollEvents - 1);
+	std::cout << "nb socket epoll after : " << epoll.getNbSockets() << std::endl;
+
+	std::cout << "nb client before : " << clients.size() << std::endl;
+	if (clients[idClient].getFdClient() > -1)
+		close(clients[idClient].getFdClient());
+	clients.erase(clients.begin() + idClient);
+	std::cout << "nb client after : " << clients.size() << std::endl;
+}
+
 void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, Epoll &epoll, std::vector<Client> &clients)
 {
 	int					epollCounterWait;
@@ -105,6 +132,7 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 	idClient = 0;
 
 	epollCounterWait = epoll_wait(epoll.getEpollFd(), events, epoll.getNbSockets(), 2000);
+	std::cout << BLUE << "dana : " << epollCounterWait << RESET << std::endl;
 	if (epollCounterWait < 1)
 		return ;
 	for (int indexEvent = 0; indexEvent < epollCounterWait; indexEvent++)
@@ -116,12 +144,16 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 		}
 		if (events[indexEvent].events == (EPOLLIN|EPOLLOUT) && isClientSocket(events[indexEvent].data.fd, clients, idClient))
 		{
+			std::cout << "receive" << std::endl;
 			receiveRequest(clients[idClient]);
+			std::cout << "Reuqest before recieveRequest: " << clients[idClient].getBuf() << std::endl;
 		}
 		else if (events[indexEvent].events == EPOLLOUT && clients[idClient].getEndOfFile())
 		{
+			std::cout << "chez kilian" << std::endl;
 			sendResponse(clients[idClient], goodServer(clients[idClient], servers));
+			if (!clients[idClient].getKeepAlive())
+				closeClient(clients, idClient, epoll);
 		}
 	}
-	std::cout << "end handle client" << std::endl;
 }

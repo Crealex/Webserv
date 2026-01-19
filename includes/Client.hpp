@@ -13,6 +13,7 @@ class Client
 		std::string	_buf;
 		sockaddr_in	_sockadd;
 		bool		_endOfFile;
+		bool		_keepAlive;
 	
 	public:
 		Client();
@@ -23,12 +24,14 @@ class Client
 		std::string const	&getBuf() const;
 		sockaddr_in const	&getSockadd() const;
 		bool const			&getEndOfFile() const;
+		bool const			&getKeepAlive() const;
 
 		void	setHostname(std::string newHostname);
 		void	setFdClient(int newFd);
 		void	setBuf(char *newBuf);
 		void	setSockadd(sockaddr_in newSockadd);
 		void	setEndOfFile(bool newEndOfFile);
+		void	setKeepAlive(bool newKeepAlive);
 };
 
 #endif

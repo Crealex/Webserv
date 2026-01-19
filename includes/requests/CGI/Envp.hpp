@@ -17,6 +17,6 @@ class Envp {
 
 		void	setEnv(Config conf, Request req);
 		
-		char*	getEnv() const;
+		char**	getEnv() const;
 		std::vector<std::string> getVec() const;
 };

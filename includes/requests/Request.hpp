@@ -20,6 +20,7 @@ struct Request
 	std::string		_body;
 	std::string		_URI;
 	std::string		_query;
+	bool			_keepAlive;
 
 	std::string getStrContentLength();
 };

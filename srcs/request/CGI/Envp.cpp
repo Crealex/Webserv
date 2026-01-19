@@ -53,3 +53,20 @@ void Envp::setEnv(Config conf, Request req)
 	_env.push_back("HTTP_LOCATION=" + req._location);
 	_env.push_back("HTTP_USER_AGENT=" + req._userAgent);
 }
+
+std::vector<std::string> Envp::getVec() const
+{
+	return _env;
+}
+
+char **Envp::getEnv() const
+{
+	char **ret = new char*[_env.size() + 1];
+
+	for (int i = 0; i <= _env.size(); i++)
+	{
+		ret[i] = (char *)_env[i].c_str();
+	}
+
+	return ret;
+}
