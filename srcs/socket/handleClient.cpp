@@ -132,7 +132,6 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 	idClient = 0;
 
 	epollCounterWait = epoll_wait(epoll.getEpollFd(), events, epoll.getNbSockets(), 2000);
-	std::cout << BLUE << "dana : " << epollCounterWait << RESET << std::endl;
 	if (epollCounterWait < 1)
 		return ;
 	for (int indexEvent = 0; indexEvent < epollCounterWait; indexEvent++)
@@ -144,9 +143,9 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 		}
 		if (events[indexEvent].events == (EPOLLIN|EPOLLOUT) && isClientSocket(events[indexEvent].data.fd, clients, idClient))
 		{
-			std::cout << "receive" << std::endl;
+			//std::cout << "receive" << std::endl;
 			receiveRequest(clients[idClient]);
-			std::cout << "Reuqest before recieveRequest: " << clients[idClient].getBuf() << std::endl;
+			//std::cout << "Reuqest before recieveRequest: " << clients[idClient].getBuf() << std::endl;
 		}
 		else if (events[indexEvent].events == EPOLLOUT && clients[idClient].getEndOfFile())
 		{

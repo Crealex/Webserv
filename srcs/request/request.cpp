@@ -82,7 +82,9 @@ static void checkPost(Request req, unsigned int maxSize)
 {
 	int leave = 0;
 	(void) maxSize;
-	std::cout << "in checkPost" << std::endl;
+	//std::cout << "in checkPost" << std::endl;
+	//std::cout << BOLD << "post content-type:" << req._ContentType << RESET << std::endl;
+	//std::cout << BOLD << "post body:" << req._body << RESET << std::endl;
 	if (req._ContentType.empty() || 
 		req._body.empty())
 	{
@@ -204,7 +206,6 @@ Request createRequest(char* buffer, size_t maxSize)
 {
 	Request ret;
 	std::map<std::string, std::string*> ptrMap = createMap(ret);
-	std::cout << "Test requ" << std::endl;
 	std::istringstream iss(buffer);
 	std::string line;
 

@@ -62,14 +62,13 @@ const std::string Post::createResponse(Server srv)
 	dataError._host = this->_host;
 	dataError._location = this->_location;
 // TODO: A continuer et decommenter le moment venu...
-	//if (this->_contentType.find("multipart/form-data") < this->_contentType.size())
-	//{
-	//	boundary = extractBoundary(this->_contentType);
-	//	handlePostFile(&resp, boundary);
-	//	return (resp);
-	//}
+	if (this->_contentType.find("multipart/form-data") < this->_contentType.size())
+	{
+		boundary = extractBoundary(this->_contentType);
+		handlePostFile(&resp, boundary);
+		return (resp);
+	}
 	target = findTarget(this->_location, srv.getLocations(), dataError, "POST");
-	// TODO: Verif si target est un file ou un dossier ou une redirection;
 	path = srv.getRoot() + target;
 	newFile.open(path.c_str(), std::ios::app);
 	if (!newFile.is_open())
