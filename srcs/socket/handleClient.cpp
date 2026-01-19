@@ -146,6 +146,7 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 		{
 			std::cout << "receive" << std::endl;
 			receiveRequest(clients[idClient]);
+			std::cout << "Reuqest before recieveRequest: " << clients[idClient].getBuf() << std::endl;
 		}
 		else if (events[indexEvent].events == EPOLLOUT && clients[idClient].getEndOfFile())
 		{

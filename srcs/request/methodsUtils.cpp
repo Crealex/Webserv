@@ -31,13 +31,10 @@ std::string findTarget(std::string locPath, std::vector<Location> loc, Request d
 				return (loc.at(i).getIndex());
 			else if (!loc.at(i).getReturn().first.empty())
 				return (loc.at(i).getReturn().first);
-			else
-				throw ResponseError(404, "Not found", dataError);
 		}
 		i++;
 	}
-	throw ResponseError(404, "Not found", dataError);
-	return std::string();
+	return (locPath);
 }
 
 
