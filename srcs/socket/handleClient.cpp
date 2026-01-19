@@ -45,9 +45,9 @@ static int	acceptClient(int fd, std::vector<Client> &clients, Epoll &epoll, std:
 	sockaddr_in	newSockadd;
 	socklen_t	addrlen;
 	
-	fdClient = -1;
 	addrlen = sizeof(newSockadd);
 	fdClient = accept(fd, (sockaddr *)&newSockadd, &addrlen);
+	std::cout << CYAN << "accept : " << fdClient << ", fd server : " << fd << std::endl << RESET; 
 	if (fdClient == -1)
 		return (-1);
 	sockOptNonBlocking(fdClient);
@@ -132,7 +132,6 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 	idClient = 0;
 
 	epollCounterWait = epoll_wait(epoll.getEpollFd(), events, epoll.getNbSockets(), 2000);
-	std::cout << BLUE << "dana : " << epollCounterWait << RESET << std::endl;
 	if (epollCounterWait < 1)
 		return ;
 	for (int indexEvent = 0; indexEvent < epollCounterWait; indexEvent++)
@@ -141,19 +140,40 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 		{
 			if (acceptClient(events[indexEvent].data.fd, clients, epoll, hostnameOfSrvSock) < 0)
 				continue ;
+			for (size_t i = 0; i < clients.size(); i++)
+			{
+				std::cout << BLUE << "clients : " << clients[i].getFdClient() << ", " << clients[i].getHostname() << ", " << clients[i].getKeepAlive() << std::endl << RESET;
+			}
+			std::cout << "epoll client size : " << epoll.getNbSockets() << std::endl;
+			for (int i = 0; i < epoll.getNbSockets(); i++)
+			{
+				std::cout << YELLOW << "epoll client : " << epoll.getEvents()[i].data.fd << ", " << epoll.getEvents()[i].events << std::endl << RESET;
+			}
 		}
 		if (events[indexEvent].events == (EPOLLIN|EPOLLOUT) && isClientSocket(events[indexEvent].data.fd, clients, idClient))
 		{
 			std::cout << "receive" << std::endl;
 			receiveRequest(clients[idClient]);
+			std::cout << RED << "receive client : " << clients[idClient].getFdClient() << ", " << clients[idClient].getHostname() << ", " << clients[idClient].getKeepAlive() << ", " << clients[idClient].getEndOfFile() << std::endl << clients[idClient].getBuf() << ", " << std::endl << RESET;
 		}
 		else if (events[indexEvent].events == EPOLLOUT && clients[idClient].getEndOfFile())
 		{
 			std::cout << "chez kilian" << std::endl;
+			std::cout << MAGENTA << "receive client : " << clients[idClient].getFdClient() << ", " << clients[idClient].getHostname() << ", " << clients[idClient].getKeepAlive() << ", " << clients[idClient].getEndOfFile() << std::endl << clients[idClient].getBuf() << ", " << std::endl << RESET;
 			sendResponse(clients[idClient], goodServer(clients[idClient], servers));
-			std::cout << RED << "IFFFFFFFFFFFFFFFFFFFFFFFF" << clients[idClient].getKeepAlive() << std::endl;
+			std::cout << MAGENTA << "receive client : " << clients[idClient].getFdClient() << ", " << clients[idClient].getHostname() << ", " << clients[idClient].getKeepAlive() << ", " << clients[idClient].getEndOfFile() << std::endl << clients[idClient].getBuf() << ", " << std::endl << RESET;
+			
 			if (!clients[idClient].getKeepAlive())
 				closeClient(clients, idClient, epoll);
+			for (size_t i = 0; i < clients.size(); i++)
+			{
+				std::cout << LIGHT_BLUE << "clients : " << clients[i].getFdClient() << ", " << clients[i].getHostname() << ", " << clients[i].getKeepAlive() << std::endl << RESET;
+			}
+			std::cout << "epoll client size : " << epoll.getNbSockets() << std::endl;
+			for (int i = 0; i < epoll.getNbSockets(); i++)
+			{
+				std::cout << LIGHT_YELLOW << "epoll client : " << epoll.getEvents()[i].data.fd << ", " << epoll.getEvents()[i].events << std::endl << RESET;
+			}
 		}
 	}
 }

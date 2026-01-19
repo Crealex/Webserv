@@ -59,6 +59,11 @@ int main (int argc, char **argv)
 		}
 		printSocketListen(sockets);
 		Epoll	epoll(sockets, nbSockets);
+		std::cout << "epoll server sockets : " << std::endl;
+		for (int i = 0; i < epoll.getNbSockets(); i++)
+		{
+			std::cout << epoll.getEvents()[i].data.fd << ", " << epoll.getEvents()[i].events << std::endl;
+		}
 		while (1)
 			handleClient(sockets, servers, epoll, clients);
 	}

@@ -12,7 +12,7 @@ void sendResponse(Client &client, Server server)
 	try
 	{
 		std::cout << MAGENTA << BOLD << "REQUESTS: " << RESET << std::endl;
-		std::cout << client.getBuf() << std::endl;
+		// std::cout << client.getBuf() << std::endl;
 		std::cout << "-------------------------------------------------------" << std::endl;
 		Methods *request;
 		request = createMethod((char *)client.getBuf().c_str(), server.getMaxSize(), ret);
@@ -27,7 +27,7 @@ void sendResponse(Client &client, Server server)
 	if (!client.getKeepAlive())
 		return ;
 	std::cout << std::boolalpha << client.getKeepAlive() << std::endl;
-	std::cout << "response:" << response  << std::endl;
+	// std::cout << "response:" << response  << std::endl;
 	while (send(client.getFdClient(), response.c_str(), response.size(), 0) == -1)
 	{
 		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
