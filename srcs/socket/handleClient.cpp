@@ -21,14 +21,14 @@ static bool	isServerSocket(int fd, std::vector<Socket *> sockets, std::string &h
 	return (false);
 }
 
-static bool	isClientSocket(int fd, std::vector<Client> clients, int &idClient)
+static bool	isClientSocket(int fd, std::vector<Client *> clients, int &idClient)
 {
 	int	sizeClients;
 
 	sizeClients = clients.size();
 	for (int i = 0; i < sizeClients; i++)
 	{
-		if (fd == clients[i].getFdClient())
+		if (fd == clients[i]->getFdClient())
 		{
 			idClient = i;
 			return (true);
@@ -38,10 +38,10 @@ static bool	isClientSocket(int fd, std::vector<Client> clients, int &idClient)
 }
 
 
-static int	acceptClient(int fd, std::vector<Client> &clients, Epoll &epoll, std::string hostnameOfSrvSock)
+static int	acceptClient(int fd, std::vector<Client *> &clients, Epoll &epoll, std::string hostnameOfSrvSock)
 {
 	int 		fdClient;
-	Client		newClient;
+	Client		*newClient = new Client();
 	sockaddr_in	newSockadd;
 	socklen_t	addrlen;
 	
@@ -51,33 +51,33 @@ static int	acceptClient(int fd, std::vector<Client> &clients, Epoll &epoll, std:
 	if (fdClient == -1)
 		return (-1);
 	sockOptNonBlocking(fdClient);
-	newClient.setFdClient(fdClient);
-	newClient.setSockadd(newSockadd);
-	newClient.setHostname(hostnameOfSrvSock);
+	newClient->setFdClient(fdClient);
+	newClient->setSockadd(newSockadd);
+	newClient->setHostname(hostnameOfSrvSock);
 	clients.push_back(newClient);
-	epoll.addEpollFd(newClient.getFdClient(), EPOLLIN|EPOLLOUT);
+	epoll.addEpollFd(newClient->getFdClient(), EPOLLIN|EPOLLOUT);
 	return (0);
 }
 
-static void	receiveRequest(Client &client)
+static void	receiveRequest(Client *client)
 {
 	int		sizeRecv;
 	char	buffer[10000];
 
 	sizeRecv = -1;
-	sizeRecv = recv(client.getFdClient(), buffer, sizeof(buffer), 0);
+	sizeRecv = recv(client->getFdClient(), buffer, sizeof(buffer), 0);
 	if (sizeRecv == -1)
 	{
 		return ;
 	}
 	if (sizeRecv < 10000)
 	{
-		client.setEndOfFile(true);
+		client->setEndOfFile(true);
 	}
-	client.setBuf(buffer);
+	client->setBuf(buffer);
 }
 
-static Server	goodServer(Client client, std::vector<Server> servers)
+static Server	goodServer(Client *client, std::vector<Server> servers)
 {
 	int sizeSrv;
 	int	goodIndex;
@@ -86,13 +86,13 @@ static Server	goodServer(Client client, std::vector<Server> servers)
 	goodIndex = 0;
 	for (int i = 0; i < sizeSrv; i++)
 	{
-		if (client.getHostname() == servers[i].getHostname())
+		if (client->getHostname() == servers[i].getHostname())
 			goodIndex = i;
 	}
 	return (servers[goodIndex]);
 }
 
-static void	closeClient(std::vector<Client> &clients, int idClient, Epoll &epoll)
+static void	closeClient(std::vector<Client *> &clients, int idClient, Epoll &epoll)
 {
 	int	indexFdEPoll;
 	int	sizeEpollEvents;
@@ -102,7 +102,7 @@ static void	closeClient(std::vector<Client> &clients, int idClient, Epoll &epoll
 	sizeEpollEvents = epoll.getNbSockets();
 	for (int i = 0; i < sizeEpollEvents; i++)
 	{
-		if (epoll.getEvents()->data.fd == clients[idClient].getFdClient())
+		if (epoll.getEvents()->data.fd == clients[idClient]->getFdClient())
 		{
 			indexFdEPoll = i;
 			break ;
@@ -113,13 +113,13 @@ static void	closeClient(std::vector<Client> &clients, int idClient, Epoll &epoll
 	std::cout << "nb socket epoll after : " << epoll.getNbSockets() << std::endl;
 
 	std::cout << "nb client before : " << clients.size() << std::endl;
-	if (clients[idClient].getFdClient() > -1)
-		close(clients[idClient].getFdClient());
+	if (clients[idClient]->getFdClient() > -1)
+		close(clients[idClient]->getFdClient());
 	clients.erase(clients.begin() + idClient);
 	std::cout << "nb client after : " << clients.size() << std::endl;
 }
 
-void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, Epoll &epoll, std::vector<Client> &clients)
+void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, Epoll &epoll, std::vector<Client *> &clients)
 {
 	int					epollCounterWait;
 	int					idClient;
@@ -142,7 +142,7 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 				continue ;
 			for (size_t i = 0; i < clients.size(); i++)
 			{
-				std::cout << BLUE << "clients : " << clients[i].getFdClient() << ", " << clients[i].getHostname() << ", keep alive : " << clients[i].getKeepAlive() << ", server : " << events[indexEvent].data.fd << std::endl << RESET;
+				std::cout << BLUE << "clients : " << clients[i]->getFdClient() << ", " << clients[i]->getHostname() << ", keep alive : " << clients[i]->getKeepAlive() << ", server : " << events[indexEvent].data.fd << std::endl << RESET;
 			}
 			std::cout << "epoll client size : " << epoll.getNbSockets() << std::endl;
 			for (int i = 0; i < epoll.getNbSockets(); i++)
@@ -150,25 +150,25 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 				std::cout << YELLOW << "epoll client : " << epoll.getEvents()[i].data.fd << ", " << epoll.getEvents()[i].events << std::endl << RESET;
 			}
 		}
-		if (events[indexEvent].events == (EPOLLIN|EPOLLOUT) && isClientSocket(events[indexEvent].data.fd, clients, idClient) && !clients[idClient].getEndOfFile())
+		if (events[indexEvent].events == (EPOLLIN|EPOLLOUT) && isClientSocket(events[indexEvent].data.fd, clients, idClient) && !clients[idClient]->getEndOfFile())
 		{
 			std::cout << "receive" << std::endl;
 			receiveRequest(clients[idClient]);
 			// std::cout << "Reuqest before recieveRequest: " << clients[idClient].getBuf() << std::endl;
 		}
-		else if (events[indexEvent].events == EPOLLOUT && clients[idClient].getEndOfFile())
+		else if (events[indexEvent].events == EPOLLOUT && clients[idClient]->getEndOfFile())
 		{
 			std::cout << "chez kilian" << std::endl;
 			sendResponse(clients[idClient], goodServer(clients[idClient], servers));
-			std::cout << BLUE << "after send : " << clients[idClient].getKeepAlive() << std::endl << RESET;
+			std::cout << BLUE << "after send : " << clients[idClient]->getKeepAlive() << std::endl << RESET;
 			for (size_t i = 0; i < clients.size(); i++)
 			{
-				std::cout << BLUE << "clients : " << clients[i].getFdClient() << ", " << clients[i].getHostname() << ", keep alive : " << clients[i].getKeepAlive() << std::endl << RESET;
+				std::cout << BLUE << "clients : " << clients[i]->getFdClient() << ", " << clients[i]->getHostname() << ", keep alive : " << clients[i]->getKeepAlive() << std::endl << RESET;
 			}
-			if (clients[idClient].getKeepAlive() == false)
+			if (clients[idClient]->getKeepAlive() == false)
 				closeClient(clients, idClient, epoll);
 			else
-				clients[idClient].resetClient();
+				clients[idClient]->resetClient();
 			std::cout << "end" << std::endl;
 		}
 	}

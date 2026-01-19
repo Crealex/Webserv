@@ -40,7 +40,7 @@ int main (int argc, char **argv)
 {
 	std::vector<Socket *>	sockets;
 	std::vector<Server>		servers;
-	std::vector<Client>		clients;
+	std::vector<Client *>		clients;
 	int						nbSockets;
 	if (argc > 2)
 	{

@@ -63,11 +63,3 @@ void	SocketData::assignmentSocket(addPort_t addPort)
 		this->_fdServer = (socketFd);
 	}
 }
-void	SocketData::sockOptNonBlocking(int &socketFd)
-{
-		int	opt;
-
-		opt = 1;
-		fcntl(socketFd, F_SETFL, O_NONBLOCK);
-		setsockopt(socketFd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(int));
-}
