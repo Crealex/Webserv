@@ -32,6 +32,8 @@ class Client
 		void	setSockadd(sockaddr_in newSockadd);
 		void	setEndOfFile(bool newEndOfFile);
 		void	setKeepAlive(bool newKeepAlive);
+		
+		void	resetClient();
 };
 
 #endif

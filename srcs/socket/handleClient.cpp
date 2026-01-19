@@ -55,9 +55,7 @@ static int	acceptClient(int fd, std::vector<Client> &clients, Epoll &epoll, std:
 	newClient.setSockadd(newSockadd);
 	newClient.setHostname(hostnameOfSrvSock);
 	clients.push_back(newClient);
-	std::vector<Client>::iterator it = clients.end();
-	it--;
-	addEpollFd(newClient.getFdClient(), epoll.getNbSockets(), epoll, EPOLLIN|EPOLLOUT);
+	epoll.addEpollFd(newClient.getFdClient(), EPOLLIN|EPOLLOUT);
 	return (0);
 }
 
@@ -132,28 +130,46 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 	idClient = 0;
 
 	epollCounterWait = epoll_wait(epoll.getEpollFd(), events, epoll.getNbSockets(), 2000);
-	std::cout << BLUE << "dana : " << epollCounterWait << RESET << std::endl;
+	// std::cout << BLUE << "dana : " << epollCounterWait << RESET << std::endl;
 	if (epollCounterWait < 1)
 		return ;
 	for (int indexEvent = 0; indexEvent < epollCounterWait; indexEvent++)
 	{
 		if (events[indexEvent].events == EPOLLIN && isServerSocket(events[indexEvent].data.fd, sockets, hostnameOfSrvSock))
 		{
+			std::cout << "Just before accept" << std::endl;
 			if (acceptClient(events[indexEvent].data.fd, clients, epoll, hostnameOfSrvSock) < 0)
 				continue ;
+			for (size_t i = 0; i < clients.size(); i++)
+			{
+				std::cout << BLUE << "clients : " << clients[i].getFdClient() << ", " << clients[i].getHostname() << ", keep alive : " << clients[i].getKeepAlive() << ", server : " << events[indexEvent].data.fd << std::endl << RESET;
+			}
+			std::cout << "epoll client size : " << epoll.getNbSockets() << std::endl;
+			for (int i = 0; i < epoll.getNbSockets(); i++)
+			{
+				std::cout << YELLOW << "epoll client : " << epoll.getEvents()[i].data.fd << ", " << epoll.getEvents()[i].events << std::endl << RESET;
+			}
 		}
-		if (events[indexEvent].events == (EPOLLIN|EPOLLOUT) && isClientSocket(events[indexEvent].data.fd, clients, idClient))
+		if (events[indexEvent].events == (EPOLLIN|EPOLLOUT) && isClientSocket(events[indexEvent].data.fd, clients, idClient) && !clients[idClient].getEndOfFile())
 		{
 			std::cout << "receive" << std::endl;
 			receiveRequest(clients[idClient]);
-			std::cout << "Reuqest before recieveRequest: " << clients[idClient].getBuf() << std::endl;
+			// std::cout << "Reuqest before recieveRequest: " << clients[idClient].getBuf() << std::endl;
 		}
 		else if (events[indexEvent].events == EPOLLOUT && clients[idClient].getEndOfFile())
 		{
 			std::cout << "chez kilian" << std::endl;
 			sendResponse(clients[idClient], goodServer(clients[idClient], servers));
-			if (!clients[idClient].getKeepAlive())
+			std::cout << BLUE << "after send : " << clients[idClient].getKeepAlive() << std::endl << RESET;
+			for (size_t i = 0; i < clients.size(); i++)
+			{
+				std::cout << BLUE << "clients : " << clients[i].getFdClient() << ", " << clients[i].getHostname() << ", keep alive : " << clients[i].getKeepAlive() << std::endl << RESET;
+			}
+			if (clients[idClient].getKeepAlive() == false)
 				closeClient(clients, idClient, epoll);
+			else
+				clients[idClient].resetClient();
+			std::cout << "end" << std::endl;
 		}
 	}
 }

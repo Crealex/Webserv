@@ -5,11 +5,12 @@ Client::Client()
 {
 	this->_fdSocket = -1;
 	this->_endOfFile = false;
-	this->_keepAlive = true;
+	this->_keepAlive = false;
 }
 
 Client::~Client()
 {
+	std::cout << RED << "IN THE DESTRUCTOR OF CLIENT : " << this->_fdSocket << std::endl << RESET;
 }
 
 // GETTERS
@@ -75,4 +76,14 @@ void	Client::setEndOfFile(bool newEndOfFile)
 void	Client::setKeepAlive(bool newKeepAlive)
 {
 	this->_keepAlive = newKeepAlive;
+}
+
+//METHODS
+
+void	Client::resetClient()
+{
+	std::cout << GREEN << "in reset : " << this->_fdSocket << std::endl << RESET;
+	this->_buf.clear();
+	this->_endOfFile = false;
+	this->_keepAlive = false;
 }

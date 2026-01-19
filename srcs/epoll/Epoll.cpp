@@ -93,3 +93,27 @@ epoll_event	*Epoll::addEpollServer(std::vector<Socket *> &sockets, int sizeRes, 
 	}
 	return (res);
 }
+
+// PUBLIC
+
+void	Epoll::addEpollFd(int fd, uint32_t event)
+{
+	epoll_event	*temp;
+
+	temp = new epoll_event[this->_nbSockets + 1];
+	for (int i = 0; i < this->_nbSockets; i++)
+		temp[i] = this->_events[i];
+
+	temp[this->_nbSockets].data.fd = fd;
+	temp[this->_nbSockets].events = event;
+	if (epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, temp[this->_nbSockets].data.fd, &temp[this->_nbSockets]) < 0)
+	{
+		if (temp)
+		{
+			delete[] temp;
+		}
+		addEpollFd(fd, event);
+	}
+	this->setEvents(temp);
+	this->_nbSockets++;
+}
