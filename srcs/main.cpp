@@ -21,8 +21,8 @@ static bool	isDuplicateServer(Server temp, std::vector<Server> res)
 static std::vector<Server>	createServers(std::string path)
 {
 	std::vector<Server>	res;
-	int					sizeStructSrv;
 	std::vector<server>	structServers;
+	int					sizeStructSrv;
 
 	structServers = createVectStructSrv(path);
 	sizeStructSrv = structServers.size();
@@ -40,8 +40,9 @@ int main (int argc, char **argv)
 {
 	std::vector<Socket *>	sockets;
 	std::vector<Server>		servers;
-	std::vector<Client>		clients;
+	std::vector<Client *>	clients;
 	int						nbSockets;
+
 	if (argc > 2)
 	{
 		std::cerr << RED << "Invalid number of arguments, you need the executable and maybe a config file" << RESET << std::endl;
@@ -49,7 +50,6 @@ int main (int argc, char **argv)
 	}
 	try 
 	{
-
 		servers = createServers(argv[1]);
 		sockets = createSocket(servers, nbSockets);
 		if (sockets.size() == 0)

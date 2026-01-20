@@ -244,7 +244,7 @@ Request createRequest(char* buffer, size_t maxSize)
 		{
 			ss >> word;
 			if (word == "keep-alive")
-				ret._keepAlive = false;
+				ret._keepAlive = true;
 			continue ;
 		}
 		try

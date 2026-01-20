@@ -7,11 +7,11 @@
 #include "../Server.hpp"
 #include "../Client.hpp"
 #include "Socket.hpp"
+#include "includeSockNonBlocking.hpp"
 
 #include <sys/socket.h>
 
-void	sockOptNonBlocking(int &socketFd);
 void	addEpollFd(int fd, int nbPollFd, Epoll &epoll, uint32_t event);
-void	sendResponse(Client &client, Server server);
+void	sendResponse(Client *client, Server server);
 
 #endif
