@@ -24,6 +24,7 @@ class Epoll
 		epoll_event const	*getEvents() const;
 		epoll_event 		*getEvents();
 		
+		void	addEpollFd(int fd, uint32_t event);
 		void	setNbSockets(int newNb);
 		void	setEvents(epoll_event *newEvents);
 };

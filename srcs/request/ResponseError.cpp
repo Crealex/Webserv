@@ -17,7 +17,7 @@ const std::string ResponseError::createResponse(Server srv)
 	std::string resp;
 
 	(void)srv;
-	std::cout << RED <<"protocol in error response: " << this->_protocol << std::endl;
+	std::cout << RED <<"protocol in error response: " << this->_protocol << std::endl << RESET;
 	addStartLine(&resp, this->_protocol, this->_code, this->_message);
 	resp.append("\n\n");
 	return (resp);

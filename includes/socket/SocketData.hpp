@@ -3,6 +3,7 @@
 #define SOCKETDATA_HPP
 
 #include "../includes.hpp"
+#include "includeSockNonBlocking.hpp"
 #include "../Server.hpp"
 #include <netinet/in.h>
 
@@ -13,7 +14,6 @@ class SocketData
 		int			_fdServer;
 
 		void	assignmentSocket(addPort_t addPort);
-		void	sockOptNonBlocking(int &socketFd);
 	public:
 		SocketData(addPort_t);
 		~SocketData();
