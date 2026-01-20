@@ -115,6 +115,7 @@ static void	closeClient(std::vector<Client *> &clients, int idClient, Epoll &epo
 	std::cout << "nb client before : " << clients.size() << std::endl;
 	if (clients[idClient]->getFdClient() > -1)
 		close(clients[idClient]->getFdClient());
+	delete clients[idClient];
 	clients.erase(clients.begin() + idClient);
 	std::cout << "nb client after : " << clients.size() << std::endl;
 }
@@ -137,12 +138,14 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 	{
 		if (events[indexEvent].events == EPOLLIN && isServerSocket(events[indexEvent].data.fd, sockets, hostnameOfSrvSock))
 		{
-			std::cout << "Just before accept" << std::endl;
+			std::cout << "Just before accept : " << epollCounterWait << std::endl;
+			std::cout << "fd of epoll wait : " << events[indexEvent].data.fd << std::endl;
+		
 			if (acceptClient(events[indexEvent].data.fd, clients, epoll, hostnameOfSrvSock) < 0)
 				continue ;
 			for (size_t i = 0; i < clients.size(); i++)
 			{
-				std::cout << BLUE << "clients : " << clients[i]->getFdClient() << ", " << clients[i]->getHostname() << ", keep alive : " << clients[i]->getKeepAlive() << ", server : " << events[indexEvent].data.fd << std::endl << RESET;
+				std::cout << BLUE << "clients : " << clients[i]->getFdClient() << ", " << clients[i]->getHostname() << ", keep alive : " << clients[i]->getKeepAlive() << std::endl << RESET;
 			}
 			std::cout << "epoll client size : " << epoll.getNbSockets() << std::endl;
 			for (int i = 0; i < epoll.getNbSockets(); i++)
@@ -154,13 +157,18 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 		{
 			std::cout << "receive" << std::endl;
 			receiveRequest(clients[idClient]);
-			// std::cout << "Reuqest before recieveRequest: " << clients[idClient].getBuf() << std::endl;
+			std::cout << MAGENTA << "Reuqest before recieveRequest: " << clients[idClient]->getBuf() << std::endl << RESET;
 		}
-		else if (events[indexEvent].events == EPOLLOUT && clients[idClient]->getEndOfFile())
+		if (events[indexEvent].events == EPOLLOUT && isClientSocket(events[indexEvent].data.fd, clients, idClient) && clients[idClient]->getEndOfFile())
 		{
 			std::cout << "chez kilian" << std::endl;
+			if (getTimeNow() - clients[idClient]->getTime() > MAXTIME)
+			{
+				std::cout << RED << "timeout" << std::endl << RESET;
+				break ;
+			}
 			sendResponse(clients[idClient], goodServer(clients[idClient], servers));
-			std::cout << BLUE << "after send : " << clients[idClient]->getKeepAlive() << std::endl << RESET;
+			// std::cout << BLUE << "after send : " << clients[idClient]->getKeepAlive() << std::endl << RESET;
 			for (size_t i = 0; i < clients.size(); i++)
 			{
 				std::cout << BLUE << "clients : " << clients[i]->getFdClient() << ", " << clients[i]->getHostname() << ", keep alive : " << clients[i]->getKeepAlive() << std::endl << RESET;

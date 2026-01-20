@@ -6,6 +6,7 @@ Client::Client()
 	this->_fdSocket = -1;
 	this->_endOfFile = false;
 	this->_keepAlive = false;
+	this->_time = getTimeNow();
 }
 
 Client::~Client()
@@ -42,6 +43,11 @@ bool const	&Client::getEndOfFile() const
 bool const			&Client::getKeepAlive() const
 {
 	return (this->_keepAlive);
+}
+
+std::time_t const	&Client::getTime() const
+{
+	return (this->_time);
 }
 
 // SETTERS
@@ -86,4 +92,5 @@ void	Client::resetClient()
 	this->_buf.clear();
 	this->_endOfFile = false;
 	this->_keepAlive = false;
+	this->_time = getTimeNow();
 }
