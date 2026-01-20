@@ -1,6 +1,6 @@
 #include "../../includes.hpp"
 #include "../Request.hpp"
-#include "../../Config.hpp"
+#include "../../Client.hpp"
 
 class Envp {
 
@@ -15,7 +15,7 @@ class Envp {
 		Envp& operator=(const Envp& src);
 		~Envp();
 
-		void	setEnv(Config conf, Request req);
+		void	setEnv(Client client, Request req);
 		
 		char**	getEnv() const;
 		std::vector<std::string> getVec() const;

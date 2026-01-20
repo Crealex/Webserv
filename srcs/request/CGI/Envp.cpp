@@ -35,7 +35,7 @@ static std::string getInStr(size_t n)
 	return ret;
 }
 
-void Envp::setEnv(Config conf, Request req)
+void Envp::setEnv(Client client, Request req)
 {
 	_env.push_back("GATEWAY_INTERFACE=CGI/1.1");
 	_env.push_back("SERVER_PROTOCOL=HTTP/1.1");
@@ -46,8 +46,8 @@ void Envp::setEnv(Config conf, Request req)
 	_env.push_back("QUERY_STRING=" + req._query);
 	_env.push_back("CONTENT_TYPE=" + req._ContentType);
 	_env.push_back("CONTENT_LENGTH=" + req.getStrContentLength());
-	_env.push_back("SERVER_NAME=" + conf.getAddressPort()[0].name);
-	_env.push_back("SERVER_PORT=" + getInStr(conf.getAddressPort()[0].addressPort[0].second));
+	// _env.push_back("SERVER_NAME=" + conf.getAddressPort()[0].name);
+	// _env.push_back("SERVER_PORT=" + getInStr(client.getSockadd().sin_port);
 	_env.push_back("HTTP_ACCEPT=" + req._accept);
 	_env.push_back("HTTP_HOST=" + req._host);
 	_env.push_back("HTTP_LOCATION=" + req._location);

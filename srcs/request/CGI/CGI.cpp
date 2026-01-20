@@ -1,6 +1,7 @@
 #include "../../../includes/requests/CGI/CGI.hpp"
+#include <sys/wait.h>
 
-CGI::CGI()
+CGI::CGI(Epoll epoll) : _started(false), _exited(false)
 {
 	if (pipe(_pipeFromCGI) != 0)
 		throw std::runtime_error("Error, could not create pipe from CGI");
@@ -33,4 +34,98 @@ CGI &CGI::operator=(const CGI& src)
 CGI::~CGI()
 {
 
+}
+
+bool CGI::subprocessStarted()
+{
+	return _started;
+}
+
+bool CGI::subprocessExited()
+{
+	return _exited;
+}
+
+void CGI::setEnvp(Client client, Request req)
+{
+	_env.setEnv(client, req);
+}
+
+void CGI::startSubprocess(const std::string path, const std::string interpreter)
+{
+	int pid = fork();
+	if (pid == -1)
+		throw std::runtime_error("Error, subprocess cannot be created");
+
+	if (pid == 0)
+	{
+		close(_pipeToCGI[1]);
+		dup2(_pipeToCGI[0], STDIN_FILENO);
+		close(_pipeToCGI[0]);
+		close(_pipeFromCGI[0]);
+		dup2(_pipeFromCGI[1], STDOUT_FILENO);
+		close(_pipeFromCGI[1]);
+
+		char **args = new char*[3];
+		args[0] = const_cast<char *>(interpreter.c_str());
+		args[1] = const_cast<char *>(path.c_str());
+		args[2] = NULL;
+
+		char **env = _env.getEnv();
+		if (execve(args[0], args, env) == -1)
+		{
+			delete env;
+			delete args;
+			throw std::runtime_error("Error, could'nt create subprocess");
+		}
+	}
+	else 
+	{
+		_started = true;
+		_childPid = pid;
+		close(_pipeToCGI[0]);
+		close(_pipeFromCGI[1]);
+	}
+}
+
+void CGI::sendBody(std::string body)
+{
+	if (_started)
+	{
+		write(_pipeToCGI[1], body.c_str(), body.size());
+		close(_pipeToCGI[1]);
+	}
+}
+
+char *CGI::getResponse()
+{
+	std::string ret;
+
+	if (_exited)
+	{
+		char buff[1024];
+		while (read(_pipeFromCGI[0], buff, 1024) != 0)
+		{
+			ret += buff;
+		}
+		close(_pipeFromCGI[0]);
+	}
+
+	return const_cast<char *>(ret.c_str());
+}
+
+void CGI::checkSubprocess()
+{
+	if (_started)
+	{
+		int status;
+		int ret = waitpid(_childPid, &status, WNOHANG);
+		if (ret == -1)
+			throw std::runtime_error("Error, waitpid could'nt wait subprocess");
+		if (ret == 0)
+			return;
+		if (!WIFEXITED(status) || WEXITSTATUS(status))
+			throw std::runtime_error("Error, subprocess exited non normally");
+		_exited = true;
+	}
 }
