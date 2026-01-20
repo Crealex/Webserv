@@ -5,7 +5,8 @@
 #include "includes.hpp"
 #include <netinet/in.h>
 
-#define MAXTIME 100
+#define MAXTIMEREQUEST 20
+#define MAXTIME 50
 
 class Client
 {
@@ -16,7 +17,9 @@ class Client
 		sockaddr_in	_sockadd;
 		bool		_endOfFile;
 		bool		_keepAlive;
+		std::time_t	_timeRequest;
 		std::time_t	_time;
+		bool		_timeoutRequest;
 	
 	public:
 		Client();
@@ -28,7 +31,7 @@ class Client
 		sockaddr_in const	&getSockadd() const;
 		bool const			&getEndOfFile() const;
 		bool const			&getKeepAlive() const;
-		std::time_t const	&getTime() const;
+		bool const			&getTimeoutRequest() const;
 
 		void	setHostname(std::string newHostname);
 		void	setFdClient(int newFd);
@@ -36,8 +39,11 @@ class Client
 		void	setSockadd(sockaddr_in newSockadd);
 		void	setEndOfFile(bool newEndOfFile);
 		void	setKeepAlive(bool newKeepAlive);
+		void	setTimeRequest();
 		
 		void	resetClient();
+		void	checkTimeoutRequest();
+		bool	checkTimeout();
 };
 
 #endif
