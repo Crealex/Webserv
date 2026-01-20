@@ -9,6 +9,6 @@
 
 #include <sys/socket.h>
 
-void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, Epoll &epoll, std::vector<Client> &clients);
+void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, Epoll &epoll, std::vector<Client *> &clients);
 
 #endif
