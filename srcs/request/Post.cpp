@@ -32,12 +32,20 @@ static bool addContentToFile(std::string body, std::ofstream *newFile)
 	return (true);
 }
 
+	//file.seekg(0, std::ios::end);
+	//size_t size = file.tellg();
+	//file.seekg(0, std::ios::beg);
+	//char* buffer = new char[size];
+	//file.read(buffer, size);
+	//std::string fileStr(buffer, size);
+	//delete[] buffer;
 // TODO: A continuer le moment venu...
 void Post::handlePostFile(std::string *resp, std::string boundary)
 {
+	std::size_t start;
+	std::size_t end;
+	std::stringstream iss(this->_body);
 	(void)resp;
-	(void)boundary;
-	std::stringstream iss;
 	while (std::getline(iss, this->_body))
 	{
 		if (iss.str().compare(0, 12, "content-type"))
@@ -45,8 +53,11 @@ void Post::handlePostFile(std::string *resp, std::string boundary)
 		if (iss.str() == "\n")
 			break;
 	}
-
-	std::getline(iss, this->_body );
+	start = iss.str().find("\r\n\r\n");// <--- recuperer ici ou on en est (pour savoir ou commence le body du fichier);
+	end = iss.str().rfind(boundary); // <--- trouver le boundary de fin pour savoir jusqu'ou extraire le body du fichier
+	std::cout << "start: " << start << ", end: " << end << std::endl;
+	this->_body = iss.str().substr(start, end - boundary.length());
+	std::cout << BOLD << "body of body of body of body of file upload: " << this->_body << RESET << std::endl;
 }
 
 const std::string Post::createResponse(Server srv)
@@ -66,7 +77,6 @@ const std::string Post::createResponse(Server srv)
 	{
 		boundary = extractBoundary(this->_contentType);
 		handlePostFile(&resp, boundary);
-		return (resp);
 	}
 	target = findTarget(this->_location, srv.getLocations(), dataError, "POST");
 	path = srv.getRoot() + target;
