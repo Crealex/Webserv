@@ -51,6 +51,20 @@ void	Epoll::setEvents(epoll_event *newEvents)
 	this->_events = newEvents;
 }
 
+
+void	Epoll::setEvents(Client *client, uint32_t event)
+{
+	int indexEvents = 0;
+
+	for (int i = 0; i < this->_nbSockets; i++) {
+		if (this->_events[i].data.fd == client->getFdClient())
+		{
+			indexEvents = i;
+			break;
+		}
+	}
+	this->_events[indexEvents].events = event;
+}
 // METHODS
 // PRIVATE
 int	Epoll::createEpoll()

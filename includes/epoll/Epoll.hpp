@@ -4,6 +4,7 @@
 
 #include "../socket/Socket.hpp"
 #include <sys/epoll.h>
+#include "../Client.hpp"
 
 class Epoll
 {
@@ -27,6 +28,7 @@ class Epoll
 		void	addEpollFd(int fd, uint32_t event);
 		void	setNbSockets(int newNb);
 		void	setEvents(epoll_event *newEvents);
+		void	setEvents(Client *client, uint32_t event);
 };
 
 #endif
