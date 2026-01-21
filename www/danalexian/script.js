@@ -59,6 +59,7 @@ document.querySelectorAll(".card button").forEach((btn) =>
       resultDiv.textContent = "Méthode non valide";
       return;
     }
+    console.log("test");
     console.log(response);
     const body = await response.text();
     const status = response.status;
@@ -72,6 +73,7 @@ document.querySelectorAll(".card button").forEach((btn) =>
       resultDiv.style.backgroundColor = "var(--green)";
     else resultDiv.style.backgroundColor = "var(--red)";
 
+    console.log(status);
     statusDiv.innerHTML = `<strong>status: </strong>${status}`;
     methodDiv.innerHTML = `<strong>method:</strong> ${method}`;
     endpointDiv.innerHTML = `<strong>endpoint:</strong> ${endpoint}`;

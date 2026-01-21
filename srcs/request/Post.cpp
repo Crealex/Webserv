@@ -44,19 +44,22 @@ void Post::handlePostFile(std::string *resp, std::string boundary)
 {
 	std::size_t start;
 	std::size_t end;
+	std::size_t lenght;
 	std::stringstream iss(this->_body);
+
 	(void)resp;
 	while (std::getline(iss, this->_body))
 	{
-		if (iss.str().compare(0, 12, "content-type"))
+		if (!iss.str().compare(0, 12, "content-type"))
 			this->_contentType = iss.str().erase(0, 12);
 		if (iss.str() == "\n")
 			break;
 	}
-	start = iss.str().find("\r\n\r\n");// <--- recuperer ici ou on en est (pour savoir ou commence le body du fichier);
+	start = iss.str().find("\r\n\r\n") + 4;// <--- recuperer ici ou on en est (pour savoir ou commence le body du fichier);
 	end = iss.str().rfind(boundary); // <--- trouver le boundary de fin pour savoir jusqu'ou extraire le body du fichier
+	lenght = end - start - boundary.length() - 2;
 	std::cout << "start: " << start << ", end: " << end << std::endl;
-	this->_body = iss.str().substr(start, end - boundary.length());
+	this->_body = iss.str().substr(start, lenght);
 	std::cout << BOLD << "body of body of body of body of file upload: " << this->_body << RESET << std::endl;
 }
 
