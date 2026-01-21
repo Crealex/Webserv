@@ -40,6 +40,11 @@ CGI::~CGI()
 
 }
 
+int CGI::getChildPid()
+{
+	return _childPid;
+}
+
 bool CGI::subprocessStarted()
 {
 	return _started;
@@ -95,7 +100,7 @@ void CGI::startSubprocess(const std::string path, const std::string interpreter)
 void CGI::sendBody(std::string body)
 {
 	if (_started)
-	{
+	{	// send pack by pack the body to not overload the fd
 		write(_pipeToCGI[1], body.c_str(), body.size());
 		close(_pipeToCGI[1]);
 	}
