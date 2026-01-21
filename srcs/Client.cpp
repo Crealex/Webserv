@@ -7,6 +7,7 @@ Client::Client()
 	this->_endOfFile = false;
 	this->_keepAlive = false;
 	this->_time = getTimeNow();
+	this->_timeoutRequest = false;
 }
 
 Client::~Client()
@@ -45,9 +46,10 @@ bool const			&Client::getKeepAlive() const
 	return (this->_keepAlive);
 }
 
-std::time_t const	&Client::getTime() const
+
+bool const			&Client::getTimeoutRequest() const
 {
-	return (this->_time);
+	return (this->_timeoutRequest);
 }
 
 // SETTERS
@@ -84,6 +86,11 @@ void	Client::setKeepAlive(bool newKeepAlive)
 	this->_keepAlive = newKeepAlive;
 }
 
+void	Client::setTimeRequest()
+{
+	this->_timeRequest = getTimeNow();
+}
+
 //METHODS
 
 void	Client::resetClient()
@@ -92,5 +99,19 @@ void	Client::resetClient()
 	this->_buf.clear();
 	this->_endOfFile = false;
 	this->_keepAlive = false;
-	this->_time = getTimeNow();
+	this->_timeRequest = getTimeNow();
+}
+
+void	Client::checkTimeoutRequest()
+{
+	if (std::difftime(getTimeNow(), this->_timeRequest) > MAXTIMEREQUEST)
+		this->_timeRequest = true;
+}
+
+bool	Client::checkTimeout()
+{
+	std::cout << "in check timeout" << std::endl;
+	if (std::difftime(getTimeNow(), this->_time) > MAXTIME)
+		return (true);
+	return (false);
 }
