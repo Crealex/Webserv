@@ -165,6 +165,7 @@ static std::map<std::string, std::string*> createMap(Request &req)
 	ret.insert(std::make_pair(std::string("Accept:"), &req._accept));
 	ret.insert(std::make_pair(std::string("Content-Type:"), &req._ContentType));
 	req._ContentLength = 0;
+	req._keepAlive = false;
 
 	return ret;
 }
