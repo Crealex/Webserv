@@ -65,23 +65,20 @@ static void	receiveRequest(Client *client, Epoll &epoll)
 {
 	int		sizeRecv;
 	char	buffer[10000];
-	std::string temp;
 
 	sizeRecv = -1;
-	std::cout << "size buf : " << sizeof(buffer) << std::endl; 
-	sizeRecv = recv(client->getFdClient(), buffer, sizeof(buffer), 0);
+	sizeRecv = recv(client->getFdClient(), buffer, sizeof(buffer) - 1, 0);
 	if (sizeRecv == -1)
 	{
 		return ;
 	}
-	if (sizeRecv < 10000)
+	buffer[sizeRecv] = '\0';
+	if (sizeRecv < 9999)
 	{
-		epoll.setEvents(client, EPOLLOUT);
-		//client->setEndOfFile(true);
-		
+		client->setEndOfFile(true);
+		// epoll.setEvents(client, EPOLLOUT);
+		std::cout << "event set : " << epoll.getEvents()[epoll.getNbSockets() - 1].events << std::endl;
 	}
-	temp.copy(buffer, sizeRecv, 0);
-	std::cout << temp << std::endl;
 	client->setBuf(buffer);
 	client->setTimeRequest();
 }
@@ -110,7 +107,7 @@ static void	closeClient(std::vector<Client *> &clients, int idClient, Epoll &epo
 	sizeEpollEvents = epoll.getNbSockets();
 	for (int i = 0; i < sizeEpollEvents; i++)
 	{
-		if (epoll.getEvents()->data.fd == clients[idClient]->getFdClient())
+		if (epoll.getEvents()[i].data.fd == clients[idClient]->getFdClient())
 		{
 			indexFdEPoll = i;
 			break ;
@@ -127,16 +124,21 @@ static void	closeClient(std::vector<Client *> &clients, int idClient, Epoll &epo
 
 void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, Epoll &epoll, std::vector<Client *> &clients)
 {
-	int					epollCounterWait;
-	int					idClient;
-	std::string			hostnameOfSrvSock;
-	epoll_event			events[epoll.getNbSockets()];
-
 	while (1)
 	{
+		int					epollCounterWait;
+		int					idClient;
+		std::string			hostnameOfSrvSock;
+		epoll_event			events[epoll.getNbSockets()];
+
 		epollCounterWait = 0;
 		idClient = 0;
-	 
+	
+		// std::cout << "epoll : " << epoll.getEpollFd() << ", " << epoll.getNbSockets() << std::endl;
+		// for (int i = 0; i < epoll.getNbSockets() ; i++)
+		// {
+		// 	std::cout << YELLOW << epoll.getEvents()[i].data.fd << ", " << epoll.getEvents()[i].events << std::endl << RESET;
+		// }
 		epollCounterWait = epoll_wait(epoll.getEpollFd(), events, epoll.getNbSockets(), 2000);
 		// std::cout << BLUE << "dana : " << epollCounterWait << RESET << std::endl;
 		if (epollCounterWait < 1)
@@ -165,8 +167,9 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 				receiveRequest(clients[idClient], epoll);
 				std::cout << MAGENTA <<"Request : " << clients[idClient]->getBuf() << std::endl << RESET;
 			}
+			// std::cout << "event : " << events[indexEvent].data.fd << ", " << events[indexEvent].events << ", " << isClientSocket(events[indexEvent].data.fd, clients, idClient) << std::endl;
 			clients[idClient]->checkTimeoutRequest();
-			if ((events[indexEvent].events & EPOLLOUT && isClientSocket(events[indexEvent].data.fd, clients, idClient)))
+			if (events[indexEvent].events & EPOLLOUT && isClientSocket(events[indexEvent].data.fd, clients, idClient) && clients[idClient]->getEndOfFile())
 			{
 				std::cout << "chez kilian" << std::endl;
 				sendResponse(clients[idClient], goodServer(clients[idClient], servers));
@@ -180,8 +183,7 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 				else
 				{
 					clients[idClient]->resetClient();
-					
-					epoll.setEvents(clients[idClient], EPOLLIN);
+					epoll.setEvents(clients[idClient], EPOLLIN|EPOLLOUT);
 				}
 				std::cout << "end" << std::endl;
 			}

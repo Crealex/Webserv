@@ -131,3 +131,19 @@ void	Epoll::addEpollFd(int fd, uint32_t event)
 	this->setEvents(temp);
 	this->_nbSockets++;
 }
+
+void	Epoll::setEvents(Client *client, uint32_t event)
+{
+	int indexEvents;
+
+	indexEvents = 0;
+	for (int i = 0; i < this->_nbSockets; i++)
+	{
+		if (this->_events[i].data.fd == client->getFdClient())
+		{
+			indexEvents = i;
+			break ;
+		}
+	}
+	this->_events[indexEvents].events = event;
+}
