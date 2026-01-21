@@ -11,9 +11,9 @@ void sendResponse(Client *client, Server server)
 	
 	try
 	{
-		std::cout << MAGENTA << BOLD << "REQUESTS: " << RESET << std::endl;
-		std::cout << client->getBuf() << std::endl;
-		std::cout << "-------------------------------------------------------" << std::endl;
+		// std::cout << MAGENTA << BOLD << "REQUESTS: " << RESET << std::endl;
+		// std::cout << client.getBuf() << std::endl;
+		// std::cout << "-------------------------------------------------------" << std::endl;
 		Methods *request;
 		request = createMethod((char *)client->getBuf().c_str(), server.getMaxSize(), ret);
 		response = request->createResponse(server);
@@ -33,5 +33,5 @@ void sendResponse(Client *client, Server server)
 	{
 		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
 	}
-	std::cout << "TEEEEEEEEEEEST" << std::endl;
+	// std::cout << "TEEEEEEEEEEEST" << std::endl;
 }
