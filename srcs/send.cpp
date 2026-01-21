@@ -23,6 +23,7 @@ void sendResponse(Client *client, Server server)
 	{
 		response = e.createResponse(server);
 	}
+	std::cout << YELLOW << "requete : " << response << std::endl;
 	client->setKeepAlive(ret);
 	// std::cout << RED << BOLD << "SEND ARG: \n" << RESET
 	// 	<< "fdclient = " << client.getFdClient()
