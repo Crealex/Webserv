@@ -13,7 +13,10 @@
 #include <dirent.h>
 #include <sstream>
 #include <fstream>
+#include <ctime>
 
 #include "colors.hpp"
+
+std::time_t	getTimeNow();
 
 #endif
