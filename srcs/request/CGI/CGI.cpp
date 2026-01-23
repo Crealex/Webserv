@@ -1,7 +1,7 @@
 #include "../../../includes/requests/CGI/CGI.hpp"
 #include <sys/wait.h>
 
-CGI::CGI(Epoll epoll) : _started(false), _exited(false)
+CGI::CGI(Epoll epoll, std::string body) : _started(false), _exited(false), _body(body)
 {
 	if (pipe(_pipeFromCGI) != 0)
 		throw std::runtime_error("Error, could not create pipe from CGI");
@@ -159,11 +159,23 @@ void CGI::startSubprocess(const std::string path, const std::string interpreter)
 	}
 }
 
-void CGI::sendBody(std::string body)
+void CGI::sendBody()
 {
 	if (_started)
 	{	// send pack by pack the body to not overload the fd
-		write(_pipeToCGI[1], body.c_str(), body.size());
+		std::string::iterator first = _body.begin();
+		std::string::iterator sec = first + 1024;
+		if (sec > _body.end())
+			sec == _body.end();
+		do
+		{
+			std::string send(first, sec);
+			write(_pipeToCGI[1], send.c_str(), send.size());
+			first = sec;
+			sec += 1024;
+			if (sec > _body.end())
+				sec == _body.end();
+		} while (sec != _body.end());
 		close(_pipeToCGI[1]);
 		_pipeToCGI[1] = -1;
 	}
