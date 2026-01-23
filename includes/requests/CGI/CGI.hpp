@@ -13,6 +13,8 @@ class CGI {
 		bool	_exited;
 		Envp	_env;
 
+		void reconstruct(Epoll epoll);
+
 	public:
 
 		CGI(Epoll epoll);
@@ -25,7 +27,9 @@ class CGI {
 		bool	subprocessStarted();
 		bool	subprocessExited();
 
+		void closeAllFd();
 		void checkSubprocess();
+		void reset(Epoll epoll);
 		void sendBody(std::string body);
 		void setEnvp(Client client, Request req);
 		void startSubprocess(const std::string path, const std::string interpreter);

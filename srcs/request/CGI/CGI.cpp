@@ -13,6 +13,8 @@ CGI::CGI(Epoll epoll) : _started(false), _exited(false)
 	{
 		close(_pipeFromCGI[0]);
 		close(_pipeFromCGI[1]);
+		_pipeFromCGI[0] = -1;
+		_pipeFromCGI[1] = -1;
 		throw std::runtime_error("Error, could not create pipe to CGI");
 	}
 	sockOptNonBlocking(_pipeToCGI[0]);
@@ -37,7 +39,7 @@ CGI &CGI::operator=(const CGI& src)
 
 CGI::~CGI()
 {
-
+	closeAllFd();
 }
 
 int CGI::getChildPid()
@@ -58,6 +60,64 @@ bool CGI::subprocessExited()
 void CGI::setEnvp(Client client, Request req)
 {
 	_env.setEnv(client, req);
+}
+
+void CGI::reconstruct(Epoll epoll)
+{
+	if (pipe(_pipeFromCGI) != 0)
+		throw std::runtime_error("Error, could not create pipe from CGI");
+	sockOptNonBlocking(_pipeFromCGI[0]);
+	sockOptNonBlocking(_pipeFromCGI[1]);
+	epoll.addEpollFd(_pipeFromCGI[0], EPOLLOUT);
+	epoll.addEpollFd(_pipeFromCGI[1], EPOLLIN);
+	if (pipe(_pipeToCGI) != 0)
+	{
+		close(_pipeFromCGI[0]);
+		close(_pipeFromCGI[1]);
+		_pipeFromCGI[0] = -1;
+		_pipeFromCGI[1] = -1;
+		throw std::runtime_error("Error, could not create pipe to CGI");
+	}
+	sockOptNonBlocking(_pipeToCGI[0]);
+	sockOptNonBlocking(_pipeToCGI[1]);
+	epoll.addEpollFd(_pipeToCGI[0], EPOLLOUT);
+	epoll.addEpollFd(_pipeToCGI[1], EPOLLIN);
+}
+
+void CGI::reset(Epoll epoll)
+{
+	if (_started && !_exited)
+		kill(_childPid, SIGKILL);
+	
+	_env = Envp();
+
+	_childPid = 0;
+	closeAllFd();
+	reconstruct(epoll);
+}
+
+void CGI::closeAllFd()
+{
+	if (_pipeFromCGI[0] != -1)
+	{
+		close(_pipeFromCGI[0]);
+		_pipeFromCGI[0] = -1;
+	}
+	if (_pipeFromCGI[1] != -1)
+	{
+		close(_pipeFromCGI[1]);
+		_pipeFromCGI[1] = -1;
+	}
+	if (_pipeToCGI[0] != -1)
+	{
+		close(_pipeToCGI[0]);
+		_pipeToCGI[0] = -1;
+	}
+	if (_pipeToCGI[1] != -1)
+	{
+		close(_pipeToCGI[1]);
+		_pipeToCGI[1] = -1;
+	}
 }
 
 void CGI::startSubprocess(const std::string path, const std::string interpreter)
@@ -94,6 +154,8 @@ void CGI::startSubprocess(const std::string path, const std::string interpreter)
 		_childPid = pid;
 		close(_pipeToCGI[0]);
 		close(_pipeFromCGI[1]);
+		_pipeFromCGI[1] = -1;
+		_pipeToCGI[0] = -1;
 	}
 }
 
@@ -103,6 +165,7 @@ void CGI::sendBody(std::string body)
 	{	// send pack by pack the body to not overload the fd
 		write(_pipeToCGI[1], body.c_str(), body.size());
 		close(_pipeToCGI[1]);
+		_pipeToCGI[1] = -1;
 	}
 }
 
@@ -118,6 +181,7 @@ char *CGI::getResponse()
 			ret += buff;
 		}
 		close(_pipeFromCGI[0]);
+		_pipeFromCGI[0] = -1;
 	}
 
 	return const_cast<char *>(ret.c_str());
