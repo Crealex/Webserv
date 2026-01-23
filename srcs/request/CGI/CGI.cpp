@@ -3,24 +3,7 @@
 
 CGI::CGI(Epoll epoll, std::string body) : _started(false), _exited(false), _body(body)
 {
-	if (pipe(_pipeFromCGI) != 0)
-		throw std::runtime_error("Error, could not create pipe from CGI");
-	sockOptNonBlocking(_pipeFromCGI[0]);
-	sockOptNonBlocking(_pipeFromCGI[1]);
-	epoll.addEpollFd(_pipeFromCGI[0], EPOLLOUT);
-	epoll.addEpollFd(_pipeFromCGI[1], EPOLLIN);
-	if (pipe(_pipeToCGI) != 0)
-	{
-		close(_pipeFromCGI[0]);
-		close(_pipeFromCGI[1]);
-		_pipeFromCGI[0] = -1;
-		_pipeFromCGI[1] = -1;
-		throw std::runtime_error("Error, could not create pipe to CGI");
-	}
-	sockOptNonBlocking(_pipeToCGI[0]);
-	sockOptNonBlocking(_pipeToCGI[1]);
-	epoll.addEpollFd(_pipeToCGI[0], EPOLLOUT);
-	epoll.addEpollFd(_pipeToCGI[1], EPOLLIN);
+	reconstruct(epoll);
 }
 
 CGI::CGI(const CGI& cpy)
