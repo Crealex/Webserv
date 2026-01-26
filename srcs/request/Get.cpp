@@ -33,7 +33,7 @@ const std::string Get::createResponse(Server srv)
 
 	target = findTarget(this->_location, srv.getLocations(), dataError, "GET");
 	// TODO: Verif si target est un file ou un dossier ou une redirection;
-	path = srv.getRoot() + "/" + target;
+	path = srv.getRoot() + "/" + target; // TODO: Peut-etre retirer le /
 	std::cout << "complete path to get: " << path << std::endl;
 	file.open(path.c_str());
 	// *************************
