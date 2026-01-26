@@ -33,9 +33,12 @@ document.querySelectorAll(".card button").forEach((btn) =>
     const timeDiv = resultDiv.querySelector(".time");
     const startTime = performance.now();
 
+    console.log("debut de la fonction");
     let response;
+		console.log(method);
     if (method === "GET") {
       if (endpoint) response = await fetch(endpoint);
+	console.log("in get")
     } else if (method === "POST") {
       if (endpoint)
         response = await fetch(endpoint, {
@@ -43,7 +46,7 @@ document.querySelectorAll(".card button").forEach((btn) =>
           headers: {
             "Content-Type": "text/plain",
           },
-          body: "Je suis le test de la method post, et si je réussis je suis content",
+          body: "Je suis le test de IN THE DESTRUCla method post, et si je réussis je suis content",
         });
     } else if (method === "DELETE") {
       if (endpoint) response = await fetch(endpoint, { method: "DELETE" });
@@ -55,6 +58,7 @@ document.querySelectorAll(".card button").forEach((btn) =>
       console.log(file);
       response = await fetch(endpoint, { method: "POST", body: file });
     }
+    console.log("fin des premieres condition");
     if (!response) {
       resultDiv.textContent = "Méthode non valide";
       return;
