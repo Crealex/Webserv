@@ -70,6 +70,7 @@ static int	receiveRequest(Client *client, Epoll &epoll)
 	if (sizeRecv == -1)
 		return (receiveRequest(client, epoll));
 	buffer[sizeRecv] = '\0';
+	std::cout << "sizeRecv : " << sizeRecv << std::endl;
 	if (sizeRecv == 0)
 		return (0);
 	client->setBuf(buffer);
@@ -165,13 +166,13 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 					std::cout << YELLOW << "epoll : " << epoll.getEvents()[i].data.fd << ", " << epoll.getEvents()[i].events << std::endl << RESET;
 				}
 			}
-			std::cout << GREEN << "epollin : " << (events[indexEvent].events & EPOLLIN) << std::endl << RESET;
+			std::cout << GREEN << "epollin : " << events[indexEvent].events << std::endl << RESET;
 			if (events[indexEvent].events & EPOLLIN && isClientSocket(events[indexEvent].data.fd, clients, idClient))
 			{
 				std::cout << "receive" << std::endl;
 				if (receiveRequest(clients[idClient], epoll) == 0)
 				{
-					std::cout << MAGENTA <<"Request : " << clients[idClient]->getBuf() << std::endl << RESET;
+					std::cout << LIGHT_YELLOW << "Request : " << clients[idClient]->getBuf() << std::endl << RESET;
 					closeClient(clients, idClient, epoll);
 					continue ;
 				}
