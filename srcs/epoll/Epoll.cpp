@@ -132,4 +132,5 @@ void	Epoll::setEvents(Client *client, uint32_t event)
 		}
 	}
 	this->_events[indexEvents].events = event;
+	epoll_ctl(this->getEpollFd(), EPOLL_CTL_MOD, this->getEvents()[indexEvents].data.fd, &this->getEvents()[indexEvents]);
 }

@@ -23,15 +23,17 @@ void sendResponse(Client *client, Server server)
 	{
 		response = e.createResponse(server);
 	}
-	std::cout << YELLOW << "requete : " << response << std::endl;
+	std::cout << YELLOW << "response : " << response << std::endl;
 	client->setKeepAlive(ret);
 	// std::cout << RED << BOLD << "SEND ARG: \n" << RESET
 	// 	<< "fdclient = " << client.getFdClient()
 	// 	<< "\nresponse " << response 
 	// 	<< "\nsize = " << response.size() << std::endl;
-	while (send(client->getFdClient(), response.c_str(), response.size(), 0) == -1)
+	int temp = send(client->getFdClient(), response.c_str(), response.size(), 0);
+	if (temp == -1)
 	{
 		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
 	}
+	std::cout << "tempppppppp : " << temp << std::endl;
 	// std::cout << "TEEEEEEEEEEEST" << std::endl;
 }
