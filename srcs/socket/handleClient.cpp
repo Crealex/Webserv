@@ -61,7 +61,7 @@ static int	acceptClient(int fd, std::vector<Client *> &clients, Epoll &epoll, st
 	return (0);
 }
 
-static void	receiveRequest(Client *client, Epoll &epoll)
+static int	receiveRequest(Client *client, Epoll &epoll)
 {
 	int		sizeRecv;
 	char	buffer[10000];
@@ -69,18 +69,28 @@ static void	receiveRequest(Client *client, Epoll &epoll)
 	sizeRecv = -1;
 	sizeRecv = recv(client->getFdClient(), buffer, sizeof(buffer) - 1, 0);
 	if (sizeRecv == -1)
-	{
-		return ;
-	}
+		return (receiveRequest(client, epoll));
 	buffer[sizeRecv] = '\0';
-	if (sizeRecv < 9999)
-	{
-		//client->setEndOfFile(true);
-		epoll.setEvents(client, EPOLLOUT);
-		std::cout << "event set : " << epoll.getEvents()[epoll.getNbSockets() - 1].events << std::endl;
-	}
+	if (sizeRecv == 0)
+		return (0);
 	client->setBuf(buffer);
+	if (client->getBuf().find("\r\n\r\n") != std::string::npos)
+	{
+		// client->setEndOfFile(true);
+		epoll.setEvents(client, EPOLLOUT);
+		int indexTemp = 0;
+		for (int i = 0; i < epoll.getNbSockets(); i++)
+		{
+			if (epoll.getEvents()[i].data.fd == client->getFdClient())
+			{
+				indexTemp = i;
+				break ;
+			}
+		}
+		std::cout << "event set : " << epoll.getEvents()[indexTemp].events << std::endl;
+	}
 	client->setTimeRequest();
+	return (1);
 }
 
 static Server	goodServer(Client *client, std::vector<Server> servers)
@@ -134,13 +144,8 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 		epollCounterWait = 0;
 		idClient = 0;
 	
-		// std::cout << "epoll : " << epoll.getEpollFd() << ", " << epoll.getNbSockets() << std::endl;
-		// for (int i = 0; i < epoll.getNbSockets() ; i++)
-		// {
-		// 	std::cout << YELLOW << epoll.getEvents()[i].data.fd << ", " << epoll.getEvents()[i].events << std::endl << RESET;
-		// }
 		epollCounterWait = epoll_wait(epoll.getEpollFd(), events, epoll.getNbSockets(), 2000);
-		// std::cout << BLUE << "dana : " << epollCounterWait << RESET << std::endl;
+		std::cout << GREEN << "dana : " << epollCounterWait << std::endl;
 		if (epollCounterWait < 1)
 			continue ;
 		for (int indexEvent = 0; indexEvent < epollCounterWait; indexEvent++)
@@ -161,10 +166,16 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 					std::cout << YELLOW << "epoll : " << epoll.getEvents()[i].data.fd << ", " << epoll.getEvents()[i].events << std::endl << RESET;
 				}
 			}
+			std::cout << GREEN << "epollin : " << (events[indexEvent].events & EPOLLIN) << std::endl << RESET;
 			if (events[indexEvent].events & EPOLLIN && isClientSocket(events[indexEvent].data.fd, clients, idClient))
 			{
 				std::cout << "receive" << std::endl;
-				receiveRequest(clients[idClient], epoll);
+				if (receiveRequest(clients[idClient], epoll) == 0)
+				{
+					std::cout << MAGENTA <<"Request : " << clients[idClient]->getBuf() << std::endl << RESET;
+					closeClient(clients, idClient, epoll);
+					continue ;
+				}
 				std::cout << MAGENTA <<"Request : " << clients[idClient]->getBuf() << std::endl << RESET;
 			}
 			// std::cout << "event : " << events[indexEvent].data.fd << ", " << events[indexEvent].events << ", " << isClientSocket(events[indexEvent].data.fd, clients, idClient) << std::endl;
@@ -172,6 +183,7 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 			if (events[indexEvent].events & EPOLLOUT && isClientSocket(events[indexEvent].data.fd, clients, idClient))
 			{
 				std::cout << "chez kilian" << std::endl;
+				std::cout << RED << "Request : " << clients[idClient]->getBuf() << std::endl << RESET;
 				sendResponse(clients[idClient], goodServer(clients[idClient], servers));
 				// std::cout << BLUE << "after send : " << clients[idClient]->getKeepAlive() << std::endl << RESET;
 				for (size_t i = 0; i < clients.size(); i++)
