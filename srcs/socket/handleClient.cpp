@@ -75,8 +75,8 @@ static void	receiveRequest(Client *client, Epoll &epoll)
 	buffer[sizeRecv] = '\0';
 	if (sizeRecv < 9999)
 	{
-		client->setEndOfFile(true);
-		// epoll.setEvents(client, EPOLLOUT);
+		//client->setEndOfFile(true);
+		epoll.setEvents(client, EPOLLOUT);
 		std::cout << "event set : " << epoll.getEvents()[epoll.getNbSockets() - 1].events << std::endl;
 	}
 	client->setBuf(buffer);
@@ -169,7 +169,7 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 			}
 			// std::cout << "event : " << events[indexEvent].data.fd << ", " << events[indexEvent].events << ", " << isClientSocket(events[indexEvent].data.fd, clients, idClient) << std::endl;
 			clients[idClient]->checkTimeoutRequest();
-			if (events[indexEvent].events & EPOLLOUT && isClientSocket(events[indexEvent].data.fd, clients, idClient) && clients[idClient]->getEndOfFile())
+			if (events[indexEvent].events & EPOLLOUT && isClientSocket(events[indexEvent].data.fd, clients, idClient))
 			{
 				std::cout << "chez kilian" << std::endl;
 				sendResponse(clients[idClient], goodServer(clients[idClient], servers));
@@ -183,7 +183,7 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 				else
 				{
 					clients[idClient]->resetClient();
-					epoll.setEvents(clients[idClient], EPOLLIN|EPOLLOUT);
+					epoll.setEvents(clients[idClient], EPOLLIN);
 				}
 				std::cout << "end" << std::endl;
 			}

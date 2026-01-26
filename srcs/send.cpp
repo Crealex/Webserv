@@ -3,6 +3,7 @@
 #include "../includes/Client.hpp"
 #include "../includes/requests/methodsClass.hpp"
 #include "../includes/requests/ResponseError.hpp"
+#include <sys/socket.h>
 
 void sendResponse(Client *client, Server server)
 {
@@ -29,7 +30,7 @@ void sendResponse(Client *client, Server server)
 	// 	<< "fdclient = " << client.getFdClient()
 	// 	<< "\nresponse " << response 
 	// 	<< "\nsize = " << response.size() << std::endl;
-	while (send(client->getFdClient(), response.c_str(), response.size(), 0) == -1)
+	while (send(client->getFdClient(), response.c_str(), response.size(), MSG_NOSIGNAL) == -1)
 	{
 		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
 	}

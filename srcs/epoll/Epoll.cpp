@@ -52,19 +52,6 @@ void	Epoll::setEvents(epoll_event *newEvents)
 }
 
 
-void	Epoll::setEvents(Client *client, uint32_t event)
-{
-	int indexEvents = 0;
-
-	for (int i = 0; i < this->_nbSockets; i++) {
-		if (this->_events[i].data.fd == client->getFdClient())
-		{
-			indexEvents = i;
-			break;
-		}
-	}
-	this->_events[indexEvents].events = event;
-}
 // METHODS
 // PRIVATE
 int	Epoll::createEpoll()
@@ -146,4 +133,7 @@ void	Epoll::setEvents(Client *client, uint32_t event)
 		}
 	}
 	this->_events[indexEvents].events = event;
+	epoll_ctl(this->_epollFd, EPOLL_CTL_MOD,                           // modif par claude
+                this->_events[indexEvents].data.fd,                      
+                &this->_events[indexEvents]); 
 }
