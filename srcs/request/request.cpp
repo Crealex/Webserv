@@ -267,11 +267,11 @@ Request createRequest(char* buffer, size_t maxSize)
 
 	// extract the body of the request
 	std::string buff(buffer);
-	size_t pos = buff.find("\n\n");
-	if (pos != std::string::npos)
+	size_t pos2 = buff.find("\n\n");
+	if (pos2 != std::string::npos)
 	{
-		pos += 2;
-		std::string body = buff.substr(pos, buff.size() - pos);
+		pos2 += 2;
+		std::string body = buff.substr(pos2, buff.size() - pos2);
 		ret._body = retBody(body, maxSize, ret);
 	}
 

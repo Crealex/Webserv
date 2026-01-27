@@ -1,13 +1,14 @@
 #include "../includes/includes.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/Client.hpp"
+#include "../includes/requests/Request.hpp"
 #include "../includes/requests/methodsClass.hpp"
 #include "../includes/requests/ResponseError.hpp"
 
 void sendResponse(Client *client, Server server)
 {
 	std::string response;
-	bool ret;
+	Request req;
 	
 	try
 	{
@@ -15,7 +16,9 @@ void sendResponse(Client *client, Server server)
 		std::cout << client->getBuf() << std::endl;
 		std::cout << "-------------------------------------------------------" << std::endl;
 		Methods *request;
-		request = createMethod((char *)client->getBuf().c_str(), server.getMaxSize(), ret);
+		req = createRequest((char *)client->getBuf().c_str(), server.getMaxSize());
+
+		request = createMethod(req);
 		response = request->createResponse(server);
 		delete request;
 	}
@@ -23,7 +26,7 @@ void sendResponse(Client *client, Server server)
 	{
 		response = e.createResponse(server);
 	}
-	client->setKeepAlive(ret);
+	client->setKeepAlive(req._keepAlive);
 	// std::cout << RED << BOLD << "SEND ARG: \n" << RESET
 	// 	<< "fdclient = " << client.getFdClient()
 	// 	<< "\nresponse " << response 
