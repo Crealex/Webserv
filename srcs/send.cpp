@@ -16,7 +16,7 @@ void sendResponse(Client *client, Server server)
 		std::cout << client->getBuf() << std::endl;
 		std::cout << "-------------------------------------------------------" << std::endl;
 		Methods *request;
-		request = createMethod((char *)client->getBuf().c_str(), server.getMaxSize(), ret);
+		request = createMethod(client->getBuf(), server.getMaxSize(), ret);
 		response = request->createResponse(server);
 		delete request;
 	}

@@ -203,7 +203,7 @@ std::string retBody(std::string str, size_t maxSize, Request req)
  * @param buffer the client request
  * @return The created Request object
  */
-Request createRequest(char* buffer, size_t maxSize)
+Request createRequest(std::string buffer, size_t maxSize)
 {
 	Request ret;
 	std::map<std::string, std::string*> ptrMap = createMap(ret);
@@ -254,13 +254,13 @@ Request createRequest(char* buffer, size_t maxSize)
 	}
 
 	// extract the body of the request
-	std::string buff(buffer);
-	size_t pos = buff.find("\r\n\r\n");
-	std::cout << "buffer = " << buff << "pos = " << pos << std::endl;
+	std::cout << "content length = " << ret._ContentLength << std::endl;
+	size_t pos = buffer.find("\r\n\r\n");
+	// std::cout << RED << "buffer = " << buffer << "pos = " << pos << std::endl;
 	if (pos != std::string::npos)
 	{
 		pos += 4;
-		std::string body = buff.substr(pos, buff.size() - pos);
+		std::string body = buffer.substr(pos, buffer.size() - pos);
 		ret._body = retBody(body, maxSize, ret);
 	}
 	std::cout << "body = " << ret._body;

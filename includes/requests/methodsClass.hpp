@@ -36,7 +36,7 @@ bool	addLocation(std::string *resp, std::string host, std::string location);
 bool	addContentType(std::string *resp, std::string type);
 std::string findTarget(std::string locPath, std::vector<Location> loc, Request dataError, std::string method);
 
-Methods* createMethod(char *buffer, size_t maxSize, bool &ret);
-Request createRequest(char* buffer, size_t maxSize);
+Methods* createMethod(std::string buffer, size_t maxSize, bool &ret);
+Request createRequest(std::string buffer, size_t maxSize);
 
 #endif
