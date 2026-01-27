@@ -6,8 +6,8 @@
 #include <cstddef>
 #include <netinet/in.h>
 
-#define MAXTIMEREQUEST 20
-#define MAXTIME 50
+#define MAXTIMEREQUEST 15
+#define MAXTIME 30
 
 class Client
 {
@@ -36,7 +36,7 @@ class Client
 
 		void	setHostname(std::string newHostname);
 		void	setFdClient(int newFd);
-		void	setBuf(char *newBuf, size_t size);
+		void	setBuf(char *newBuf, int size);
 		void	setSockadd(sockaddr_in newSockadd);
 		void	setEndOfFile(bool newEndOfFile);
 		void	setKeepAlive(bool newKeepAlive);

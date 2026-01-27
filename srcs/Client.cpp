@@ -63,8 +63,9 @@ void	Client::setFdClient(int newFd)
 	this->_fdSocket = newFd;
 }
 
-void  Client::setBuf(char *newBuf, size_t size)
+void	Client::setBuf(char *newBuf, int size)
 {
+	(void) size;
 	if (this->_buf.empty())
 			this->_buf = std::string(newBuf, size);  // ✅ Préserve t
 	else
@@ -110,7 +111,6 @@ void	Client::checkTimeoutRequest()
 
 bool	Client::checkTimeout()
 {
-	std::cout << "in check timeout" << std::endl;
 	if (std::difftime(getTimeNow(), this->_time) > MAXTIME)
 		return (true);
 	return (false);
