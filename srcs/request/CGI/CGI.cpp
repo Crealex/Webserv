@@ -47,16 +47,16 @@ void CGI::setEnvp(Client client, Request req)
 
 void CGI::reconstruct(Epoll epoll)
 {
-	if (pipe(_pipeFromCGI) != 0)
+	if (::pipe(_pipeFromCGI) != 0)
 		throw std::runtime_error("Error, could not create pipe from CGI");
 	sockOptNonBlocking(_pipeFromCGI[0]);
 	sockOptNonBlocking(_pipeFromCGI[1]);
 	epoll.addEpollFd(_pipeFromCGI[0], EPOLLOUT);
 	epoll.addEpollFd(_pipeFromCGI[1], EPOLLIN);
-	if (pipe(_pipeToCGI) != 0)
+	if (::pipe(_pipeToCGI) != 0)
 	{
-		close(_pipeFromCGI[0]);
-		close(_pipeFromCGI[1]);
+		::close(_pipeFromCGI[0]);
+		::close(_pipeFromCGI[1]);
 		_pipeFromCGI[0] = -1;
 		_pipeFromCGI[1] = -1;
 		throw std::runtime_error("Error, could not create pipe to CGI");
@@ -70,7 +70,7 @@ void CGI::reconstruct(Epoll epoll)
 void CGI::reset(Epoll epoll)
 {
 	if (_started && !_exited)
-		kill(_childPid, SIGKILL);
+		::kill(_childPid, SIGKILL);
 	
 	_env = Envp();
 
@@ -83,40 +83,40 @@ void CGI::closeAllFd()
 {
 	if (_pipeFromCGI[0] != -1)
 	{
-		close(_pipeFromCGI[0]);
+		::close(_pipeFromCGI[0]);
 		_pipeFromCGI[0] = -1;
 	}
 	if (_pipeFromCGI[1] != -1)
 	{
-		close(_pipeFromCGI[1]);
+		::close(_pipeFromCGI[1]);
 		_pipeFromCGI[1] = -1;
 	}
 	if (_pipeToCGI[0] != -1)
 	{
-		close(_pipeToCGI[0]);
+		::close(_pipeToCGI[0]);
 		_pipeToCGI[0] = -1;
 	}
 	if (_pipeToCGI[1] != -1)
 	{
-		close(_pipeToCGI[1]);
+		::close(_pipeToCGI[1]);
 		_pipeToCGI[1] = -1;
 	}
 }
 
 void CGI::startSubprocess(const std::string path, const std::string interpreter)
 {
-	int pid = fork();
+	int pid = ::fork();
 	if (pid == -1)
 		throw std::runtime_error("Error, subprocess cannot be created");
 
 	if (pid == 0)
 	{
-		close(_pipeToCGI[1]);
-		dup2(_pipeToCGI[0], STDIN_FILENO);
-		close(_pipeToCGI[0]);
-		close(_pipeFromCGI[0]);
-		dup2(_pipeFromCGI[1], STDOUT_FILENO);
-		close(_pipeFromCGI[1]);
+		::close(_pipeToCGI[1]);
+		::dup2(_pipeToCGI[0], STDIN_FILENO);
+		::close(_pipeToCGI[0]);
+		::close(_pipeFromCGI[0]);
+		::dup2(_pipeFromCGI[1], STDOUT_FILENO);
+		::close(_pipeFromCGI[1]);
 
 		char **args = new char*[3];
 		args[0] = const_cast<char *>(interpreter.c_str());
@@ -124,7 +124,7 @@ void CGI::startSubprocess(const std::string path, const std::string interpreter)
 		args[2] = NULL;
 
 		char **env = _env.getEnv();
-		if (execve(args[0], args, env) == -1)
+		if (::execve(args[0], args, env) == -1)
 		{
 			delete env;
 			delete args;
@@ -135,8 +135,8 @@ void CGI::startSubprocess(const std::string path, const std::string interpreter)
 	{
 		_started = true;
 		_childPid = pid;
-		close(_pipeToCGI[0]);
-		close(_pipeFromCGI[1]);
+		::close(_pipeToCGI[0]);
+		::close(_pipeFromCGI[1]);
 		_pipeFromCGI[1] = -1;
 		_pipeToCGI[0] = -1;
 	}
@@ -153,13 +153,13 @@ void CGI::sendBody()
 		do
 		{
 			std::string send(first, sec);
-			write(_pipeToCGI[1], send.c_str(), send.size());
+			::write(_pipeToCGI[1], send.c_str(), send.size());
 			first = sec;
 			sec += 1024;
 			if (sec > _body.end())
 				sec == _body.end();
 		} while (sec != _body.end());
-		close(_pipeToCGI[1]);
+		::close(_pipeToCGI[1]);
 		_pipeToCGI[1] = -1;
 	}
 }
@@ -171,11 +171,11 @@ char *CGI::getResponse()
 	if (_exited)
 	{
 		char buff[1024];
-		while (read(_pipeFromCGI[0], buff, 1024) != 0)
+		while (::read(_pipeFromCGI[0], buff, 1024) != 0)
 		{
 			ret += buff;
 		}
-		close(_pipeFromCGI[0]);
+		::close(_pipeFromCGI[0]);
 		_pipeFromCGI[0] = -1;
 	}
 
@@ -187,7 +187,7 @@ void CGI::checkSubprocess()
 	if (_started)
 	{
 		int status;
-		int ret = waitpid(_childPid, &status, WNOHANG);
+		int ret = ::waitpid(_childPid, &status, WNOHANG);
 		if (ret == -1)
 			throw std::runtime_error("Error, waitpid could'nt wait subprocess");
 		if (ret == 0)
