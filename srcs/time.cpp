@@ -13,7 +13,6 @@ std::time_t	getTimeNow()
 void	checkAllTimeout(std::vector<Client *> &clients, Epoll &epoll)
 {
 	int	nbClients;
-	int counter = 0;
 
 	nbClients = clients.size();
 	if (nbClients == 0)
@@ -22,15 +21,9 @@ void	checkAllTimeout(std::vector<Client *> &clients, Epoll &epoll)
 	{
 		if (clients[i]->checkTimeout())
 		{
-			std::cout << "hereeeee" << std::endl;
 			closeClient(clients, i, epoll);
 			nbClients = clients.size();
 			i--;
-			counter++;
-			std::cout << "i : " << i << ", " << nbClients << std::endl;
-			if (counter == 2)
-				std::exit(1);
 		}
 	}
-	std::cout << RED << "HERE" << std::endl << RESET; 
 }

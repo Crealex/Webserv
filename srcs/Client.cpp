@@ -65,10 +65,11 @@ void	Client::setFdClient(int newFd)
 
 void	Client::setBuf(char *newBuf, int size)
 {
+	(void) size;
 	if (this->_buf.empty())
-		this->_buf = std::string(newBuf, size);
+		this->_buf = newBuf;
 	else
-		this->_buf.append(newBuf, size);
+		this->_buf.append(newBuf);
 }
 
 void	Client::setSockadd(sockaddr_in newSockadd)

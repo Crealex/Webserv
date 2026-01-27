@@ -5,8 +5,8 @@
 #include "includes.hpp"
 #include <netinet/in.h>
 
-#define MAXTIMEREQUEST 10
-#define MAXTIME 15
+#define MAXTIMEREQUEST 15
+#define MAXTIME 30
 
 class Client
 {
