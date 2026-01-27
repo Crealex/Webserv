@@ -73,7 +73,7 @@ static int	receiveRequest(Client *client, Epoll &epoll)
 	std::cout << "sizeRecv : " << sizeRecv << std::endl;
 	if (sizeRecv == 0)
 		return (0);
-	client->setBuf(buffer);
+	client->setBuf(buffer, sizeRecv);
 	if (client->getBuf().find("\r\n\r\n") != std::string::npos)
 	{
 		// client->setEndOfFile(true);
@@ -108,30 +108,6 @@ static Server	goodServer(Client *client, std::vector<Server> servers)
 	return (servers[goodIndex]);
 }
 
-static void	closeClient(std::vector<Client *> &clients, int idClient, Epoll &epoll)
-{
-	int	indexFdEPoll;
-	int	sizeEpollEvents;
-
-	indexFdEPoll = 0;
-	sizeEpollEvents = epoll.getNbSockets();
-	for (int i = 0; i < sizeEpollEvents; i++)
-	{
-		if (epoll.getEvents()[i].data.fd == clients[idClient]->getFdClient())
-		{
-			indexFdEPoll = i;
-			break ;
-		}
-	}
-	epoll_ctl(epoll.getEpollFd(), EPOLL_CTL_DEL, epoll.getEvents()[indexFdEPoll].data.fd, &epoll.getEvents()[indexFdEPoll]);
-	epoll.setNbSockets(sizeEpollEvents - 1);
-
-	if (clients[idClient]->getFdClient() > -1)
-		close(clients[idClient]->getFdClient());
-	delete clients[idClient];
-	clients.erase(clients.begin() + idClient);
-}
-
 void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, Epoll &epoll, std::vector<Client *> &clients)
 {
 	while (1)
@@ -145,7 +121,8 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 		idClient = 0;
 	
 		epollCounterWait = epoll_wait(epoll.getEpollFd(), events, epoll.getNbSockets(), 2000);
-		std::cout << GREEN << "dana : " << epollCounterWait << std::endl;
+		std::cout << GREEN << "dana : " << epollCounterWait << std::endl << RESET;
+		checkAllTimeout(clients, epoll);
 		if (epollCounterWait < 1)
 			continue ;
 		for (int indexEvent = 0; indexEvent < epollCounterWait; indexEvent++)
@@ -199,10 +176,6 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 				}
 				std::cout << "end" << std::endl;
 			}
-			// if (clients[idClient]->checkTimeout())
-			// {
-			// 	closeClient(clients, idClient, epoll);
-			// }
 		}
 	}
 }
