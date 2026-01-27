@@ -39,7 +39,8 @@ class Client
 		void	setSockadd(sockaddr_in newSockadd);
 		void	setEndOfFile(bool newEndOfFile);
 		void	setKeepAlive(bool newKeepAlive);
-		void	setTimeRequest();
+		void	setTimeoutRequest();
+		void	setTimeout();
 		
 		void	resetClient();
 		void	checkTimeoutRequest();

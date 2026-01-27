@@ -65,11 +65,10 @@ void	Client::setFdClient(int newFd)
 
 void	Client::setBuf(char *newBuf, int size)
 {
-	(void) size;
 	if (this->_buf.empty())
-		this->_buf = newBuf;
+		this->_buf = std::string(newBuf, size);
 	else
-		this->_buf.append(newBuf);
+		this->_buf.append(newBuf, size);
 }
 
 void	Client::setSockadd(sockaddr_in newSockadd)
@@ -87,9 +86,14 @@ void	Client::setKeepAlive(bool newKeepAlive)
 	this->_keepAlive = newKeepAlive;
 }
 
-void	Client::setTimeRequest()
+void	Client::setTimeoutRequest()
 {
 	this->_timeRequest = getTimeNow();
+}
+
+void	Client::setTimeout()
+{
+	this->_time = getTimeNow();
 }
 
 //METHODS

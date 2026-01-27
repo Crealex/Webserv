@@ -48,7 +48,7 @@ static int	acceptClient(int fd, std::vector<Client *> &clients, Epoll &epoll, st
 	
 	fdClient = -1;
 	addrlen = sizeof(newSockadd);
-	fdClient = accept(fd, (sockaddr *)&newSockadd, &addrlen);
+	fdClient = ::accept(fd, (sockaddr *)&newSockadd, &addrlen);
 	if (fdClient == -1)
 		return (-1);
 	sockOptNonBlocking(fdClient);
@@ -66,7 +66,7 @@ static int	receiveRequest(Client *client, Epoll &epoll)
 	char	buffer[10000];
 
 	sizeRecv = -1;
-	sizeRecv = recv(client->getFdClient(), buffer, sizeof(buffer) - 1, 0);
+	sizeRecv = ::recv(client->getFdClient(), buffer, sizeof(buffer) - 1, 0);
 	if (sizeRecv == -1)
 		return (receiveRequest(client, epoll));
 	buffer[sizeRecv] = '\0';
@@ -79,7 +79,8 @@ static int	receiveRequest(Client *client, Epoll &epoll)
 		// client->setEndOfFile(true);
 		epoll.setEvents(client, EPOLLOUT);
 	}
-	client->setTimeRequest();
+	client->setTimeoutRequest();
+	client->setTimeout();
 	return (1);
 }
 
@@ -110,7 +111,7 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 		epollCounterWait = 0;
 		idClient = 0;
 	
-		epollCounterWait = epoll_wait(epoll.getEpollFd(), events, epoll.getNbSockets(), 2000);
+		epollCounterWait = ::epoll_wait(epoll.getEpollFd(), events, epoll.getNbSockets(), 2000);
 		std::cout << GREEN << "dana : " << epollCounterWait << std::endl << RESET;
 		checkAllTimeout(clients, epoll);
 		if (epollCounterWait < 1)
@@ -129,7 +130,7 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 				}
 				std::cout << "epoll size : " << epoll.getNbSockets() << std::endl;
 			}
-			std::cout << GREEN << "epollin : " << events[indexEvent].events << std::endl << RESET;
+			std::cout << GREEN << "epollin : " << events[indexEvent].events << ", " << (isClientSocket(events[indexEvent].data.fd, clients, idClient)) << std::endl << RESET;
 			if (events[indexEvent].events & EPOLLIN && isClientSocket(events[indexEvent].data.fd, clients, idClient))
 			{
 				std::cout << "receive" << std::endl;

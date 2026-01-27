@@ -6,7 +6,7 @@ std::time_t	getTimeNow()
 {
 	time_t	timestamp;
 	
-	time(&timestamp);
+	std::time(&timestamp);
 	return (timestamp);
 }
 
