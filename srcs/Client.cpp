@@ -63,13 +63,13 @@ void	Client::setFdClient(int newFd)
 	this->_fdSocket = newFd;
 }
 
-void	Client::setBuf(char *newBuf)
+void  Client::setBuf(char *newBuf, size_t size)
 {
 	if (this->_buf.empty())
-		this->_buf = newBuf;
+			this->_buf = std::string(newBuf, size);  // ✅ Préserve t
 	else
-		this->_buf.append(newBuf);
-}
+			this->_buf.append(newBuf, size);         // ✅ Préserve t
+}  
 
 void	Client::setSockadd(sockaddr_in newSockadd)
 {

@@ -3,6 +3,7 @@
 #define CLIENT_HPP
 
 #include "includes.hpp"
+#include <cstddef>
 #include <netinet/in.h>
 
 #define MAXTIMEREQUEST 20
@@ -35,7 +36,7 @@ class Client
 
 		void	setHostname(std::string newHostname);
 		void	setFdClient(int newFd);
-		void	setBuf(char *newBuf);
+		void	setBuf(char *newBuf, size_t size);
 		void	setSockadd(sockaddr_in newSockadd);
 		void	setEndOfFile(bool newEndOfFile);
 		void	setKeepAlive(bool newKeepAlive);

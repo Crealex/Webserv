@@ -20,6 +20,7 @@ const std::string ResponseError::createResponse(Server srv)
 	std::string path;
 	std::stringstream ss;
 	std::ifstream file;
+	Request dataError;
 
 	ss << this->_code;
 	path = srv.getRoot() + "/error/" + ss.str() + ".html";
@@ -41,6 +42,14 @@ const std::string ResponseError::createResponse(Server srv)
 	delete[] buffer;
 
 	std::cout << BOLD << YELLOW << "HEEEERRRREEEEEEEE" << std::endl;
+	if (!addContentType(&resp, "text/html", path))
+		throw ResponseError(406, "Not acceptable", dataError);
+	if (!addDate(&resp))
+		throw ResponseError(500, "Can't add date", dataError);
+	if (!addLastModif(&resp, path))
+		throw ResponseError(500, "can't add last modif", dataError);
+	if (!addContentLenght(&resp, path))
+		throw ResponseError(500, "can't add content lenght", dataError);
 	addStartLine(&resp, this->_protocol, this->_code, this->_message);
 	resp.append("\r\n\r\n");
 	addBody(&resp, fileStr);

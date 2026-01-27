@@ -217,6 +217,7 @@ Request createRequest(char* buffer, size_t maxSize)
 		if (!line.empty() && line[line.size() - 1] == '\r') // INFO: Ajouter par Alex (pour gerer les \r)
         line.erase(line.size() - 1);
 		// extract and parse the different element of the request
+		std::cout << "Buffer: " << buffer << std::endl;
 		if (line.empty())
 			break ;
 

@@ -7,6 +7,7 @@
 #include <exception>
 #include <fstream>
 #include <string>
+#include <sys/types.h>
 Post::Post(Request requ) : Methods(requ), _contentType(requ._ContentType), _contentLength(requ._ContentLength), _body(requ._body)
 {
 	std::cout << GREEN << "Default Post constructor called" << RESET << std::endl;
@@ -58,9 +59,7 @@ void Post::handlePostFile(std::string *resp, std::string boundary)
 	start = iss.str().find("\r\n\r\n") + 4;// <--- recuperer ici ou on en est (pour savoir ou commence le body du fichier);
 	end = iss.str().rfind(boundary); // <--- trouver le boundary de fin pour savoir jusqu'ou extraire le body du fichier
 	lenght = end - start - boundary.length() - 2;
-	std::cout << "start: " << start << ", end: " << end << std::endl;
-	this->_body = iss.str().substr(start, lenght);
-	std::cout << BOLD << "body of body of body of body of file upload: " << this->_body << RESET << std::endl;
+	this->_body = this->_body.substr(start, lenght);
 }
 
 const std::string Post::createResponse(Server srv)
@@ -71,16 +70,19 @@ const std::string Post::createResponse(Server srv)
 	std::string path;
 	std::string boundary;
 	std::string target;
+	ssize_t bodySize;
 
 	dataError._protocol = this->_protocol;
 	dataError._host = this->_host;
 	dataError._location = this->_location;
-// TODO: A continuer et decommenter le moment venu...
 	if (this->_contentType.find("multipart/form-data") < this->_contentType.size())
 	{
 		boundary = extractBoundary(this->_contentType);
 		handlePostFile(&resp, boundary);
 	}
+	bodySize = this->_body.size();
+	std::cout << "Body in post: " << this->_body << std::endl;
+
 	target = findTarget(this->_location, srv.getLocations(), dataError, "POST");
 	path = srv.getRoot() + target;
 	newFile.open(path.c_str(), std::ios::app);
@@ -93,6 +95,10 @@ const std::string Post::createResponse(Server srv)
 	if (!addLocation(&resp, this->_host, this->_location))
 		throw(ResponseError(500, "Can't add Location", dataError));
 	resp.append("\n");
+	if (!addLastModif(&resp, path))
+		throw ResponseError(500, "can't add last modif", dataError);
+	if (!addContentLenght(&resp, bodySize))
+		throw ResponseError(500, "can't add content lenght", dataError);
 	if (!addStartLine(&resp, this->_protocol, 201, "Created"))
 		throw(ResponseError(500, "Can't add start line", dataError));
 	if (!addBody(&resp, this->_body))

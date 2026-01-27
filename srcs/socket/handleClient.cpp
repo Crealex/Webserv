@@ -71,9 +71,12 @@ static int	receiveRequest(Client *client, Epoll &epoll)
 	if (sizeRecv == -1)
 		return (receiveRequest(client, epoll));
 	buffer[sizeRecv] = '\0';
+	std::cout << "sizeRecv: " << sizeRecv << std::endl;
 	if (sizeRecv == 0)
 		return (0);
-	client->setBuf(buffer);
+	client->setBuf(buffer, sizeRecv);
+	std::cout << BLUE << "raw Buffer: " << std::endl;
+	std::cout << buffer << std::endl;
 	if (client->getBuf().find("\r\n\r\n") != std::string::npos)
 	{
 		// client->setEndOfFile(true);
@@ -172,6 +175,7 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 				std::cout << "receive" << std::endl;
 				if (receiveRequest(clients[idClient], epoll) == 0)
 				{
+
 					std::cout << MAGENTA <<"Request : " << clients[idClient]->getBuf() << std::endl << RESET;
 					closeClient(clients, idClient, epoll);
 					continue ;
