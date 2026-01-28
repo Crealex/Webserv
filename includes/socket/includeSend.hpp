@@ -12,7 +12,5 @@
 #include <sys/socket.h>
 
 void	sendResponse(Client *client, Server server);
-void	checkAllTimeout(std::vector<Client *> &clients, Epoll &epoll);
-void	closeClient(std::vector<Client *> &clients, int idClient, Epoll &epoll);
 
 #endif

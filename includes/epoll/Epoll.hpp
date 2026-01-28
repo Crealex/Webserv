@@ -16,6 +16,7 @@ class Epoll
 		void	addEpollServer(std::vector<Socket *> &sockets, int sizeRes, int epollFd);
 
 	public:
+		Epoll();
 		Epoll(std::vector<Socket *> sockets, int nbSockets);
 		~Epoll();
 

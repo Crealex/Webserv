@@ -1,6 +1,12 @@
 #include "../../includes/epoll/Epoll.hpp"
 
 // CONSTRUCTOR & DESTRUCTOR
+Epoll::Epoll()
+{
+	this->_epollFd = -1;
+	this->_nbSockets = -1;
+}
+
 Epoll::Epoll(std::vector<Socket *> sockets, int nbSockets)
 {
 	this->_epollFd = createEpoll();
