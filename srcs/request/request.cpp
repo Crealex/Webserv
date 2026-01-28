@@ -85,6 +85,7 @@ static void checkPost(Request req, unsigned int maxSize)
 	//std::cout << "in checkPost" << std::endl;
 	//std::cout << BOLD << "post content-type:" << req._ContentType << RESET << std::endl;
 	//std::cout << BOLD << "post body:" << req._body << RESET << std::endl;
+	std::cout << LIGHT_CYAN << "Content-type: " << req._ContentType << ", body: " << req._body << RESET << std::endl;
 	if (req._ContentType.empty() || 
 		req._body.empty())
 	{
