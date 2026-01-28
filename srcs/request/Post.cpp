@@ -24,6 +24,8 @@ std::string extractBoundary(std::string contentType)
 		res = contentType.erase(0, contentType.find('=') + 1);
 		std::cout << "res boundary: " << res << std::endl;
 	}
+	while (!res.empty() && (res[res.length() - 1] == '\r' || res[res.length() - 1] == '\n'))                                        
+		res.erase(res.length() - 1); 
 	return (res);
 }
 
@@ -45,21 +47,18 @@ void Post::handlePostFile(std::string *resp, std::string boundary)
 {
 	std::size_t start;
 	std::size_t end;
-	std::size_t lenght;
-	std::stringstream iss(this->_body);
+	std::size_t length;
 
 	(void)resp;
-	while (std::getline(iss, this->_body))
-	{
-		if (!iss.str().compare(0, 12, "content-type"))
-			this->_contentType = iss.str().erase(0, 12);
-		if (iss.str() == "\n")
-			break;
-	}
-	start = iss.str().find("\r\n\r\n") + 4;
-	end = iss.str().rfind("\r\n--" + boundary);
-	lenght = end - start - boundary.length();
-	this->_body = iss.str().substr(start, lenght - boundary.length() - boundary.length());
+	//if (this->_body.find("content-type"))
+	//	this->_contentType = this->_body.erase(0, 12);
+	start = this->_body.find("\r\n\r\n") + 4;
+	end = this->_body.rfind("--" + boundary);
+	std::cout << "Boundary recherché: [" << boundary << "]" << std::endl;  
+	std::cout << "Recherche de: [\\r\\n--" << boundary << "]" << std::endl;
+																			 
+	length = end - start;
+	this->_body = this->_body.substr(start, length);
 }
 
 const std::string Post::createResponse(Server srv)
@@ -87,7 +86,7 @@ const std::string Post::createResponse(Server srv)
 		newFile.open(path.c_str(), std::ios::app);
 	}
 	bodySize = this->_body.size();
-	std::cout << "Body in post: " << this->_body << std::endl;
+	//std::cout << "Body in post: " << this->_body << std::endl;
 
 	if (!newFile.is_open())
 		throw (ResponseError(401, "Unauthorized", dataError));
@@ -101,7 +100,7 @@ const std::string Post::createResponse(Server srv)
 	if (!addLastModif(&resp, path))
 		throw ResponseError(500, "can't add last modif", dataError);
 	if (!addContentLenght(&resp, bodySize))
-		throw ResponseError(500, "can't add content lenght", dataError);
+		throw ResponseError(500, "can't add content length", dataError);
 	if (!addStartLine(&resp, this->_protocol, 201, "Created"))
 		throw(ResponseError(500, "Can't add start line", dataError));
 	if (!addBody(&resp, this->_body))

@@ -55,7 +55,7 @@ const std::string Get::createResponse(Server srv)
 	if (!addLastModif(&resp, path))
 		throw ResponseError(500, "can't add last modif", dataError);
 	if (!addContentLenght(&resp, path))
-		throw ResponseError(500, "can't add content lenght", dataError);
+		throw ResponseError(500, "can't add content length", dataError);
 	if (!addBody(&resp, fileStr))
 		throw ResponseError(500, "can't add body", dataError);
 	if (!addStartLine(&resp, this->_protocol, 200, "OK"))

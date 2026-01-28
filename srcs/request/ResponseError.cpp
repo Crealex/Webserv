@@ -49,7 +49,7 @@ const std::string ResponseError::createResponse(Server srv)
 	if (!addLastModif(&resp, path))
 		throw ResponseError(500, "can't add last modif", dataError);
 	if (!addContentLenght(&resp, path))
-		throw ResponseError(500, "can't add content lenght", dataError);
+		throw ResponseError(500, "can't add content length", dataError);
 	addStartLine(&resp, this->_protocol, this->_code, this->_message);
 	resp.append("\r\n\r\n");
 	addBody(&resp, fileStr);

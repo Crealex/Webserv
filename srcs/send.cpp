@@ -12,7 +12,7 @@ void sendResponse(Client *client, Server server)
 	
 	try
 	{
-		std::cout << MAGENTA << BOLD << "REQUESTS: " << RESET << std::endl;
+		//std::cout << MAGENTA << BOLD << "REQUESTS: " << RESET << std::endl;
 		std::cout << client->getBuf() << std::endl;
 		std::cout << "-------------------------------------------------------" << std::endl;
 		Methods *request;
@@ -24,7 +24,7 @@ void sendResponse(Client *client, Server server)
 	{
 		response = e.createResponse(server);
 	}
-	std::cout << YELLOW << "response : " << response << std::endl;
+	//std::cout << YELLOW << "response : " << response << std::endl;
 	client->setKeepAlive(ret);
 	// std::cout << RED << BOLD << "SEND ARG: \n" << RESET
 	// 	<< "fdclient = " << client.getFdClient()
@@ -35,6 +35,5 @@ void sendResponse(Client *client, Server server)
 	{
 		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
 	}
-	std::cout << "tempppppppp : " << temp << std::endl;
 	// std::cout << "TEEEEEEEEEEEST" << std::endl;
 }
