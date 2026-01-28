@@ -56,10 +56,10 @@ void Post::handlePostFile(std::string *resp, std::string boundary)
 		if (iss.str() == "\n")
 			break;
 	}
-	start = iss.str().find("\r\n\r\n") + 4;// <--- recuperer ici ou on en est (pour savoir ou commence le body du fichier);
-	end = iss.str().rfind(boundary); // <--- trouver le boundary de fin pour savoir jusqu'ou extraire le body du fichier
-	lenght = end - start - boundary.length() - 2;
-	this->_body = this->_body.substr(start, lenght);
+	start = iss.str().find("\r\n\r\n") + 4;
+	end = iss.str().rfind("\r\n--" + boundary);
+	lenght = end - start - boundary.length();
+	this->_body = iss.str().substr(start, lenght - boundary.length() - boundary.length());
 }
 
 const std::string Post::createResponse(Server srv)
@@ -75,17 +75,20 @@ const std::string Post::createResponse(Server srv)
 	dataError._protocol = this->_protocol;
 	dataError._host = this->_host;
 	dataError._location = this->_location;
+	target = findTarget(this->_location, srv.getLocations(), dataError, "POST");
+	path = srv.getRoot() + target;
 	if (this->_contentType.find("multipart/form-data") < this->_contentType.size())
 	{
 		boundary = extractBoundary(this->_contentType);
 		handlePostFile(&resp, boundary);
+		newFile.open(path.c_str(), std::ios::binary);
+	}
+	else {
+		newFile.open(path.c_str(), std::ios::app);
 	}
 	bodySize = this->_body.size();
 	std::cout << "Body in post: " << this->_body << std::endl;
 
-	target = findTarget(this->_location, srv.getLocations(), dataError, "POST");
-	path = srv.getRoot() + target;
-	newFile.open(path.c_str(), std::ios::app);
 	if (!newFile.is_open())
 		throw (ResponseError(401, "Unauthorized", dataError));
 	if (!addContentType(&resp, this->_contentType))

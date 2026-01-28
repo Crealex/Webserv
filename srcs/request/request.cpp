@@ -85,6 +85,7 @@ static void checkPost(Request req, unsigned int maxSize)
 	//std::cout << "in checkPost" << std::endl;
 	//std::cout << BOLD << "post content-type:" << req._ContentType << RESET << std::endl;
 	//std::cout << BOLD << "post body:" << req._body << RESET << std::endl;
+	std::cout << LIGHT_CYAN << "Content-type: " << req._ContentType << ", body: " << req._body << RESET << std::endl;
 	if (req._ContentType.empty() || 
 		req._body.empty())
 	{
@@ -217,7 +218,6 @@ Request createRequest(std::string buffer, size_t maxSize)
 		if (!line.empty() && line[line.size() - 1] == '\r') // INFO: Ajouter par Alex (pour gerer les \r)
         line.erase(line.size() - 1);
 		// extract and parse the different element of the request
-		std::cout << "Buffer: " << buffer << std::endl;
 		if (line.empty())
 			break ;
 
@@ -254,9 +254,9 @@ Request createRequest(std::string buffer, size_t maxSize)
 	}
 
 	// extract the body of the request
-	std::cout << "content length = " << ret._ContentLength << std::endl;
+	// std::cout << "content length = " << ret._ContentLength << std::endl;
 	size_t pos = buffer.find("\r\n\r\n");
-	// std::cout << RED << "buffer = " << buffer << "pos = " << pos << std::endl;
+	std::cout << RED << "buffer = " << buffer << "pos = " << pos << RESET << std::endl;
 	if (pos != std::string::npos)
 	{
 		pos += 4;
