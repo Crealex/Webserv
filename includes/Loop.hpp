@@ -27,6 +27,9 @@ class Loop
 		Loop(std::vector<Server> servers, std::vector<Socket *> sockets, int nbSockets);
 		~Loop();
 
+		std::vector<Client *> const	&getClients() const;
+		Server const				&getServer(std::string hostname) const;
+
 		void	runLoop();
 };
 

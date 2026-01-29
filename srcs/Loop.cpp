@@ -190,8 +190,7 @@ void	Loop::runLoop()
 				std::cout << "chez kilian" << std::endl;
 				std::cout << RED << "Request : " << this->_clients[idClient]->getBuf() << std::endl << RESET;
 				std::cout << "maybe after" << std::endl;
-				sendResponse(this->_clients[idClient], this->_servers[this->_clients[idClient]->getHostname()]);
-				// std::cout << BLUE << "after send : " << clients[idClient]->getKeepAlive() << std::endl << RESET;
+				sendResponse(this->getClients()[idClient], this->getServer(this->_hostnameOfSrvSock));
 				for (size_t i = 0; i < this->_clients.size(); i++)
 				{
 					std::cout << BLUE << "clients : " << this->_clients[i]->getFdClient() << ", " << this->_clients[i]->getHostname() << ", keep alive : " << this->_clients[i]->getKeepAlive() << std::endl << RESET;
@@ -207,4 +206,14 @@ void	Loop::runLoop()
 			}
 		}
 	}
+}
+
+std::vector<Client *> const	&Loop::getClients() const
+{
+	return (this->_clients);
+}
+
+Server const	&Loop::getServer(std::string hostname) const
+{
+	return (this->_servers.at(hostname));
 }
