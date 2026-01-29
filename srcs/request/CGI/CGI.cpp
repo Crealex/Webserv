@@ -1,21 +1,22 @@
 #include "../../../includes/requests/CGI/CGI.hpp"
 #include <sys/wait.h>
 
-CGI::CGI(Epoll epoll, std::string body) : _started(false), _exited(false), _body(body)
+CGI::CGI(Epoll &epoll) : _started(false), _exited(false)
 {
-	reconstruct(epoll);
+	_reconstruct(epoll);
+	std::cout << "constructed proprely" << std::endl;
 }
 
 CGI::CGI(const CGI& cpy)
 {
-	
+	_env = cpy._env;
 }
 
 CGI &CGI::operator=(const CGI& src)
 {
 	if (this != &src)
 	{
-		
+		_env = src._env;
 	}
 	return *this;
 }
@@ -45,7 +46,7 @@ void CGI::setEnvp(Client client, Request req)
 	_env.setEnv(client, req);
 }
 
-void CGI::reconstruct(Epoll epoll)
+void CGI::_reconstruct(Epoll &epoll)
 {
 	if (::pipe(_pipeFromCGI) != 0)
 		throw std::runtime_error("Error, could not create pipe from CGI");
@@ -76,7 +77,7 @@ void CGI::reset(Epoll epoll)
 
 	_childPid = 0;
 	closeAllFd();
-	reconstruct(epoll);
+	_reconstruct(epoll);
 }
 
 void CGI::closeAllFd()
@@ -127,7 +128,7 @@ void CGI::startSubprocess(const std::string path, const std::string interpreter)
 		if (::execve(args[0], args, env) == -1)
 		{
 			delete env;
-			delete args;
+			delete[] args;
 			throw std::runtime_error("Error, could'nt create subprocess");
 		}
 	}
@@ -142,23 +143,23 @@ void CGI::startSubprocess(const std::string path, const std::string interpreter)
 	}
 }
 
-void CGI::sendBody()
+void CGI::sendBody(std::string body)
 {
 	if (_started)
 	{	// send pack by pack the body to not overload the fd
-		std::string::iterator first = _body.begin();
+		std::string::iterator first = body.begin();
 		std::string::iterator sec = first + 1024;
-		if (sec > _body.end())
-			sec == _body.end();
+		if (sec > body.end())
+			sec == body.end();
 		do
 		{
 			std::string send(first, sec);
 			::write(_pipeToCGI[1], send.c_str(), send.size());
 			first = sec;
 			sec += 1024;
-			if (sec > _body.end())
-				sec == _body.end();
-		} while (sec != _body.end());
+			if (sec > body.end())
+				sec == body.end();
+		} while (sec != body.end());
 		::close(_pipeToCGI[1]);
 		_pipeToCGI[1] = -1;
 	}
@@ -195,5 +196,75 @@ void CGI::checkSubprocess()
 		if (!WIFEXITED(status) || WEXITSTATUS(status))
 			throw std::runtime_error("Error, subprocess exited non normally");
 		_exited = true;
+	}
+}
+
+inline std::string CGI::_retExtension(std::string str)
+{
+	size_t pos = str.find('.');
+	if (pos == std::string::npos)
+		pos = 0;
+	return str.substr(pos, str.size() - (pos));
+}
+
+Location* CGI::_retRightLoc(std::string path, Server serv)
+{
+	std::string locStr = path.substr(0, path.find('.'));
+	std::vector<Location> v = serv.getLocations();
+	for (std::vector<Location>::iterator it = v.begin();
+		it != v.end(); it++)
+	{
+		if (locStr == (*it).getPath())
+			return &(*it);	// return the adress of the object 'it' point to :D
+	}
+
+	return NULL;
+}
+
+bool CGI::_cmpExt(std::string ext, std::map<std::string, std::string> map)
+{
+	std::map<std::string, std::string>::iterator it;
+	for (it = map.begin(); it != map.end(); it++)
+	{
+		if (ext == it->first)
+			return true;
+	}
+	return false;
+}
+
+bool CGI::isCGI(std::string path, Server server)
+{
+	std::string ext = _retExtension(path);
+	std::cout << BOLD << RED << "IN ISCGI()\n\tpath = " << path << "\n\text = " << ext << RESET << std::endl;
+	if (ext == path)
+	{
+		Location *loc = _retRightLoc(path, server);
+		if (loc != NULL)
+		{
+			std::string indexExt = _retExtension(loc->getIndex());
+			return _cmpExt(indexExt, loc->getCgiHandler());
+		}
+		else
+			return false; // TODO maybe throw ?
+	}
+	else
+	{
+		std::string substring = path.substr(0, path.find_last_of('/'));
+		Location *loc = _retRightLoc(substring, server);
+		if (loc != NULL)
+		{
+			if (_cmpExt(ext, loc->getCgiHandler()))
+			{
+				std::ifstream is(std::string(server.getRoot() + path).c_str());
+				
+				if (is.is_open())
+					return true;
+				return false;
+			}
+			else
+				return false;
+		}
+		else
+			return false;
 	}
 }

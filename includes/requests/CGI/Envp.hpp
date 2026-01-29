@@ -2,6 +2,9 @@
 #include "../Request.hpp"
 #include "../../Client.hpp"
 
+#ifndef ENVP_HPP
+# define ENVP_HPP
+
 class Envp {
 
 	private:
@@ -20,3 +23,5 @@ class Envp {
 		char**	getEnv() const;
 		std::vector<std::string> getVec() const;
 };
+
+#endif

@@ -24,19 +24,9 @@ Envp::~Envp()
 	
 }
 
-static std::string getInStr(size_t n)
-{
-	std::stringstream ss;
-	std::string ret;
-
-	ss << n;
-	ss >> ret;
-
-	return ret;
-}
-
 void Envp::setEnv(Client client, Request req)
 {
+	(void)client;
 	_env.push_back("GATEWAY_INTERFACE=CGI/1.1");
 	_env.push_back("SERVER_PROTOCOL=HTTP/1.1");
 	_env.push_back("REQUEST_METHOD=" + req._method);
@@ -63,7 +53,7 @@ char **Envp::getEnv() const
 {
 	char **ret = new char*[_env.size() + 1];
 
-	for (int i = 0; i <= _env.size(); i++)
+	for (size_t i = 0; i <= _env.size(); i++)
 	{
 		ret[i] = (char *)_env[i].c_str();
 	}

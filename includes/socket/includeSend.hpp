@@ -8,10 +8,11 @@
 #include "../Client.hpp"
 #include "Socket.hpp"
 #include "includeSockNonBlocking.hpp"
+#include "../requests/CGI/CGI.hpp"
 
 #include <sys/socket.h>
 
 void	addEpollFd(int fd, int nbPollFd, Epoll &epoll, uint32_t event);
-void	sendResponse(Client *client, Server server);
+void	sendResponse(Client *client, Server server, CGI cgi);
 
 #endif

@@ -2,22 +2,23 @@
 #include "../includes/Server.hpp"
 #include "../includes/Client.hpp"
 #include "../includes/requests/Request.hpp"
+#include "../includes/requests/CGI/CGI.hpp"
 #include "../includes/requests/methodsClass.hpp"
 #include "../includes/requests/ResponseError.hpp"
 
-void sendResponse(Client *client, Server server)
+void sendResponse(Client *client, Server server, CGI cgi)
 {
 	std::string response;
 	Request req;
 	
 	try
 	{
-		std::cout << MAGENTA << BOLD << "REQUESTS: " << RESET << std::endl;
-		std::cout << client->getBuf() << std::endl;
-		std::cout << "-------------------------------------------------------" << std::endl;
+		// std::cout << MAGENTA << BOLD << "REQUESTS: " << RESET << std::endl;
+		// std::cout << client->getBuf() << std::endl;
+		// std::cout << "-------------------------------------------------------" << std::endl;
 		Methods *request;
 		req = createRequest((char *)client->getBuf().c_str(), server.getMaxSize());
-
+		std::cout << "result of is cgi =" << std::boolalpha << cgi.isCGI(req._location, server) << std::endl;
 		request = createMethod(req);
 		response = request->createResponse(server);
 		delete request;

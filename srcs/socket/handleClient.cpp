@@ -1,4 +1,5 @@
 #include "../../includes/socket/includeSend.hpp"
+#include "../../includes/requests/CGI/CGI.hpp"
 
 static bool	isServerSocket(int fd, std::vector<Socket *> sockets, std::string &hostnameOfSrvSock)
 {
@@ -167,7 +168,10 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 				std::cout << RED << "timeout" << std::endl << RESET;
 				break ;
 			}
-			sendResponse(clients[idClient], goodServer(clients[idClient], servers));
+			std::cout << "create CGI" << std::endl;
+			CGI cgi(epoll);
+			std::cout << "CGI created" << std::endl;
+			sendResponse(clients[idClient], goodServer(clients[idClient], servers), cgi);
 			// std::cout << BLUE << "after send : " << clients[idClient]->getKeepAlive() << std::endl << RESET;
 			for (size_t i = 0; i < clients.size(); i++)
 			{

@@ -120,11 +120,11 @@ static void checkIndex(std::string index, std::string path)
 {
 	if (index.empty())
 		return ;
-	if (index.compare(index.size() - 5, 5, ".html"))
-	{
-		std::string error("Error: wrong index extension\n\t");
-		throw std::invalid_argument(error + path + index);
-	}
+	// if (index.compare(index.size() - 5, 5, ".html"))
+	// {
+	// 	std::string error("Error: wrong index extension\n\t");
+	// 	throw std::invalid_argument(error + path + index);
+	// }
 
 	if (path[path.size() - 1] != '/')
 		path += '/';
