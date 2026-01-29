@@ -65,6 +65,10 @@ void	Client::setFdClient(int newFd)
 
 void	Client::setBuf(char *newBuf, int size)
 {
+	static int count = 0;
+
+	count += size;
+	std::cout << "count total: " << count << std::endl;
 	if (this->_buf.empty())
 			this->_buf = std::string(newBuf, size);  // ✅ Préserve t
 	else

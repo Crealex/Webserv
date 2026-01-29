@@ -74,6 +74,7 @@ const std::string Post::createResponse(Server srv)
 	dataError._protocol = this->_protocol;
 	dataError._host = this->_host;
 	dataError._location = this->_location;
+	std::cout << "Body size: " << this->_body.size() << std::endl;
 	target = findTarget(this->_location, srv.getLocations(), dataError, "POST");
 	path = srv.getRoot() + target;
 	if (this->_contentType.find("multipart/form-data") < this->_contentType.size())
@@ -86,7 +87,6 @@ const std::string Post::createResponse(Server srv)
 		newFile.open(path.c_str(), std::ios::app);
 	}
 	bodySize = this->_body.size();
-	//std::cout << "Body in post: " << this->_body << std::endl;
 
 	if (!newFile.is_open())
 		throw (ResponseError(401, "Unauthorized", dataError));
