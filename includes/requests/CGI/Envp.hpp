@@ -18,7 +18,7 @@ class Envp {
 		Envp& operator=(const Envp& src);
 		~Envp();
 
-		void	setEnv(Client client, Request req);
+		void	setEnv(Client &client, Request &req);
 		
 		char**	getEnv() const;
 		std::vector<std::string> getVec() const;

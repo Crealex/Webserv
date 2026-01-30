@@ -17,14 +17,13 @@ class CGI {
 		Envp		_env;
 		std::string	_body;
 
-		void		_reconstruct(Epoll &epoll);
 		bool		_cmpExt(std::string ext, std::map<std::string, std::string> map);
 		Location*	_retRightLoc(std::string path, Server serv);
 		inline std::string	_retExtension(std::string str);
 
 	public:
 
-		CGI(Epoll &epoll);
+		CGI();
 		CGI(const CGI& cpy);
 		CGI& operator=(const CGI& src);
 		~CGI();
@@ -38,9 +37,10 @@ class CGI {
 		void	sendBody(std::string body);
 		void	closeAllFd();
 		void	checkSubprocess();
-		void	reset(Epoll epoll);
-		void	setEnvp(Client client, Request req);
+		void	reset(Epoll &epoll);
+		void	setEnvp(Client &client, Request &req);
 		void	startSubprocess(const std::string path, const std::string interpreter);
+		void	constructFD(Epoll &epoll);
 
 		bool	isCGI(std::string path, Server server);
 };

@@ -1,10 +1,9 @@
 #include "../../../includes/requests/CGI/CGI.hpp"
 #include <sys/wait.h>
 
-CGI::CGI(Epoll &epoll) : _started(false), _exited(false)
+CGI::CGI() : _started(false), _exited(false)
 {
-	_reconstruct(epoll);
-	std::cout << "constructed proprely" << std::endl;
+
 }
 
 CGI::CGI(const CGI& cpy)
@@ -26,27 +25,27 @@ CGI::~CGI()
 	closeAllFd();
 }
 
-int CGI::getChildPid()
+inline int CGI::getChildPid()
 {
 	return _childPid;
 }
 
-bool CGI::subprocessStarted()
+inline bool CGI::subprocessStarted()
 {
 	return _started;
 }
 
-bool CGI::subprocessExited()
+inline bool CGI::subprocessExited()
 {
 	return _exited;
 }
 
-void CGI::setEnvp(Client client, Request req)
+inline void CGI::setEnvp(Client &client, Request &req)
 {
 	_env.setEnv(client, req);
 }
 
-void CGI::_reconstruct(Epoll &epoll)
+void CGI::constructFD(Epoll &epoll)
 {
 	if (::pipe(_pipeFromCGI) != 0)
 		throw std::runtime_error("Error, could not create pipe from CGI");
@@ -68,7 +67,7 @@ void CGI::_reconstruct(Epoll &epoll)
 	epoll.addEpollFd(_pipeToCGI[1], EPOLLIN);
 }
 
-void CGI::reset(Epoll epoll)
+void CGI::reset(Epoll &epoll)
 {
 	if (_started && !_exited)
 		::kill(_childPid, SIGKILL);
@@ -77,7 +76,6 @@ void CGI::reset(Epoll epoll)
 
 	_childPid = 0;
 	closeAllFd();
-	_reconstruct(epoll);
 }
 
 void CGI::closeAllFd()

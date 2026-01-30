@@ -18,7 +18,10 @@ void sendResponse(Client *client, Server server, CGI cgi)
 		// std::cout << "-------------------------------------------------------" << std::endl;
 		Methods *request;
 		req = createRequest((char *)client->getBuf().c_str(), server.getMaxSize());
-		std::cout << "result of is cgi =" << std::boolalpha << cgi.isCGI(req._location, server) << std::endl;
+		if (cgi.isCGI(req._location, server))
+		{
+			
+		}
 		request = createMethod(req);
 		response = request->createResponse(server);
 		delete request;
