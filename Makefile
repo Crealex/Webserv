@@ -10,7 +10,7 @@ OBJSOCK	= ${SOCKET:%.cpp=${OBJDIR}/%.o}
 OBJREQ	= ${REQUEST:%.cpp=${OBJDIR}/%.o}
 OBJEPO	= ${EPOLL:%.cpp=${OBJDIR}/%.o}
 OBJDIR	= objets
-CFLAGS	= -Werror -Wextra -Wall -std=c++98
+CFLAGS	= -Werror -Wextra -Wall -std=c++98 -g3
 CC = c++
 
 # Colors and style

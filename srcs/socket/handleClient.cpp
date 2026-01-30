@@ -1,5 +1,6 @@
 #include "../../includes/socket/includeSend.hpp"
 #include <cstring>
+#include <sys/epoll.h>
 
 static bool	isServerSocket(int fd, std::vector<Socket *> sockets, std::string &hostnameOfSrvSock)
 {
@@ -136,18 +137,18 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 				std::cout << "receive" << std::endl;
 				if (receiveRequest(clients[idClient], epoll) == 0)
 				{
-					std::cout << LIGHT_YELLOW << "Request : " << clients[idClient]->getBuf() << std::endl << RESET;
+					//std::cout << LIGHT_YELLOW << "Request : " << clients[idClient]->getBuf() << std::endl << RESET;
 					closeClient(clients, idClient, epoll);
 					continue ;
 				}
-				std::cout << MAGENTA <<"Request : " << clients[idClient]->getBuf() << std::endl << RESET;
+				//std::cout << MAGENTA <<"Request : " << clients[idClient]->getBuf() << std::endl << RESET;
 			}
 			// std::cout << "event : " << events[indexEvent].data.fd << ", " << events[indexEvent].events << ", " << isClientSocket(events[indexEvent].data.fd, clients, idClient) << std::endl;
 			clients[idClient]->checkTimeoutRequest();
 			if (events[indexEvent].events & EPOLLOUT && isClientSocket(events[indexEvent].data.fd, clients, idClient))
 			{
 				std::cout << "chez kilian" << std::endl;
-				std::cout << RED << "Request : " << clients[idClient]->getBuf() << std::endl << RESET;
+				//std::cout << RED << "Request : " << clients[idClient]->getBuf() << std::endl << RESET;
 				std::cout << "maybe after" << std::endl;
 				sendResponse(clients[idClient], goodServer(clients[idClient], servers));
 				// std::cout << BLUE << "after send : " << clients[idClient]->getKeepAlive() << std::endl << RESET;

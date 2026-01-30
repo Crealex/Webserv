@@ -44,6 +44,7 @@ void	Epoll::setEvents(Client *client, uint32_t event)
 	::epoll_ctl(this->getEpollFd(), EPOLL_CTL_MOD, temp.data.fd, &temp);
 }
 
+
 // METHODS
 // PRIVATE
 int	Epoll::createEpoll()

@@ -7,6 +7,7 @@
 #include <exception>
 #include <fstream>
 #include <string>
+#include <sys/types.h>
 Post::Post(Request requ) : Methods(requ), _contentType(requ._ContentType), _contentLength(requ._ContentLength), _body(requ._body)
 {
 	std::cout << GREEN << "Default Post constructor called" << RESET << std::endl;
@@ -23,6 +24,8 @@ std::string extractBoundary(std::string contentType)
 		res = contentType.erase(0, contentType.find('=') + 1);
 		std::cout << "res boundary: " << res << std::endl;
 	}
+	while (!res.empty() && (res[res.length() - 1] == '\r' || res[res.length() - 1] == '\n'))                                        
+		res.erase(res.length() - 1); 
 	return (res);
 }
 
@@ -32,21 +35,30 @@ static bool addContentToFile(std::string body, std::ofstream *newFile)
 	return (true);
 }
 
+	//file.seekg(0, std::ios::end);
+	//size_t size = file.tellg();
+	//file.seekg(0, std::ios::beg);
+	//char* buffer = new char[size];
+	//file.read(buffer, size);
+	//std::string fileStr(buffer, size);
+	//delete[] buffer;
 // TODO: A continuer le moment venu...
 void Post::handlePostFile(std::string *resp, std::string boundary)
 {
-	(void)resp;
-	(void)boundary;
-	std::stringstream iss;
-	while (std::getline(iss, this->_body))
-	{
-		if (iss.str().compare(0, 12, "content-type"))
-			this->_contentType = iss.str().erase(0, 12);
-		if (iss.str() == "\n")
-			break;
-	}
+	std::size_t start;
+	std::size_t end;
+	std::size_t length;
 
-	std::getline(iss, this->_body );
+	(void)resp;
+	//if (this->_body.find("content-type"))
+	//	this->_contentType = this->_body.erase(0, 12);
+	start = this->_body.find("\r\n\r\n") + 4;
+	end = this->_body.rfind("--" + boundary);
+	std::cout << "Boundary recherché: [" << boundary << "]" << std::endl;  
+	std::cout << "Recherche de: [\\r\\n--" << boundary << "]" << std::endl;
+																			 
+	length = end - start;
+	this->_body = this->_body.substr(start, length);
 }
 
 const std::string Post::createResponse(Server srv)
@@ -57,21 +69,25 @@ const std::string Post::createResponse(Server srv)
 	std::string path;
 	std::string boundary;
 	std::string target;
+	ssize_t bodySize;
 
 	dataError._protocol = this->_protocol;
 	dataError._host = this->_host;
 	dataError._location = this->_location;
-// TODO: A continuer et decommenter le moment venu...
-	//if (this->_contentType.find("multipart/form-data") < this->_contentType.size())
-	//{
-	//	boundary = extractBoundary(this->_contentType);
-	//	handlePostFile(&resp, boundary);
-	//	return (resp);
-	//}
+	std::cout << "Body size: " << this->_body.size() << std::endl;
 	target = findTarget(this->_location, srv.getLocations(), dataError, "POST");
-	// TODO: Verif si target est un file ou un dossier ou une redirection;
 	path = srv.getRoot() + target;
-	newFile.open(path.c_str(), std::ios::app);
+	if (this->_contentType.find("multipart/form-data") < this->_contentType.size())
+	{
+		boundary = extractBoundary(this->_contentType);
+		handlePostFile(&resp, boundary);
+		newFile.open(path.c_str(), std::ios::binary);
+	}
+	else {
+		newFile.open(path.c_str(), std::ios::app);
+	}
+	bodySize = this->_body.size();
+
 	if (!newFile.is_open())
 		throw (ResponseError(401, "Unauthorized", dataError));
 	if (!addContentType(&resp, this->_contentType))
@@ -81,6 +97,10 @@ const std::string Post::createResponse(Server srv)
 	if (!addLocation(&resp, this->_host, this->_location))
 		throw(ResponseError(500, "Can't add Location", dataError));
 	resp.append("\n");
+	if (!addLastModif(&resp, path))
+		throw ResponseError(500, "can't add last modif", dataError);
+	if (!addContentLenght(&resp, bodySize))
+		throw ResponseError(500, "can't add content length", dataError);
 	if (!addStartLine(&resp, this->_protocol, 201, "Created"))
 		throw(ResponseError(500, "Can't add start line", dataError));
 	if (!addBody(&resp, this->_body))

@@ -3,6 +3,7 @@
 #include "../includes/Client.hpp"
 #include "../includes/requests/methodsClass.hpp"
 #include "../includes/requests/ResponseError.hpp"
+#include <sys/socket.h>
 
 void sendResponse(Client *client, Server server)
 {
@@ -11,11 +12,11 @@ void sendResponse(Client *client, Server server)
 	
 	try
 	{
-		// std::cout << MAGENTA << BOLD << "REQUESTS: " << RESET << std::endl;
-		// std::cout << client.getBuf() << std::endl;
-		// std::cout << "-------------------------------------------------------" << std::endl;
+		//std::cout << MAGENTA << BOLD << "REQUESTS: " << RESET << std::endl;
+		std::cout << client->getBuf() << std::endl;
+		std::cout << "-------------------------------------------------------" << std::endl;
 		Methods *request;
-		request = createMethod((char *)client->getBuf().c_str(), server.getMaxSize(), ret);
+		request = createMethod(client->getBuf(), server.getMaxSize(), ret);
 		response = request->createResponse(server);
 		delete request;
 	}
@@ -23,7 +24,7 @@ void sendResponse(Client *client, Server server)
 	{
 		response = e.createResponse(server);
 	}
-	std::cout << YELLOW << "response : " << response << std::endl;
+	//std::cout << YELLOW << "response : " << response << std::endl;
 	client->setKeepAlive(ret);
 	// std::cout << RED << BOLD << "SEND ARG: \n" << RESET
 	// 	<< "fdclient = " << client.getFdClient()
@@ -34,6 +35,5 @@ void sendResponse(Client *client, Server server)
 	{
 		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
 	}
-	std::cout << "tempppppppp : " << temp << std::endl;
 	// std::cout << "TEEEEEEEEEEEST" << std::endl;
 }

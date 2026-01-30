@@ -3,6 +3,7 @@
 #define CLIENT_HPP
 
 #include "includes.hpp"
+#include <cstddef>
 #include <netinet/in.h>
 
 #define MAXTIMEREQUEST 15

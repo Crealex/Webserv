@@ -33,6 +33,7 @@ document.querySelectorAll(".card button").forEach((btn) =>
     const timeDiv = resultDiv.querySelector(".time");
     const startTime = performance.now();
 
+    console.log("debut de la fonction");
     let response;
     if (method === "GET") {
       if (endpoint) response = await fetch(endpoint);
@@ -55,12 +56,14 @@ document.querySelectorAll(".card button").forEach((btn) =>
       console.log(file);
       response = await fetch(endpoint, { method: "POST", body: file });
     }
+    console.log("fin des premieres condition");
     if (!response) {
       resultDiv.textContent = "Méthode non valide";
       return;
     }
     console.log(response);
     const body = await response.text();
+    console.log("here");
     const status = response.status;
     const length = response.headers.get("content-length");
     const type = response.headers.get("content-type");
@@ -72,6 +75,7 @@ document.querySelectorAll(".card button").forEach((btn) =>
       resultDiv.style.backgroundColor = "var(--green)";
     else resultDiv.style.backgroundColor = "var(--red)";
 
+    console.log(status);
     statusDiv.innerHTML = `<strong>status: </strong>${status}`;
     methodDiv.innerHTML = `<strong>method:</strong> ${method}`;
     endpointDiv.innerHTML = `<strong>endpoint:</strong> ${endpoint}`;

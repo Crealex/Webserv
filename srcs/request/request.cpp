@@ -82,7 +82,10 @@ static void checkPost(Request req, unsigned int maxSize)
 {
 	int leave = 0;
 	(void) maxSize;
-	std::cout << "in checkPost" << std::endl;
+	//std::cout << "in checkPost" << std::endl;
+	//std::cout << BOLD << "post content-type:" << req._ContentType << RESET << std::endl;
+	//std::cout << BOLD << "post body:" << req._body << RESET << std::endl;
+	std::cout << LIGHT_CYAN << "Content-type: " << req._ContentType << ", body: " << req._body << RESET << std::endl;
 	if (req._ContentType.empty() || 
 		req._body.empty())
 	{
@@ -201,11 +204,10 @@ std::string retBody(std::string str, size_t maxSize, Request req)
  * @param buffer the client request
  * @return The created Request object
  */
-Request createRequest(char* buffer, size_t maxSize)
+Request createRequest(std::string buffer, size_t maxSize)
 {
 	Request ret;
 	std::map<std::string, std::string*> ptrMap = createMap(ret);
-	std::cout << "Test requ" << std::endl;
 	std::istringstream iss(buffer);
 	std::string line;
 
@@ -252,13 +254,13 @@ Request createRequest(char* buffer, size_t maxSize)
 	}
 
 	// extract the body of the request
-	std::string buff(buffer);
-	size_t pos = buff.find("\r\n\r\n");
-	std::cout << "buffer = " << buff << "pos = " << pos << std::endl;
+	// std::cout << "content length = " << ret._ContentLength << std::endl;
+	size_t pos = buffer.find("\r\n\r\n");
+	std::cout << RED << "buffer = " << buffer << "pos = " << pos << RESET << std::endl;
 	if (pos != std::string::npos)
 	{
 		pos += 4;
-		std::string body = buff.substr(pos, buff.size() - pos);
+		std::string body = buffer.substr(pos, buffer.size() - pos);
 		ret._body = retBody(body, maxSize, ret);
 	}
 	std::cout << "body = " << ret._body;
