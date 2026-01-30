@@ -60,7 +60,7 @@ std::string findMimeType(std::string file)
 {
 	std::string extension;
 
-	std::cout << "file in " << file << std::endl;
+	//std::cout << "file in " << file << std::endl;
 	extension = file.substr(file.find_last_of(".") + 1, file.length());
 	return MimeTypes::getType(extension);
 }
@@ -74,7 +74,7 @@ bool addContentType(std::string *resp, std::string accept, std::string file)
 	contentType = findMimeType(file);
 	while (std::getline(acceptSs, type,  ','))
 	{
-		//std::cout << "type: " << type << ", Content-Type: " << contentType << std::endl;
+		std::cout << "type: " << type << ", Content-Type: " << contentType << std::endl;
 		if (contentType == type || type == "*/*")
 		{
 			resp->append("Content-Type: " + contentType + "\n");

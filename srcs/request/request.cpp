@@ -85,7 +85,7 @@ static void checkPost(Request req, unsigned int maxSize)
 	//std::cout << "in checkPost" << std::endl;
 	//std::cout << BOLD << "post content-type:" << req._ContentType << RESET << std::endl;
 	//std::cout << BOLD << "post body:" << req._body << RESET << std::endl;
-	std::cout << LIGHT_CYAN << "Content-type: " << req._ContentType << ", body: " << req._body << RESET << std::endl;
+	//std::cout << LIGHT_CYAN << "Content-type: " << req._ContentType << ", body: " << req._body << RESET << std::endl;
 	if (req._ContentType.empty() || 
 		req._body.empty())
 	{
@@ -256,14 +256,14 @@ Request createRequest(std::string buffer, size_t maxSize)
 	// extract the body of the request
 	// std::cout << "content length = " << ret._ContentLength << std::endl;
 	size_t pos = buffer.find("\r\n\r\n");
-	std::cout << RED << "buffer = " << buffer << "pos = " << pos << RESET << std::endl;
+	//std::cout << RED << "buffer = " << buffer << "pos = " << pos << RESET << std::endl;
 	if (pos != std::string::npos)
 	{
 		pos += 4;
 		std::string body = buffer.substr(pos, buffer.size() - pos);
 		ret._body = retBody(body, maxSize, ret);
 	}
-	std::cout << "body = " << ret._body;
+	//std::cout << "body = " << ret._body;
 	// verify the different extracted element
 	// if (ret._host.empty() || access(ret._host.c_str(), F_OK) != 0)
 	// {
@@ -275,16 +275,16 @@ Request createRequest(std::string buffer, size_t maxSize)
 	else if (ret._method == "GET")
 		checkGET(ret);
 
-	std::cout << std::endl << std::endl
-		<< "method = " << ret._method
-		<< "\nlocation = " << ret._location
-		<< "\nprotocol = " << ret._protocol
-		<< "\nhost = " << ret._host
-		<< "\nuserAgent = " << ret._userAgent
-		<< "\naccept = " << ret._accept
-		<< "\ncontent type = " << ret._ContentType
-		<< "\ncontent length = " << ret._ContentLength
-		<< "\nbody = " << ret._body << std::endl;
+	//std::cout << std::endl << std::endl
+	//	<< "method = " << ret._method
+	//	<< "\nlocation = " << ret._location
+	//	<< "\nprotocol = " << ret._protocol
+	//	<< "\nhost = " << ret._host
+	//	<< "\nuserAgent = " << ret._userAgent
+	//	<< "\naccept = " << ret._accept
+	//	<< "\ncontent type = " << ret._ContentType
+	//	<< "\ncontent length = " << ret._ContentLength
+	//	<< "\nbody = " << ret._body << std::endl;
 
 	return ret;
 }

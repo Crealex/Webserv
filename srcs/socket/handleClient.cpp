@@ -140,15 +140,14 @@ void	handleClient(std::vector<Socket *> &sockets, std::vector<Server> servers, E
 					closeClient(clients, idClient, epoll);
 					continue ;
 				}
-				//std::cout << MAGENTA <<"Request : " << clients[idClient]->getBuf() << std::endl << RESET;
+				std::cout << MAGENTA <<"RAW Request : " << std::endl;
+				std::cout << clients[idClient]->getBuf() << std::endl << RESET;
 			}
 			// std::cout << "event : " << events[indexEvent].data.fd << ", " << events[indexEvent].events << ", " << isClientSocket(events[indexEvent].data.fd, clients, idClient) << std::endl;
 			clients[idClient]->checkTimeoutRequest();
 			if (events[indexEvent].events & EPOLLOUT && isClientSocket(events[indexEvent].data.fd, clients, idClient))
 			{
 				std::cout << "chez kilian" << std::endl;
-				//std::cout << RED << "Request : " << clients[idClient]->getBuf() << std::endl << RESET;
-				std::cout << "maybe after" << std::endl;
 				sendResponse(clients[idClient], goodServer(clients[idClient], servers));
 				// std::cout << BLUE << "after send : " << clients[idClient]->getKeepAlive() << std::endl << RESET;
 				for (size_t i = 0; i < clients.size(); i++)
