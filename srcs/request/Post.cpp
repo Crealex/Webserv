@@ -8,7 +8,7 @@
 #include <fstream>
 #include <string>
 #include <sys/types.h>
-Post::Post(Request requ) : Methods(requ), _contentType(requ._ContentType), _contentLength(requ._ContentLength), _body(requ._body)
+Post::Post(Request requ) : Methods(requ), _contentType(requ.getContentType()), _contentLength(requ.getContentLength()), _body(requ.getBody())
 {
 	std::cout << GREEN << "Default Post constructor called" << RESET << std::endl;
 }
@@ -71,9 +71,9 @@ const std::string Post::createResponse(Server srv)
 	std::string target;
 	ssize_t bodySize;
 
-	dataError._protocol = this->_protocol;
-	dataError._host = this->_host;
-	dataError._location = this->_location;
+	dataError.setProtocol(this->_protocol);
+	dataError.setHost(this->_host);
+	dataError.setLocation(this->_location);
 	std::cout << "Body size: " << this->_body.size() << std::endl;
 	target = findTarget(this->_location, srv.getLocations(), dataError, "POST");
 	path = srv.getRoot() + target;
