@@ -57,6 +57,28 @@ void	Loop::_checkAllTimeout()
 	}
 }
 
+std::string	Loop::_createResponse(Client *client, Server serv)
+{
+	Methods *met;
+	std::string method = client->getRequest().getMethod();
+
+	if (method == "GET")
+		met = new Get(client->getRequest());
+	else if (method == "POST")
+		met = new Post(client->getRequest());
+	else
+		met = new Delete(client->getRequest());
+
+	return met->createResponse(serv);
+}
+
+inline void Loop::_sendResponse(Client *client, std::string response)
+{
+	if (send(client->getFdClient(), response.c_str(), response.size(), 0) == -1)
+	{
+		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
+	}
+}
 
 bool	Loop::_isServerSocket(int fd)
 {

@@ -4,6 +4,8 @@
 
 #include "includes.hpp"
 #include "socket/Socket.hpp"
+#include "Client.hpp"
+#include "epoll/Epoll.hpp"
 
 class Loop
 {

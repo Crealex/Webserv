@@ -37,9 +37,9 @@ const std::string Delete::createResponse(Server srv)
 	std::string		target;
 	Request			dataError;
 
-	dataError._protocol = this->_protocol;
-	dataError._host = this->_host;
-	dataError._location = this->_location;
+	dataError.setProtocol(this->_protocol);
+	dataError.setHost(this->_host);
+	dataError.setLocation(this->_location);
 
 
 	target = findTarget(this->_location, srv.getLocations(), dataError, "DELETE");
