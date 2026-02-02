@@ -17,12 +17,12 @@ class Client
 		int			_fdSocket;
 		std::string	_buf;
 		sockaddr_in	_sockadd;
-		bool		_endOfFile;
+		Request		_request;
+		std::string	_response;
 		bool		_keepAlive;
 		std::time_t	_timeRequest;
 		std::time_t	_time;
 		bool		_timeoutRequest;
-		Request		_request;
 
 	public:
 		Client();
@@ -32,22 +32,23 @@ class Client
 		int const			&getFdClient() const;
 		std::string const	&getBuf() const;
 		sockaddr_in const	&getSockadd() const;
-		bool const			&getEndOfFile() const;
+		Request	const		&getRequest() const;
+		std::string const	&getResponse() const;
 		bool const			&getKeepAlive() const;
 		bool const			&getTimeoutRequest() const;
-		Request	const		&getRequest() const;
 
 		void	setHostname(std::string newHostname);
 		void	setFdClient(int newFd);
-		void	setBuf(char *newBuf, int size);
+		void	setBuf(const char *newBuf, int size);
 		void	setSockadd(sockaddr_in newSockadd);
-		void	setEndOfFile(bool newEndOfFile);
+		void	setRequestHeader(std::string &str);
+		void	setRequestBody(std::string &str);
+		void	setResponse(std::string &str);
 		void	setKeepAlive(bool newKeepAlive);
 		void	setTimeoutRequest();
 		void	setTimeout();
-		void	setRequestHeader(std::string &str);
-		void	setRequestBody(std::string &str);
 		
+		void	resetBuf();
 		void	resetClient();
 		void	checkTimeoutRequest();
 		bool	checkTimeout();

@@ -4,7 +4,6 @@
 Client::Client()
 {
 	this->_fdSocket = -1;
-	this->_endOfFile = false;
 	this->_keepAlive = false;
 	this->_time = getTimeNow();
 	this->_timeoutRequest = false;
@@ -36,26 +35,26 @@ sockaddr_in const	&Client::getSockadd() const
 	return (this->_sockadd);
 }
 
-bool const	&Client::getEndOfFile() const
+Request const &Client::getRequest() const
 {
-	return (this->_endOfFile);
+	return (this->_request);
+}
+
+std::string const	&Client::getResponse() const
+{
+	return (this->_response);
 }
 
 bool const			&Client::getKeepAlive() const
 {
 	return (this->_keepAlive);
-}
+}	
 
 
 bool const	&Client::getTimeoutRequest() const
 {
 	return (this->_timeoutRequest);
-}
-
-Request const &Client::getRequest() const
-{
-	return (this->_request);
-}
+}	
 
 // SETTERS
 void	Client::setHostname(std::string newHostname)
@@ -68,7 +67,7 @@ void	Client::setFdClient(int newFd)
 	this->_fdSocket = newFd;
 }
 
-void	Client::setBuf(char *newBuf, int size)
+void	Client::setBuf(const char *newBuf, int size)
 {
 	if (this->_buf.empty())
 		this->_buf = std::string(newBuf, size);
@@ -81,9 +80,19 @@ void	Client::setSockadd(sockaddr_in newSockadd)
 	this->_sockadd = newSockadd;
 }
 
-void	Client::setEndOfFile(bool newEndOfFile)
+void	Client::setResponse(std::string &str)
 {
-	this->_endOfFile = newEndOfFile;
+	this->_response = str;
+}
+
+void	Client::setRequestHeader(std::string &str)
+{
+	this->_request.parseHeader(str);
+}
+
+void	Client::setRequestBody(std::string &str)
+{
+	this->_request.parseBody(str);
 }
 
 void	Client::setKeepAlive(bool newKeepAlive)
@@ -101,32 +110,28 @@ void	Client::setTimeout()
 	this->_time = getTimeNow();
 }
 
-void	Client::setRequestHeader(std::string &str)
-{
-	this->_request.parseHeader(str);
-}
-
-void	Client::setRequestBody(std::string &str)
-{
-	this->_request.parseBody(str);
-}
 
 //METHODS
+
+void	Client::resetBuf()
+{
+	this->_buf.clear();
+}
 
 void	Client::resetClient()
 {
 	std::cout << GREEN << "in reset : " << this->_fdSocket << std::endl << RESET;
 	this->_buf.clear();
 	this->_request.reset();
-	this->_endOfFile = false;
 	this->_keepAlive = false;
 	this->_timeRequest = getTimeNow();
+	this->_timeoutRequest = false;
 }
 
 void	Client::checkTimeoutRequest()
 {
 	if (std::difftime(getTimeNow(), this->_timeRequest) > MAXTIMEREQUEST)
-		this->_timeRequest = true;
+		this->_timeoutRequest = true;
 }
 
 bool	Client::checkTimeout()

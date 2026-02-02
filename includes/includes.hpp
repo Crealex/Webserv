@@ -16,6 +16,9 @@
 #include <ctime>
 
 #include "colors.hpp"
+#include "Client.hpp"
+#include "epoll/Epoll.hpp"
+#include "socket/Socket.hpp"
 
 std::time_t	getTimeNow();
 

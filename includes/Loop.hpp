@@ -3,7 +3,6 @@
 #define LOOP_HPP
 
 #include "includes.hpp"
-#include "socket/includeSend.hpp"
 #include "socket/Socket.hpp"
 
 class Loop
@@ -18,11 +17,15 @@ class Loop
 		void	_createMapServer(std::vector<Server> servers);
 		void	_closeClients(int idClient);
 		void	_checkAllTimeout();
-		void	_sendResponse(Client *client, std::string response);
 		bool	_isServerSocket(int fd);
 		bool	_isClientSocket(int fd, int &idClient);
 		int		_acceptClient(int fd);
+		bool	_parsingRequest(int idClient);
+		void	_addBodyLen(int idClient);
+		int		_checkBody(int idClient);
 		int		_receiveRequest(int idClient);
+		bool	_getRequest(int idClient);
+		void	_sendResponse(Client *client, std::string response);
 
 	public:
 		Loop(std::vector<Server> servers, std::vector<Socket *> sockets, int nbSockets);
