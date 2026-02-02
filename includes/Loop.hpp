@@ -3,8 +3,9 @@
 #define LOOP_HPP
 
 #include "includes.hpp"
-#include "socket/includeSend.hpp"
 #include "socket/Socket.hpp"
+#include "Client.hpp"
+#include "epoll/Epoll.hpp"
 
 class Loop
 {
@@ -15,15 +16,16 @@ class Loop
 		Epoll							_epoll;
 		std::string						_hostnameOfSrvSock;
 
-		void	_createMapServer(std::vector<Server> servers);
-		void	_closeClients(int idClient);
-		void	_checkAllTimeout();
-		void	_sendResponse(Client *client, std::string response);
-		bool	_isServerSocket(int fd);
-		bool	_isClientSocket(int fd, int &idClient);
-		int		_acceptClient(int fd);
-		int		_receiveRequest(int idClient);
-
+		void		_createMapServer(std::vector<Server> servers);
+		void		_closeClients(int idClient);
+		void		_checkAllTimeout();
+		void		_sendResponse(Client *client, std::string response);
+		bool		_isServerSocket(int fd);
+		bool		_isClientSocket(int fd, int &idClient);
+		int			_acceptClient(int fd);
+		int			_receiveRequest(int idClient);
+		std::string	_createResponse(Client *client, Server serv);
+		
 	public:
 		Loop(std::vector<Server> servers, std::vector<Socket *> sockets, int nbSockets);
 		~Loop();
