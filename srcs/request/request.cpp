@@ -3,7 +3,7 @@
 
 std::vector<std::string> Request::_v = Request::_acceptedType();
 
-Request::Request()
+Request::Request() : _ContentLength(0)
 {
 	
 }
@@ -220,6 +220,7 @@ void Request::setFirstLine(std::string &line)
 	ret.insert(std::make_pair(std::string("User-Agent:"), &_userAgent));
 	ret.insert(std::make_pair(std::string("Accept:"), &_accept));
 	ret.insert(std::make_pair(std::string("Content-Type:"), &_ContentType));
+	ret.insert(std::make_pair(std::string("Transfer-Encoding:"), &_transferEncoding));
 
 	return ret;
 }
@@ -369,4 +370,59 @@ bool Request::getkeepAlive() const
 unsigned int Request::getContentLength() const
 {
 	return _ContentLength;
+}
+
+void	Request::setkeepAlive(bool b)
+{
+	_keepAlive = b;
+}
+
+void	Request::setMethod(std::string str)
+{
+	_method = str;
+}
+
+void	Request::setLocation(std::string str)
+{
+	_location = str;
+}
+
+void	Request::setProtocol(std::string str)
+{
+	_protocol = str;
+}
+
+void	Request::setHost(std::string str)
+{
+	_host = str;
+}
+
+void	Request::setUserAgent(std::string str)
+{
+	_userAgent = str;
+}
+
+void	Request::setAccept(std::string str)
+{
+	_accept = str;
+}
+
+void Request::setTranferEncoding(std::string str)
+{
+	_transferEncoding = str;
+}
+
+void	Request::setContentType(std::string str)
+{
+	_ContentType = str;
+}
+
+void	Request::setBody(std::string str)
+{
+	_body = str;
+}
+
+void	Request::setContentLength(unsigned int n)
+{
+	_ContentLength = n;
 }

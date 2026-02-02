@@ -20,6 +20,7 @@ class Request {
 		std::string		_host;
 		std::string		_userAgent;
 		std::string		_accept;
+		std::string		_transferEncoding;
 		std::string		_ContentType;
 		unsigned int	_ContentLength;
 		std::string		_body;
@@ -53,10 +54,22 @@ class Request {
 		std::string	getHost() const;
 		std::string	getUserAgent() const;
 		std::string	getAccept() const;
+		std::string getTranferEncoding() const;
 		std::string	getContentType() const;
 		std::string	getBody() const;
 		unsigned int getContentLength() const;
 
+		void		setkeepAlive(bool b);
+		void		setMethod(std::string str);
+		void		setLocation(std::string str);
+		void		setProtocol(std::string str);
+		void		setHost(std::string str);
+		void		setUserAgent(std::string str);
+		void		setAccept(std::string str);
+		void		setTranferEncoding(std::string str);
+		void		setContentType(std::string str);
+		void		setBody(std::string str);
+		void		setContentLength(unsigned int n);	
 };
 
 #endif
