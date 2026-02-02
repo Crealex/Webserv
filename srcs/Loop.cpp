@@ -157,17 +157,6 @@ bool	Loop::_parsingRequest(int idClient)
 	return (true);
 }
 
-void	Loop::_addBodyLen(int idClient)
-{
-
-}
-
-int	Loop::_checkBody(int idClient)
-{
-	if (this->_clients[idClient]->getRequest().getContentLength() > 0)
-		this->_addBodyLen(idClient);
-}
-
 int	Loop::_receiveRequest(int idClient)
 {
 	int		sizeRecv;
@@ -178,10 +167,43 @@ int	Loop::_receiveRequest(int idClient)
 		return (this->_receiveRequest(idClient));
 	buffer[sizeRecv] = '\0';
 	if (sizeRecv == 0)	
-		return (0);
+		return (sizeRecv);
 	this->_clients[idClient]->setBuf(buffer, sizeRecv);	
-	return (1);
+	return (sizeRecv);
 }	
+
+void	Loop::_addBodyLen(int idClient)
+{
+	int	counter;
+	int	contentLen;
+
+	counter = this->_clients[idClient]->getBuf().size();
+	contentLen = this->_clients[idClient]->getRequest().getContentLength();
+	while (counter < contentLen)
+	{
+		counter += this->_receiveRequest(idClient);
+	}
+}	
+
+void	Loop::_addBodyChunked(int idClient)
+{
+	int	posCRLF;
+
+	posCRLF = this->_clients[idClient]->getBuf().find("\r\n\r\n");
+	while (posCRLF != std::string::npos)
+	{
+		this->_receiveRequest(idClient);
+		posCRLF = this->_clients[idClient]->getBuf().find("\r\n\r\n");
+	}
+}	
+
+void	Loop::_checkBody(int idClient)
+{
+	if (this->_clients[idClient]->getRequest().getContentLength() > 0)
+		this->_addBodyLen(idClient);
+	if (this->_clients[idClient]->getRequest().getTranferEncoding().find("chunked") != std::string::npos)	
+		this->_addBodyChunked(idClient);
+}		
 
 bool	Loop::_getRequest(int idClient)
 {
@@ -192,9 +214,10 @@ bool	Loop::_getRequest(int idClient)
 		return (false);
 	if (!this->_parsingRequest(idClient))
 		this->_getRequest(idClient);	
-	this
+	this->_checkBody(idClient);
 	this->_clients[idClient]->setTimeoutRequest();
 	this->_clients[idClient]->setTimeout();
+	return (true);
 }
 
 inline void Loop::_sendResponse(Client *client, std::string response)
@@ -230,7 +253,7 @@ void	Loop::runLoop()
 			}
 			if (events[indexEvent].events & EPOLLIN && this->_isClientSocket(events[indexEvent].data.fd, idClient))
 			{
-				if (this->_receiveRequest(idClient) == 0)
+				if (!this->_getRequest(idClient))
 				{
 					this->_closeClients(idClient);
 					continue ;

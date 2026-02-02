@@ -24,7 +24,8 @@ class Loop
 		int		_acceptClient(int fd);
 		bool	_parsingRequest(int idClient);
 		void	_addBodyLen(int idClient);
-		int		_checkBody(int idClient);
+		void	_addBodyChunked(int idClient);
+		void	_checkBody(int idClient);
 		int		_receiveRequest(int idClient);
 		bool	_getRequest(int idClient);
 		void	_sendResponse(Client *client, std::string response);
