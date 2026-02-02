@@ -1,22 +1,58 @@
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseError.hpp"
 
+std::vector<std::string> Request::_v = Request::_acceptedType();
+
+Request::Request()
+{
+	
+}
+
+Request::Request(const Request& cpy)
+{
+	_method = cpy.getMethod();
+	_location = cpy.getLocation();
+	_protocol = cpy.getProtocol();
+	_host = cpy.getHost();
+	_userAgent = cpy.getUserAgent();
+	_accept = cpy.getAccept();
+	_ContentType = cpy.getContentType();
+	_ContentLength = cpy.getContentLength();
+	_body = cpy.getBody();
+	_keepAlive = cpy.getkeepAlive();
+}
+
+Request &Request::operator=(const Request& src)
+{
+	if (this != &src)
+	{
+		_method = src.getMethod();
+		_location = src.getLocation();
+		_protocol = src.getProtocol();
+		_host = src.getHost();
+		_userAgent = src.getUserAgent();
+		_accept = src.getAccept();
+		_ContentType = src.getContentType();
+		_ContentLength = src.getContentLength();
+		_body = src.getBody();
+		_keepAlive = src.getkeepAlive();
+	}
+	return *this;
+}
+
+Request::~Request()
+{
+	
+}
+
 /**
  * @brief return a hard vector with the different accepted Content-Type
  * 
  * @return Vector with the Content-Type
  */
-static std::vector<std::string> acceptedType()
+std::vector<std::string> Request::_acceptedType()
 {
 	std::vector<std::string> v;
-
-	// TODO
-	// v = {
-	// 	truc1,
-	// 	truc2,
-	// 	truc3.
-	// 	etc...,
-	// }
 
 	v.push_back("*/*");
 	v.push_back("text/html");
@@ -43,28 +79,48 @@ static std::vector<std::string> acceptedType()
 	return v;
 }
 
-static void checkGET(Request req)
+void Request::reset()
+{
+	if (!_method.empty())
+		_method.clear();
+	if (!_location.empty())
+		_location.clear();
+	if (!_protocol.empty())
+		_protocol.clear();
+	if (!_host.empty())
+		_host.clear();
+	if (!_userAgent.empty())
+		_userAgent.clear();
+	if (!_accept.empty())
+		_accept.clear();
+	if (!_ContentType.empty())
+		_ContentType.clear();
+	if (!_body.empty())
+		_body.clear();
+	_bodySize = 0;
+	_ContentLength = 0;
+	_keepAlive = false;
+}
+
+void Request::_checkGet()
 {
 	std::cout << "in checkGET" << std::endl;
-	if (req._userAgent.empty() || 
-		req._accept.empty())
+	if (_userAgent.empty() || 
+		_accept.empty())
 	{
-		throw ResponseError(411, "Error: Missing value", req);
+		throw ResponseError(411, "Error: Missing value", *this);
 	}
 
 	int leave = 0;
-	std::vector<std::string> v = acceptedType();
-	for (std::vector<std::string>::iterator it = v.begin();
-	it != v.end(); it++)
+	for (std::vector<std::string>::iterator it = _v.begin();
+	it != _v.end(); it++)
 	{
-		std::istringstream iss(req._accept);
+		std::istringstream iss(_accept);
 		std::string str;
 		while (std::getline(iss, str, ','))
 		{
-		std::cout << "*it: " << *it << ", str: " << str << std::endl;
 			if (str.compare(*it) == 0)
 			{
-				std::cout << "is egal" << std::endl;
 				leave = 1;
 				break ;
 			}
@@ -73,37 +129,29 @@ static void checkGET(Request req)
 		if (leave == 1)
 			break ;
 
-		if (it + 1 == v.end())
-			throw ResponseError(415, "Error: Unsupported Media Type", req);
+		if (it + 1 == _v.end())
+			throw ResponseError(415, "Error: Unsupported Media Type", *this);
 	}
 }
 
-static void checkPost(Request req, unsigned int maxSize)
+void Request::_checkPost()
 {
 	int leave = 0;
-	(void) maxSize;
-	//std::cout << "in checkPost" << std::endl;
-	//std::cout << BOLD << "post content-type:" << req._ContentType << RESET << std::endl;
-	//std::cout << BOLD << "post body:" << req._body << RESET << std::endl;
-	std::cout << LIGHT_CYAN << "Content-type: " << req._ContentType << ", body: " << req._body << RESET << std::endl;
-	if (req._ContentType.empty() || 
-		req._body.empty())
+	if (_ContentType.empty() || 
+		_body.empty())
 	{
-		throw ResponseError(411, "Error: Missing value", req);
+		throw ResponseError(411, "Error: Missing value", *this);
 	}
 
-	std::vector<std::string> v = acceptedType();
-	for (std::vector<std::string>::iterator it = v.begin(); // INFO: Toutes la boucle for complémentent modif (par alex avec l'aval de kiki)
-	it != v.end(); it++)
+	for (const std::vector<std::string>::iterator it = _v.begin(); // INFO: Toutes la boucle for complémentent modif (par alex avec l'aval de kiki)
+	it != _v.end(); it)
 	{
-		std::istringstream iss(req._accept);
+		std::istringstream iss(_accept);
 		std::string str;
 		while (std::getline(iss, str, ','))
 		{
-		std::cout << "*it: " << *it << ", str: " << str << std::endl;
 			if (str.compare(*it) == 0)
 			{
-				std::cout << "is egal" << std::endl;
 				leave = 1;
 				break ;
 			}
@@ -112,10 +160,35 @@ static void checkPost(Request req, unsigned int maxSize)
 		if (leave == 1)
 			break ;
 
-		if (it + 1 == v.end())
-			throw ResponseError(415, "Error: Unsupported Media Type", req);
+		if (it + 1 == _v.end())
+			throw ResponseError(415, "Error: Unsupported Media Type", *this);
 	}
-	// TODO check if content length < maxSize
+}
+
+void Request::checkRequest(size_t maxSize)
+{
+	if (_method != "GET" &&
+		_method != "POST" &&
+		_method != "DELETE")
+	{
+		throw ResponseError(501, "Error: Not implemented method", *this);
+	}
+
+	if (_protocol != "HTTP/1.1" &&
+		_protocol != "HTTP/1.0")
+	{
+		throw ResponseError(505, "Error: HTTP version not supported", *this);
+	}
+
+	if (_bodySize > maxSize)
+	{
+		throw ResponseError(413, "Error, content too large", *this);
+	}
+
+	if (_method == "POST")
+		_checkPost();
+	else if (_method == "GET")
+		_checkGet();
 }
 
 /**
@@ -124,33 +197,13 @@ static void checkPost(Request req, unsigned int maxSize)
  * @param line 
  * @param req 
  */
-static void setHeader(std::string line, Request& req)
+void Request::setFirstLine(std::string &line)
 {
 	std::stringstream ss(line);
-	std::string method;
-	std::string location;
-	std::string protocol;
 
-	ss >> method;
-	if (method != "GET" &&
-		method != "POST" &&
-		method != "DELETE")
-	{
-		throw ResponseError(501, "Error: Not implemented method", req);
-	}
-	req._method = method;
-
-	ss >> location;
-	req._location = location;
-	
-	ss >> protocol;
-	if (protocol != "HTTP/1.1" &&
-		protocol != "HTTP/1.0")
-	{
-		throw ResponseError(505, "Error: HTTP version not supported", req);
-	}
-
-	req._protocol = protocol;
+	ss >> _method;
+	ss >> _location;
+	ss >>_protocol;
 }
 
 /**
@@ -159,16 +212,14 @@ static void setHeader(std::string line, Request& req)
  * @param req 
  * @return std::map<std::string, std::string*> 
  */
-static std::map<std::string, std::string*> createMap(Request &req)
+ std::map<std::string, std::string*> Request::createMap()
 {
 	std::map<std::string, std::string*> ret;
 
-	ret.insert(std::make_pair(std::string("Host:"), &req._host));
-	ret.insert(std::make_pair(std::string("User-Agent:"), &req._userAgent));
-	ret.insert(std::make_pair(std::string("Accept:"), &req._accept));
-	ret.insert(std::make_pair(std::string("Content-Type:"), &req._ContentType));
-	req._ContentLength = 0;
-	req._keepAlive = false;
+	ret.insert(std::make_pair(std::string("Host:"), &_host));
+	ret.insert(std::make_pair(std::string("User-Agent:"), &_userAgent));
+	ret.insert(std::make_pair(std::string("Accept:"), &_accept));
+	ret.insert(std::make_pair(std::string("Content-Type:"), &_ContentType));
 
 	return ret;
 }
@@ -179,20 +230,16 @@ static std::map<std::string, std::string*> createMap(Request &req)
  * @param str 
  * @return std::string 
  */
-std::string retBody(std::string str, size_t maxSize, Request req)
+std::string Request::retBody(std::string &str)
 {
 	std::stringstream target(str);
 
 	target.seekg(0, std::ios::end);
-	size_t size = target.tellg();
-	if (size > maxSize)
-	{
-		throw ResponseError(413, "Error, content too large", req);
-	}
+	_bodySize = target.tellg();
 	target.seekg(0, std::ios::beg);
-	char* buffer = new char[size];
-	target.read(buffer, size);
-	std::string file(buffer, size);
+	char* buffer = new char[_bodySize];
+	target.read(buffer, _bodySize);
+	std::string file(buffer, _bodySize);
 	delete[] buffer;
 
 	return file;
@@ -204,15 +251,14 @@ std::string retBody(std::string str, size_t maxSize, Request req)
  * @param buffer the client request
  * @return The created Request object
  */
-Request createRequest(std::string buffer, size_t maxSize)
+void Request::parseHeader(std::string &buffer)
 {
-	Request ret;
-	std::map<std::string, std::string*> ptrMap = createMap(ret);
+	std::map<std::string, std::string*> ptrMap = createMap();
 	std::istringstream iss(buffer);
 	std::string line;
 
 	std::getline(iss, line);
-	setHeader(line, ret);
+	setFirstLine(line);
 	while (std::getline(iss, line)) 
 	{
 		if (!line.empty() && line[line.size() - 1] == '\r') // INFO: Ajouter par Alex (pour gerer les \r)
@@ -228,15 +274,14 @@ Request createRequest(std::string buffer, size_t maxSize)
 		{
 			unsigned int cLength;
 			ss >> cLength;
-			std::cout << BOLD << "content length : " << cLength << RESET << std::endl;
-			ret._ContentLength = cLength;
+			_ContentLength = cLength;
 			continue ;
 		}
 		if (word == "Connection:")
 		{
 			ss >> word;
 			if (word == "keep-alive")
-				ret._keepAlive = true;
+				_keepAlive = true;
 			continue ;
 		}
 		try
@@ -252,69 +297,76 @@ Request createRequest(std::string buffer, size_t maxSize)
 		{
 		}
 	}
-
-	// extract the body of the request
-	// std::cout << "content length = " << ret._ContentLength << std::endl;
-	size_t pos = buffer.find("\r\n\r\n");
-	std::cout << RED << "buffer = " << buffer << "pos = " << pos << RESET << std::endl;
-	if (pos != std::string::npos)
-	{
-		pos += 4;
-		std::string body = buffer.substr(pos, buffer.size() - pos);
-		ret._body = retBody(body, maxSize, ret);
-	}
-	std::cout << "body = " << ret._body;
-	// verify the different extracted element
-	// if (ret._host.empty() || access(ret._host.c_str(), F_OK) != 0)
-	// {
-	// 	throw ResponseError(400, "Error: Host cannot be accessed", ret);
-	// }
-
-	if (ret._method == "POST")
-		checkPost(ret, maxSize);
-	else if (ret._method == "GET")
-		checkGET(ret);
-
-	std::cout << std::endl << std::endl
-		<< "method = " << ret._method
-		<< "\nlocation = " << ret._location
-		<< "\nprotocol = " << ret._protocol
-		<< "\nhost = " << ret._host
-		<< "\nuserAgent = " << ret._userAgent
-		<< "\naccept = " << ret._accept
-		<< "\ncontent type = " << ret._ContentType
-		<< "\ncontent length = " << ret._ContentLength
-		<< "\nbody = " << ret._body << std::endl;
-
-	return ret;
 }
 
-// int main()
-// {
-	// test GET
-	// std::string str = "GET /contact HTTP/1.1\nHost: exemple.fr\nUser-Agent: curl/8.6.0\nAccept: */*";
+void Request::parseBody(std::string &buffer)
+{
+	// std::cout << RED << "buffer = " << buffer << "pos = " << pos << RESET << std::endl;
+	_body = retBody(buffer);
+	// std::cout << "body = " << ret._body;
+}
 
-	// test POST 1
-	// char str[] = "POST /test HTTP/1.1\nHost: exemple.fr\nContent-Type: application/x-www-form-urlencoded\nContent-Length: 27\n\nfield1=value1&field2=value2";
+void Request::printRequest()
+{
+	std::cout << std::endl << std::endl
+		<< "\tmethod = " << _method
+		<< "\n\tlocation = " << _location
+		<< "\n\tprotocol = " << _protocol
+		<< "\n\thost = " << _host
+		<< "\n\tuserAgent = " << _userAgent
+		<< "\n\taccept = " << _accept
+		<< "\n\tcontent type = " << _ContentType
+		<< "\n\tcontent length = " << _ContentLength
+		<< "\n\tbody = " << _body << std::endl;
+}
 
-	// test POST 2 (si qqun arrive a le faire marcher ?)
-	// char str[] = "POST /test HTTP/1.1\nHost: ./.\nContent-Type: text/html\nContent-Length: 50\n\n--delimiter12345\nContent-Disposition: form-data; name=\"field1\"\n\nvalue1\n--delimiter12345\nContent-Disposition: form-data; name=\"field2\"; filename=\"exemple.txt\"\n\nvalue2\n--delimiter12345--";
+std::string Request::getMethod() const
+{
+	return _method;
+}
 
-	// test DELETE
-	// char str[] = "DELETE /fichier.html HTTP/1.1\nHost: example.com";
+std::string Request::getLocation() const
+{
+	return _location;
+}
 
-	// std::cout << "test :\n" << str << std::endl;
+std::string Request::getProtocol() const
+{
+	return _protocol;
+}
 
-// 	Request req = createRequest(str);
-	
-// 	std::cout 
-// 		<< "method = " << req._method
-// 		<< "\nlocation = " << req._location
-// 		<< "\nprotocol = " << req._protocol
-// 		<< "\nhost = " << req._host
-// 		<< "\nuserAgent = " << req._userAgent
-// 		<< "\naccept = " << req._accept
-// 		<< "\ncontent type = " << req._ContentType
-// 		<< "\ncontent length = " << req._ContentLength
-// 		<< "\nbody = \n" << req._body << std::endl;
-// }
+std::string Request::getHost() const
+{
+	return _host;
+}
+
+std::string Request::getUserAgent() const
+{
+	return _userAgent;
+}
+
+std::string Request::getAccept() const
+{
+	return _accept;
+}
+
+std::string Request::getContentType() const
+{
+	return _ContentType;
+}
+
+
+std::string Request::getBody() const
+{
+	return _body;
+}
+
+bool Request::getkeepAlive() const
+{
+	return _keepAlive;
+}
+
+unsigned int Request::getContentLength() const
+{
+	return _ContentLength;
+}
