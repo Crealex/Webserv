@@ -351,6 +351,11 @@ std::string Request::getAccept() const
 	return _accept;
 }
 
+std::string Request::getTranferEncoding() const
+{
+	return _transferEncoding;
+}
+
 std::string Request::getContentType() const
 {
 	return _ContentType;

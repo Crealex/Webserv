@@ -25,7 +25,7 @@ class Loop
 		int			_acceptClient(int fd);
 		int			_receiveRequest(int idClient);
 		std::string	_createResponse(Client *client, Server serv);
-		
+
 	public:
 		Loop(std::vector<Server> servers, std::vector<Socket *> sockets, int nbSockets);
 		~Loop();
