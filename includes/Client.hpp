@@ -3,6 +3,7 @@
 #define CLIENT_HPP
 
 #include "includes.hpp"
+#include "requests/Request.hpp"
 #include <cstddef>
 #include <netinet/in.h>
 
@@ -21,7 +22,8 @@ class Client
 		std::time_t	_timeRequest;
 		std::time_t	_time;
 		bool		_timeoutRequest;
-	
+		Request		_request;
+
 	public:
 		Client();
 		~Client();
@@ -33,6 +35,7 @@ class Client
 		bool const			&getEndOfFile() const;
 		bool const			&getKeepAlive() const;
 		bool const			&getTimeoutRequest() const;
+		Request	const		&getRequest() const;
 
 		void	setHostname(std::string newHostname);
 		void	setFdClient(int newFd);
@@ -42,6 +45,8 @@ class Client
 		void	setKeepAlive(bool newKeepAlive);
 		void	setTimeoutRequest();
 		void	setTimeout();
+		void	setRequestHeader(std::string &str);
+		void	setRequestBody(std::string &str);
 		
 		void	resetClient();
 		void	checkTimeoutRequest();

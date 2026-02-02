@@ -47,9 +47,14 @@ bool const			&Client::getKeepAlive() const
 }
 
 
-bool const			&Client::getTimeoutRequest() const
+bool const	&Client::getTimeoutRequest() const
 {
 	return (this->_timeoutRequest);
+}
+
+Request const &Client::getRequest() const
+{
+	return (this->_request);
 }
 
 // SETTERS
@@ -96,12 +101,23 @@ void	Client::setTimeout()
 	this->_time = getTimeNow();
 }
 
+void	Client::setRequestHeader(std::string &str)
+{
+	this->_request.parseHeader(str);
+}
+
+void	Client::setRequestBody(std::string &str)
+{
+	this->_request.parseBody(str);
+}
+
 //METHODS
 
 void	Client::resetClient()
 {
 	std::cout << GREEN << "in reset : " << this->_fdSocket << std::endl << RESET;
 	this->_buf.clear();
+	this->_request.reset();
 	this->_endOfFile = false;
 	this->_keepAlive = false;
 	this->_timeRequest = getTimeNow();

@@ -57,6 +57,14 @@ void	Loop::_checkAllTimeout()
 	}
 }
 
+inline void Loop::_sendResponse(Client *client, std::string response)
+{
+	if (send(client->getFdClient(), response.c_str(), response.size(), 0) == -1)
+	{
+		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
+	}
+}
+
 bool	Loop::_isServerSocket(int fd)
 {
 	int	sizeSockets;

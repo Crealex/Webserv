@@ -18,6 +18,7 @@ class Loop
 		void	_createMapServer(std::vector<Server> servers);
 		void	_closeClients(int idClient);
 		void	_checkAllTimeout();
+		void	_sendResponse(Client *client, std::string response);
 		bool	_isServerSocket(int fd);
 		bool	_isClientSocket(int fd, int &idClient);
 		int		_acceptClient(int fd);
