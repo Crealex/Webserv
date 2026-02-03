@@ -4,7 +4,6 @@
 Client::Client()
 {
 	this->_fdSocket = -1;
-	this->_keepAlive = false;
 	this->_time = this->getTimeNow();
 }
 
@@ -43,12 +42,6 @@ std::string const	&Client::getResponse() const
 {
 	return (this->_response);
 }
-
-bool const			&Client::getKeepAlive() const
-{
-	return (this->_keepAlive);
-}	
-
 
 // SETTERS
 void	Client::setHostname(std::string newHostname)
@@ -89,11 +82,6 @@ void	Client::setRequestBody()
 	this->_request.parseBody(this->_buf);
 }
 
-void	Client::setKeepAlive(bool newKeepAlive)
-{
-	this->_keepAlive = newKeepAlive;
-}
-
 void	Client::setTimeoutRequest()
 {
 	this->_timeRequest = this->getTimeNow();
@@ -126,7 +114,6 @@ void	Client::resetClient()
 	if (!this->_buf.empty())
 		this->_buf.clear();
 	this->_request.reset();
-	this->_keepAlive = false;
 	this->_timeRequest = this->getTimeNow();
 	this->_time = this->getTimeNow();
 	if (!this->_response.empty())

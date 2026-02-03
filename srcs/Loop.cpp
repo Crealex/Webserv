@@ -11,7 +11,6 @@ Loop::Loop(std::vector<Server> servers, std::vector<Socket *> sockets, int nbSoc
 
 Loop::~Loop()
 {
-
 }
 
 // METHODS
@@ -254,6 +253,7 @@ inline void Loop::_sendResponse(int idClient)
 		this->_clients[idClient]->getResponse().size(), 0) == -1)
 	{
 		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
+		this->_createTimeoutResponse(idClient);
 	}
 }
 // PUBLIC
@@ -279,30 +279,33 @@ void	Loop::runLoop()
 			{
 				this->_acceptClient(events[indexEvent].data.fd);
 			}
-			if (events[indexEvent].events & EPOLLIN && this->_isClientSocket(events[indexEvent].data.fd, idClient))
+			if (this->_isClientSocket(events[indexEvent].data.fd, idClient))
 			{
-				if (!this->_getRequest(idClient))
+				if (events[indexEvent].events & EPOLLIN)
 				{
-					this->_closeClients(idClient);
-					continue ;
+					if (!this->_getRequest(idClient))
+					{
+						this->_closeClients(idClient);
+						continue ;
+					}
+					this->_clients[idClient]->setTimeout();
+					this->_clients[idClient]->setTimeoutRequest();
+					std::cout << "request : " << std::endl;
+					this->_clients[idClient]->getRequest().printRequest();
 				}
-				this->_clients[idClient]->setTimeout();
-				this->_clients[idClient]->setTimeoutRequest();
-				std::cout << "request : " << std::endl;
-				this->_clients[idClient]->getRequest().printRequest();
-			}
-			if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient))
-			{
-				std::cout << MAGENTA << "Before response : " << std::endl << RESET;
-				this->_createResponse(idClient);
-				std::cout << CYAN << "response : " << this->_clients[idClient]->getResponse() << std::endl << RESET;
-				this->_sendResponse(idClient);
-				if (this->_clients[idClient]->getKeepAlive() == false)
-					this->_closeClients(idClient);
-				else
+				if (events[indexEvent].events & EPOLLOUT)
 				{
-					this->_clients[idClient]->resetClient();
-					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN|EPOLLET);
+					std::cout << MAGENTA << "Before response : " << std::endl << RESET;
+					this->_createResponse(idClient);
+					std::cout << CYAN << "response : " << this->_clients[idClient]->getResponse() << std::endl << RESET;
+					this->_sendResponse(idClient);
+					if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
+						this->_closeClients(idClient);
+					else
+					{
+						this->_clients[idClient]->resetClient();
+						this->_epoll.setEvents(this->_clients[idClient], EPOLLIN|EPOLLET);
+					}
 				}
 			}
 		}
