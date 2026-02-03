@@ -9,7 +9,7 @@ static int	listenSocket(std::vector<Socket *> &sockets, size_t &i, size_t &j, si
 	std::vector<SocketData *>::iterator	eltToErase;
 
 	checkFail = 0;
-	checkFail = listen(sockets[i]->getSockData()[j]->getFdServer(), 2);
+	checkFail = ::listen(sockets[i]->getSockData()[j]->getFdServer(), 2);
 	if (checkFail < 0)
 	{
 		sockets[i]->eraseSocket(j);
@@ -35,7 +35,7 @@ static int	bindSocket(std::vector<Socket *> &sockets)
 		sizeSockData = sockets[i]->getSockData().size();
 		for (size_t j = 0; j != sizeSockData; j++)
 		{
-			checkFail = bind(sockets[i]->getSockData()[j]->getFdServer(), (struct sockaddr *)&(sockets[i]->getSockData()[j]->getSockadd()), sizeof(sockaddr_in));
+			checkFail = ::bind(sockets[i]->getSockData()[j]->getFdServer(), (struct sockaddr *)&(sockets[i]->getSockData()[j]->getSockadd()), sizeof(sockaddr_in));
 			if (checkFail < 0)
 			{
 				sockets[i]->eraseSocket(j);

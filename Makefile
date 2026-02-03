@@ -1,9 +1,9 @@
 NAME	= webServ
-SRCS	= $(addprefix srcs/, Server.cpp main.cpp printDebug.cpp send.cpp Client.cpp time.cpp)
+SRCS	= $(addprefix srcs/, Server.cpp main.cpp printDebug.cpp Client.cpp Loop.cpp)
 PARSING	= $(addprefix srcs/parsing_config/, createStructV2.cpp parseRoot.cpp parseAddressPort.cpp parseErrorPage.cpp parseMaxSize.cpp parseHostname.cpp parseUtils.cpp Location.cpp)
-SOCKET  = $(addprefix srcs/socket/, createSocket.cpp Socket.cpp SocketData.cpp handleClient.cpp printSocket.cpp)
-REQUEST = $(addprefix srcs/request/, methodsUtils.cpp Delete.cpp Get.cpp getMethods.cpp MethodsClass.cpp MimeTypes.cpp Post.cpp request.cpp ResponseError.cpp)
 CGI		= $(addprefix srcs/request/CGI/, CGI.cpp Envp.cpp)
+SOCKET  = $(addprefix srcs/socket/, createSocket.cpp Socket.cpp SocketData.cpp printSocket.cpp)
+REQUEST = $(addprefix srcs/request/, methodsUtils.cpp Delete.cpp Get.cpp MethodsClass.cpp MimeTypes.cpp Post.cpp request.cpp ResponseError.cpp)
 EPOLL   = $(addprefix srcs/epoll/, Epoll.cpp addEpollFd.cpp)
 OBJS	= ${SRCS:%.cpp=${OBJDIR}/%.o}
 OBJPARS	= ${PARSING:%.cpp=${OBJDIR}/%.o}
@@ -12,7 +12,7 @@ OBJREQ	= ${REQUEST:%.cpp=${OBJDIR}/%.o}
 OBJCGI	= ${CGI:%.cpp=${OBJDIR}/%.o}
 OBJEPO	= ${EPOLL:%.cpp=${OBJDIR}/%.o}
 OBJDIR	= objets
-CFLAGS	= -Werror -Wextra -Wall -g3 -std=c++98
+CFLAGS	= -Werror -Wextra -Wall -std=c++98 -g3
 CC = c++
 
 # Colors and style

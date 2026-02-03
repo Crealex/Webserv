@@ -37,9 +37,9 @@ const std::string Delete::createResponse(Server srv)
 	std::string		target;
 	Request			dataError;
 
-	dataError._protocol = this->_protocol;
-	dataError._host = this->_host;
-	dataError._location = this->_location;
+	dataError.setProtocol(this->_protocol);
+	dataError.setHost(this->_host);
+	dataError.setLocation(this->_location);
 
 
 	target = findTarget(this->_location, srv.getLocations(), dataError, "DELETE");
@@ -56,7 +56,7 @@ const std::string Delete::createResponse(Server srv)
 		throw (ResponseError(401, "Unauthorized", dataError));
 	std::getline(file, contentFile, '\0');
 	if (!addContentLenght(&resp, contentFile))
-		throw (ResponseError(500, "can't add content lenght", dataError));
+		throw (ResponseError(500, "can't add content length", dataError));
 	if (!addBody(&resp, contentFile))
 		throw (ResponseError(500, "can't add body", dataError));
 	if (std::remove(path.c_str()))

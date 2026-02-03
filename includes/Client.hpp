@@ -3,9 +3,12 @@
 #define CLIENT_HPP
 
 #include "includes.hpp"
+#include "requests/Request.hpp"
+#include <cstddef>
 #include <netinet/in.h>
 
-#define MAXTIME 100
+#define MAXTIMEREQUEST 15
+#define MAXTIME 30
 
 class Client
 {
@@ -14,10 +17,13 @@ class Client
 		int			_fdSocket;
 		std::string	_buf;
 		sockaddr_in	_sockadd;
-		bool		_endOfFile;
+		Request		_request;
+		std::string	_response;
 		bool		_keepAlive;
+		std::time_t	_timeRequest;
 		std::time_t	_time;
-	
+		bool		_timeoutRequest;
+
 	public:
 		Client();
 		~Client();
@@ -26,18 +32,29 @@ class Client
 		int const			&getFdClient() const;
 		std::string const	&getBuf() const;
 		sockaddr_in const	&getSockadd() const;
-		bool const			&getEndOfFile() const;
+		Request	const		&getRequest() const;
+		std::string const	&getResponse() const;
 		bool const			&getKeepAlive() const;
-		std::time_t const	&getTime() const;
+		bool const			&getTimeoutRequest() const;
 
 		void	setHostname(std::string newHostname);
 		void	setFdClient(int newFd);
-		void	setBuf(char *newBuf);
+		void	setBuf(const char *newBuf, int size);
 		void	setSockadd(sockaddr_in newSockadd);
-		void	setEndOfFile(bool newEndOfFile);
+		void	setRequestHeader(std::string &str);
+		void	setRequestBody();
+		void	setResponse(const std::string &str);
 		void	setKeepAlive(bool newKeepAlive);
+		void	setTimeoutRequest();
+		void	setTimeout();
 		
+		std::time_t	getTimeNow();
+
+		void	resetBuf();
 		void	resetClient();
+		void	checkRequest(Server server);
+		void	checkTimeoutRequest();
+		bool	checkTimeout();
 };
 
 #endif

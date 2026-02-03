@@ -9,7 +9,7 @@
 #include "../../includes/Server.hpp"
 #include "../../includes/requests/ResponseError.hpp"
 
-Get::Get(Request requ): Methods(requ), _userAgent(requ._userAgent), _accept(requ._accept) 
+Get::Get(Request requ): Methods(requ), _userAgent(requ.getUserAgent()), _accept(requ.getAccept()) 
 {
     std::cout << GREEN << "Default Get constructor called" << RESET << std::endl;
 }
@@ -25,15 +25,15 @@ const std::string Get::createResponse(Server srv)
 	Request			dataError;
 	std::string		target;
 	
-	dataError._protocol = this->_protocol;
-	dataError._host = this->_host;
-	dataError._accept = this->_accept;
-	dataError._location = this->_location;
-	dataError._userAgent = this->_userAgent;
+	dataError.setProtocol(this->_protocol);
+	dataError.setHost(this->_host);
+	dataError.setAccept(this->_accept);
+	dataError.setLocation(this->_location);
+	dataError.setUserAgent(this->_userAgent);
 
 	target = findTarget(this->_location, srv.getLocations(), dataError, "GET");
 	// TODO: Verif si target est un file ou un dossier ou une redirection;
-	path = srv.getRoot() + "/" + target;
+	path = srv.getRoot() + "/" + target; // TODO: Peut-etre retirer le /
 	std::cout << "complete path to get: " << path << std::endl;
 	file.open(path.c_str());
 	// *************************
@@ -55,7 +55,7 @@ const std::string Get::createResponse(Server srv)
 	if (!addLastModif(&resp, path))
 		throw ResponseError(500, "can't add last modif", dataError);
 	if (!addContentLenght(&resp, path))
-		throw ResponseError(500, "can't add content lenght", dataError);
+		throw ResponseError(500, "can't add content length", dataError);
 	if (!addBody(&resp, fileStr))
 		throw ResponseError(500, "can't add body", dataError);
 	if (!addStartLine(&resp, this->_protocol, 200, "OK"))

@@ -25,6 +25,7 @@ class Server
 	void printAtt() const;
 
   public:
+	Server();
 	Server(struct server data);
 	~Server();
 

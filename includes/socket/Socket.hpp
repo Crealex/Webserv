@@ -2,8 +2,9 @@
 
 #define SOCKET_HPP
 
-#include <poll.h>
 #include "SocketData.hpp"
+#include <poll.h>
+#include "../Server.hpp"
 
 class Socket
 {
