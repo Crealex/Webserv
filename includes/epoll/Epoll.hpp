@@ -4,8 +4,6 @@
 
 #include "../socket/Socket.hpp"
 #include "../Client.hpp"
-#include <sys/epoll.h>
-#include "../Client.hpp"
 
 class Epoll
 {

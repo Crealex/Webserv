@@ -41,35 +41,35 @@ class Request {
 		Request& operator=(const Request& src);
 		~Request();
 
-		void printRequest();
+		void printRequest() const;
 		void parseHeader(std::string &buffer);
 		void parseBody(std::string &buffer);
-		void checkRequest(size_t maxSize);
+		void checkRequest(const unsigned int maxSize);
 		void reset();
 
-		bool		getkeepAlive() const;
-		std::string	getMethod() const;
-		std::string	getLocation() const;
-		std::string	getProtocol() const;
-		std::string	getHost() const;
-		std::string	getUserAgent() const;
-		std::string	getAccept() const;
-		std::string getTranferEncoding() const;
-		std::string	getContentType() const;
-		std::string	getBody() const;
-		unsigned int getContentLength() const;
+		bool			getkeepAlive() const;
+		std::string		getMethod() const;
+		std::string		getLocation() const;
+		std::string		getProtocol() const;
+		std::string		getHost() const;
+		std::string		getUserAgent() const;
+		std::string		getAccept() const;
+		std::string 	getTranferEncoding() const;
+		std::string		getContentType() const;
+		std::string		getBody() const;
+		unsigned int	getContentLength() const;
 
-		void		setkeepAlive(bool b);
-		void		setMethod(std::string str);
-		void		setLocation(std::string str);
-		void		setProtocol(std::string str);
-		void		setHost(std::string str);
-		void		setUserAgent(std::string str);
-		void		setAccept(std::string str);
-		void		setTranferEncoding(std::string str);
-		void		setContentType(std::string str);
-		void		setBody(std::string str);
-		void		setContentLength(unsigned int n);	
+		void	setkeepAlive(bool b);
+		void	setMethod(std::string str);
+		void	setLocation(std::string str);
+		void	setProtocol(std::string str);
+		void	setHost(std::string str);
+		void	setUserAgent(std::string str);
+		void	setAccept(std::string str);
+		void	setTranferEncoding(std::string str);
+		void	setContentType(std::string str);
+		void	setBody(std::string str);
+		void	setContentLength(unsigned int n);	
 };
 
 #endif

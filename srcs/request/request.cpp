@@ -143,8 +143,8 @@ void Request::_checkPost()
 		throw ResponseError(411, "Error: Missing value", *this);
 	}
 
-	for (const std::vector<std::string>::iterator it = _v.begin(); // INFO: Toutes la boucle for complémentent modif (par alex avec l'aval de kiki)
-	it != _v.end(); it)
+	for (std::vector<std::string>::iterator it = _v.begin(); // INFO: Toutes la boucle for complémentent modif (par alex avec l'aval de kiki)
+		it != _v.end(); it++)
 	{
 		std::istringstream iss(_accept);
 		std::string str;
@@ -165,7 +165,7 @@ void Request::_checkPost()
 	}
 }
 
-void Request::checkRequest(size_t maxSize)
+void Request::checkRequest(const unsigned int maxSize)
 {
 	if (_method != "GET" &&
 		_method != "POST" &&
@@ -307,7 +307,7 @@ void Request::parseBody(std::string &buffer)
 	// std::cout << "body = " << ret._body;
 }
 
-void Request::printRequest()
+void	Request::printRequest() const
 {
 	std::cout << std::endl << std::endl
 		<< "\tmethod = " << _method

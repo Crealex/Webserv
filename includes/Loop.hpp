@@ -3,9 +3,8 @@
 #define LOOP_HPP
 
 #include "includes.hpp"
-#include "socket/Socket.hpp"
-#include "Client.hpp"
 #include "epoll/Epoll.hpp"
+#include "requests/ResponseError.hpp"
 
 class Loop
 {
@@ -19,23 +18,23 @@ class Loop
 		void	_createMapServer(std::vector<Server> servers);
 		void	_closeClients(int idClient);
 		void	_checkAllTimeout();
+		void	_createResponse(int idClient);
 		bool	_isServerSocket(int fd);
 		bool	_isClientSocket(int fd, int &idClient);
-		int		_acceptClient(int fd);
+		void	_acceptClient(int fd);
 		bool	_parsingRequest(int idClient);
 		void	_addBodyLen(int idClient);
 		void	_addBodyChunked(int idClient);
 		void	_checkBody(int idClient);
 		int		_receiveRequest(int idClient);
 		bool	_getRequest(int idClient);
-		void	_sendResponse(Client *client, std::string response);
+		void	_sendResponse(int idClient);
 
 	public:
 		Loop(std::vector<Server> servers, std::vector<Socket *> sockets, int nbSockets);
 		~Loop();
 
 		std::vector<Client *> const	&getClients() const;
-		Server const				&getServer(std::string hostname) const;
 
 		void	runLoop();
 };

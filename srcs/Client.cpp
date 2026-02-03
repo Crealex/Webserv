@@ -80,7 +80,7 @@ void	Client::setSockadd(sockaddr_in newSockadd)
 	this->_sockadd = newSockadd;
 }
 
-void	Client::setResponse(std::string &str)
+void	Client::setResponse(const std::string &str)
 {
 	this->_response = str;
 }
@@ -126,6 +126,11 @@ void	Client::resetClient()
 	this->_keepAlive = false;
 	this->_timeRequest = getTimeNow();
 	this->_timeoutRequest = false;
+}
+
+void	Client::checkRequest(Server server)
+{
+	this->_request.checkRequest(server.getMaxSize());
 }
 
 void	Client::checkTimeoutRequest()

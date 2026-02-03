@@ -43,13 +43,14 @@ class Client
 		void	setSockadd(sockaddr_in newSockadd);
 		void	setRequestHeader(std::string &str);
 		void	setRequestBody();
-		void	setResponse(std::string &str);
+		void	setResponse(const std::string &str);
 		void	setKeepAlive(bool newKeepAlive);
 		void	setTimeoutRequest();
 		void	setTimeout();
 		
 		void	resetBuf();
 		void	resetClient();
+		void	checkRequest(Server server);
 		void	checkTimeoutRequest();
 		bool	checkTimeout();
 };

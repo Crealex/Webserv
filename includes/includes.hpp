@@ -14,11 +14,10 @@
 #include <sstream>
 #include <fstream>
 #include <ctime>
+#include <sys/epoll.h>
+#include <poll.h>
 
 #include "colors.hpp"
-#include "Client.hpp"
-#include "epoll/Epoll.hpp"
-#include "socket/Socket.hpp"
 
 std::time_t	getTimeNow();
 
