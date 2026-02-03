@@ -19,6 +19,4 @@
 
 #include "colors.hpp"
 
-std::time_t	getTimeNow();
-
 #endif

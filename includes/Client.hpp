@@ -48,6 +48,8 @@ class Client
 		void	setTimeoutRequest();
 		void	setTimeout();
 		
+		std::time_t	getTimeNow();
+
 		void	resetBuf();
 		void	resetClient();
 		void	checkRequest(Server server);

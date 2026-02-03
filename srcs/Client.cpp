@@ -5,7 +5,7 @@ Client::Client()
 {
 	this->_fdSocket = -1;
 	this->_keepAlive = false;
-	this->_time = getTimeNow();
+	this->_time = this->getTimeNow();
 	this->_timeoutRequest = false;
 }
 
@@ -102,16 +102,24 @@ void	Client::setKeepAlive(bool newKeepAlive)
 
 void	Client::setTimeoutRequest()
 {
-	this->_timeRequest = getTimeNow();
+	this->_timeRequest = this->getTimeNow();
 }
 
 void	Client::setTimeout()
 {
-	this->_time = getTimeNow();
+	this->_time = this->getTimeNow();
 }
 
 
 //METHODS
+
+std::time_t	Client::getTimeNow()
+{
+	time_t	timestamp;
+	
+	std::time(&timestamp);
+	return (timestamp);
+}
 
 void	Client::resetBuf()
 {
@@ -124,7 +132,7 @@ void	Client::resetClient()
 	this->_buf.clear();
 	this->_request.reset();
 	this->_keepAlive = false;
-	this->_timeRequest = getTimeNow();
+	this->_timeRequest = this->getTimeNow();
 	this->_timeoutRequest = false;
 }
 
@@ -135,13 +143,13 @@ void	Client::checkRequest(Server server)
 
 void	Client::checkTimeoutRequest()
 {
-	if (std::difftime(getTimeNow(), this->_timeRequest) > MAXTIMEREQUEST)
+	if (std::difftime(this->getTimeNow(), this->_timeRequest) > MAXTIMEREQUEST)
 		this->_timeoutRequest = true;
 }
 
 bool	Client::checkTimeout()
 {
-	if (std::difftime(getTimeNow(), this->_time) > MAXTIME)
+	if (std::difftime(this->getTimeNow(), this->_time) > MAXTIME)
 		return (true);
 	return (false);
 }

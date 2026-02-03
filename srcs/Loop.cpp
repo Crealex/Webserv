@@ -21,7 +21,7 @@ void	Loop::_createMapServer(std::vector<Server> servers)
 {
 	int	nbServers;
 
-	nbServers = 0;
+	nbServers = servers.size();
 	for (int i = 0; i < nbServers; i++)
 	{
 		this->_servers[servers[i].getHostname()] = servers[i];
@@ -123,7 +123,7 @@ void	Loop::_acceptClient(int fd)
 		newClient->setSockadd(newSockadd);
 		newClient->setHostname(this->_hostnameOfSrvSock);
 		this->_clients.push_back(newClient);
-		this->_epoll.addEpollFd(newClient->getFdClient(), EPOLLIN|EPOLLOUT);
+		this->_epoll.addEpollFd(newClient->getFdClient(), EPOLLIN|EPOLLET);
 	}
 }
 
@@ -216,7 +216,6 @@ void	Loop::_createResponse(int idClient)
 	Methods *met;
 	std::string method = this->_clients[idClient]->getRequest().getMethod();
 
-	std::cout << "METHOD : " << method << std::endl;
 	try
 	{
 		this->_clients[idClient]->checkRequest(this->_servers.at(this->_clients[idClient]->getHostname()));
@@ -269,7 +268,7 @@ void	Loop::runLoop()
 				std::cout << CYAN << "After accept" << std::endl;
 				for (size_t i = 0; i < this->_clients.size(); i++)
 				{
-					std::cout << "Client " << i << " : " << this->_clients[i]->getFdClient() << std::endl;
+					std::cout << "Client " << i << " : " << this->_clients[i]->getFdClient() << " event : " << events[indexEvent].events << std::endl;
 				}
 				std::cout << RESET;
 			}
@@ -297,7 +296,7 @@ void	Loop::runLoop()
 				else
 				{
 					this->_clients[idClient]->resetClient();
-					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN|EPOLLOUT);
+					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN|EPOLLET);
 				}
 			}
 		}
