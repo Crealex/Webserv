@@ -69,7 +69,9 @@ std::string	Loop::_createResponse(Client *client, Server serv)
 	else
 		met = new Delete(client->getRequest());
 
-	return met->createResponse(serv);
+	std::string ret = met->createResponse(serv);
+	delete met;
+	return ret;
 }
 
 inline void Loop::_sendResponse(Client *client, std::string response)
