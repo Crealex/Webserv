@@ -4,9 +4,8 @@
 Client::Client()
 {
 	this->_fdSocket = -1;
-	this->_endOfFile = false;
 	this->_keepAlive = false;
-	this->_time = getTimeNow();
+	this->_time = this->getTimeNow();
 	this->_timeoutRequest = false;
 }
 
@@ -36,21 +35,26 @@ sockaddr_in const	&Client::getSockadd() const
 	return (this->_sockadd);
 }
 
-bool const	&Client::getEndOfFile() const
+Request const &Client::getRequest() const
 {
-	return (this->_endOfFile);
+	return (this->_request);
+}
+
+std::string const	&Client::getResponse() const
+{
+	return (this->_response);
 }
 
 bool const			&Client::getKeepAlive() const
 {
 	return (this->_keepAlive);
-}
+}	
 
 
-bool const			&Client::getTimeoutRequest() const
+bool const	&Client::getTimeoutRequest() const
 {
 	return (this->_timeoutRequest);
-}
+}	
 
 // SETTERS
 void	Client::setHostname(std::string newHostname)
@@ -63,12 +67,12 @@ void	Client::setFdClient(int newFd)
 	this->_fdSocket = newFd;
 }
 
-void	Client::setBuf(char *newBuf)
+void	Client::setBuf(const char *newBuf, int size)
 {
 	if (this->_buf.empty())
-		this->_buf = newBuf;
+		this->_buf = std::string(newBuf, size);
 	else
-		this->_buf.append(newBuf);
+		this->_buf.append(newBuf, size);
 }
 
 void	Client::setSockadd(sockaddr_in newSockadd)
@@ -76,9 +80,19 @@ void	Client::setSockadd(sockaddr_in newSockadd)
 	this->_sockadd = newSockadd;
 }
 
-void	Client::setEndOfFile(bool newEndOfFile)
+void	Client::setResponse(const std::string &str)
 {
-	this->_endOfFile = newEndOfFile;
+	this->_response = str;
+}
+
+void	Client::setRequestHeader(std::string &str)
+{
+	this->_request.parseHeader(str);
+}
+
+void	Client::setRequestBody()
+{
+	this->_request.parseBody(this->_buf);
 }
 
 void	Client::setKeepAlive(bool newKeepAlive)
@@ -86,32 +100,56 @@ void	Client::setKeepAlive(bool newKeepAlive)
 	this->_keepAlive = newKeepAlive;
 }
 
-void	Client::setTimeRequest()
+void	Client::setTimeoutRequest()
 {
-	this->_timeRequest = getTimeNow();
+	this->_timeRequest = this->getTimeNow();
 }
 
+void	Client::setTimeout()
+{
+	this->_time = this->getTimeNow();
+}
+
+
 //METHODS
+
+std::time_t	Client::getTimeNow()
+{
+	time_t	timestamp;
+	
+	std::time(&timestamp);
+	return (timestamp);
+}
+
+void	Client::resetBuf()
+{
+	this->_buf.clear();
+}
 
 void	Client::resetClient()
 {
 	std::cout << GREEN << "in reset : " << this->_fdSocket << std::endl << RESET;
 	this->_buf.clear();
-	this->_endOfFile = false;
+	this->_request.reset();
 	this->_keepAlive = false;
-	this->_timeRequest = getTimeNow();
+	this->_timeRequest = this->getTimeNow();
+	this->_timeoutRequest = false;
+}
+
+void	Client::checkRequest(Server server)
+{
+	this->_request.checkRequest(server.getMaxSize());
 }
 
 void	Client::checkTimeoutRequest()
 {
-	if (std::difftime(getTimeNow(), this->_timeRequest) > MAXTIMEREQUEST)
-		this->_timeRequest = true;
+	if (std::difftime(this->getTimeNow(), this->_timeRequest) > MAXTIMEREQUEST)
+		this->_timeoutRequest = true;
 }
 
 bool	Client::checkTimeout()
 {
-	std::cout << "in check timeout" << std::endl;
-	if (std::difftime(getTimeNow(), this->_time) > MAXTIME)
+	if (std::difftime(this->getTimeNow(), this->_time) > MAXTIME)
 		return (true);
 	return (false);
 }

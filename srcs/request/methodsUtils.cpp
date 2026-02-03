@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseError.hpp"
 
@@ -152,11 +153,24 @@ bool addContentLenght(std::string *resp, std::string path)
 	return (true);
 }
 
+bool addContentLenght(std::string *resp, ssize_t bodySize)
+{
+	std::stringstream ss;
+
+	ss << bodySize;
+	try {
+		resp->append("Content-Length: " + ss.str() + "\n");
+	} catch (std::exception &e) {
+		return (false);
+	}
+	return (true);
+}
+
 //	<!doctype html>
 //	<!-- Contenu HTML -->
 bool addBody(std::string *resp, std::string file)
 {
-	resp->append("\n" + file + "\n\n");
+	resp->append("\n" + file + "\r\n\r\n");
 	return (true);
 }
 

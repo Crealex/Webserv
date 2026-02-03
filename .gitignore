@@ -3,3 +3,5 @@ webServ
 AGENTS.md
 opencode.json
 protectedFile.txt
+uploads/
+.vscode/

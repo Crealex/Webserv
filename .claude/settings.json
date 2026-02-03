@@ -1,6 +1,6 @@
 {
   "hooks": {
-    "PreToolUse": [
+    "SessionStart": [
       {
         "matcher": "Read @AGENTS.md",
         "hooks": [
