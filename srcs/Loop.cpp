@@ -203,6 +203,7 @@ void	Loop::_checkBody(int idClient)
 		this->_addBodyLen(idClient);
 	if (this->_clients[idClient]->getRequest().getTranferEncoding().find("chunked") != std::string::npos)	
 		this->_addBodyChunked(idClient);
+	this->_clients[idClient]->setRequestBody();
 }		
 
 bool	Loop::_getRequest(int idClient)
@@ -215,6 +216,7 @@ bool	Loop::_getRequest(int idClient)
 	if (!this->_parsingRequest(idClient))
 		this->_getRequest(idClient);	
 	this->_checkBody(idClient);
+	this->_epoll.setEvents(this->_clients[idClient], EPOLLOUT);
 	this->_clients[idClient]->setTimeoutRequest();
 	this->_clients[idClient]->setTimeout();
 	return (true);
@@ -261,6 +263,7 @@ void	Loop::runLoop()
 			}
 			if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient))
 			{
+				this->_
 				this->_sendResponse(this->getClients()[idClient]);
 				if (this->_clients[idClient]->getKeepAlive() == false)
 					this->_closeClients(idClient);

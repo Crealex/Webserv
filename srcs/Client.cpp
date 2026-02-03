@@ -90,9 +90,9 @@ void	Client::setRequestHeader(std::string &str)
 	this->_request.parseHeader(str);
 }
 
-void	Client::setRequestBody(std::string &str)
+void	Client::setRequestBody()
 {
-	this->_request.parseBody(str);
+	this->_request.parseBody(this->_buf);
 }
 
 void	Client::setKeepAlive(bool newKeepAlive)

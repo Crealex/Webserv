@@ -42,7 +42,7 @@ class Client
 		void	setBuf(const char *newBuf, int size);
 		void	setSockadd(sockaddr_in newSockadd);
 		void	setRequestHeader(std::string &str);
-		void	setRequestBody(std::string &str);
+		void	setRequestBody();
 		void	setResponse(std::string &str);
 		void	setKeepAlive(bool newKeepAlive);
 		void	setTimeoutRequest();
