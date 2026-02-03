@@ -4,8 +4,6 @@
 
 #include "../socket/Socket.hpp"
 #include "../Client.hpp"
-#include <sys/epoll.h>
-#include "../Client.hpp"
 
 class Epoll
 {
@@ -17,6 +15,7 @@ class Epoll
 		void	addEpollServer(std::vector<Socket *> &sockets, int sizeRes, int epollFd);
 
 	public:
+		Epoll();
 		Epoll(std::vector<Socket *> sockets, int nbSockets);
 		~Epoll();
 

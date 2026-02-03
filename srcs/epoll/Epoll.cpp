@@ -1,6 +1,12 @@
 #include "../../includes/epoll/Epoll.hpp"
 
 // CONSTRUCTOR & DESTRUCTOR
+Epoll::Epoll()
+{
+	this->_epollFd = -1;
+	this->_nbSockets = -1;
+}
+
 Epoll::Epoll(std::vector<Socket *> sockets, int nbSockets)
 {
 	this->_epollFd = createEpoll();
@@ -35,7 +41,7 @@ void	Epoll::setEvents(Client *client, uint32_t event)
 
 	temp.data.fd = client->getFdClient();
 	temp.events = event;
-	epoll_ctl(this->getEpollFd(), EPOLL_CTL_MOD, temp.data.fd, &temp);
+	::epoll_ctl(this->getEpollFd(), EPOLL_CTL_MOD, temp.data.fd, &temp);
 }
 
 
@@ -45,7 +51,7 @@ int	Epoll::createEpoll()
 {
 	int	res;
 
-	res = epoll_create(1);
+	res = ::epoll_create(1);
 	if (res == -1)
 	{
 		return (createEpoll());
@@ -69,9 +75,9 @@ void	Epoll::addEpollServer(std::vector<Socket *> &sockets, int sizeRes, int epol
 		{
 			res.data.fd = sockets[i]->getSockData()[j]->getFdServer();
 			res.events = EPOLLIN;
-			if (epoll_ctl(epollFd, EPOLL_CTL_ADD, res.data.fd, &res) < 0)
+			if (::epoll_ctl(epollFd, EPOLL_CTL_ADD, res.data.fd, &res) < 0)
 			{
-				addEpollServer(sockets, sizeRes, epollFd);
+				this->addEpollServer(sockets, sizeRes, epollFd);
 			}
 			count++;
 		}
@@ -86,9 +92,9 @@ void	Epoll::addEpollFd(int fd, uint32_t event)
 
 	temp.data.fd = fd;
 	temp.events = event;
-	if (epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, temp.data.fd, &temp) < 0)
+	if (::epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, temp.data.fd, &temp) < 0)
 	{
-		addEpollFd(fd, event);
+		this->addEpollFd(fd, event);
 	}
 	this->_nbSockets++;
 }

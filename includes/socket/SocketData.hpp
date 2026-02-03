@@ -4,8 +4,9 @@
 
 #include "../includes.hpp"
 #include "includeSockNonBlocking.hpp"
-#include "../Server.hpp"
 #include <netinet/in.h>
+
+typedef std::pair<std::string, unsigned int> addPort_t;
 
 class SocketData
 {

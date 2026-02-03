@@ -5,6 +5,10 @@
 
 // Constructor & Destructor
 
+Server::Server()
+{
+}
+
 Server::Server(struct server data)
 {
 	printStructV2(data);
@@ -17,7 +21,6 @@ Server::~Server()
 {
 	//std::cout << RED << "Destructor called" << RESET << std::endl;
 }
-
 
 
 // GETTER

@@ -8,6 +8,6 @@ void	sockOptNonBlocking(int &socketFd)
 		int	opt;
 
 		opt = 1;
-		fcntl(socketFd, F_SETFL, O_NONBLOCK);
-		setsockopt(socketFd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(int));
+		::fcntl(socketFd, F_SETFL, O_NONBLOCK);
+		::setsockopt(socketFd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(int));
 }
