@@ -28,13 +28,12 @@ class Loop
 		void	_checkBody(int idClient);
 		int		_receiveRequest(int idClient);
 		bool	_getRequest(int idClient);
+		void	_createTimeoutResponse(int idClient);
 		void	_sendResponse(int idClient);
 
 	public:
 		Loop(std::vector<Server> servers, std::vector<Socket *> sockets, int nbSockets);
 		~Loop();
-
-		std::vector<Client *> const	&getClients() const;
 
 		void	runLoop();
 };

@@ -57,7 +57,6 @@ void	Loop::_checkAllTimeout()
 	}
 }
 
-
 bool	Loop::_isServerSocket(int fd)
 {
 	int	sizeSockets;
@@ -201,9 +200,9 @@ bool	Loop::_getRequest(int idClient)
 	
 	recvStatus = this->_receiveRequest(idClient);
 	if (recvStatus == 0)
-	return (false);
+		return (false);
 	if (!this->_parsingRequest(idClient))
-	this->_getRequest(idClient);	
+		this->_getRequest(idClient);	
 	this->_checkBody(idClient);
 	this->_epoll.setEvents(this->_clients[idClient], EPOLLOUT);
 	this->_clients[idClient]->setTimeoutRequest();
@@ -235,8 +234,22 @@ void	Loop::_createResponse(int idClient)
 	}
 }
 
+void	Loop::_createTimeoutResponse(int idClient)
+{
+	try
+	{
+		if (this->_clients[idClient]->checkTimeoutRequest())
+			throw ResponseError(504, "Error: Gateway Timeout", this->_clients[idClient]->getRequest());
+	}
+	catch (ResponseError& e)
+	{
+		this->_clients[idClient]->setResponse(e.createResponse(this->_servers.at(this->_clients[idClient]->getHostname())));
+	}
+}
+
 inline void Loop::_sendResponse(int idClient)
 {
+	this->_createTimeoutResponse(idClient);
 	if (send(this->_clients[idClient]->getFdClient(), this->_clients[idClient]->getResponse().c_str(),
 		this->_clients[idClient]->getResponse().size(), 0) == -1)
 	{
@@ -265,31 +278,24 @@ void	Loop::runLoop()
 			if (events[indexEvent].events & EPOLLIN && this->_isServerSocket(events[indexEvent].data.fd))
 			{
 				this->_acceptClient(events[indexEvent].data.fd);
-				std::cout << CYAN << "After accept" << std::endl;
-				for (size_t i = 0; i < this->_clients.size(); i++)
-				{
-					std::cout << "Client " << i << " : " << this->_clients[i]->getFdClient() << " event : " << events[indexEvent].events << std::endl;
-				}
-				std::cout << RESET;
 			}
 			if (events[indexEvent].events & EPOLLIN && this->_isClientSocket(events[indexEvent].data.fd, idClient))
 			{
-				std::cout << LIGHT_YELLOW << "Before recv" << std::endl << RESET;
 				if (!this->_getRequest(idClient))
 				{
 					this->_closeClients(idClient);
 					continue ;
 				}
-				std::cout << LIGHT_YELLOW << "After recv" << std::endl;
+				this->_clients[idClient]->setTimeout();
+				this->_clients[idClient]->setTimeoutRequest();
 				std::cout << "request : " << std::endl;
 				this->_clients[idClient]->getRequest().printRequest();
-				std::cout << RESET;
 			}
 			if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient))
 			{
-				std::cout << MAGENTA << "Before response : " << std::endl;
+				std::cout << MAGENTA << "Before response : " << std::endl << RESET;
 				this->_createResponse(idClient);
-				std::cout << this->_clients[idClient]->getResponse() << std::endl << RESET;
+				std::cout << CYAN << "response : " << this->_clients[idClient]->getResponse() << std::endl << RESET;
 				this->_sendResponse(idClient);
 				if (this->_clients[idClient]->getKeepAlive() == false)
 					this->_closeClients(idClient);
@@ -303,7 +309,3 @@ void	Loop::runLoop()
 	}
 }
 
-std::vector<Client *> const	&Loop::getClients() const
-{
-	return (this->_clients);
-}

@@ -6,7 +6,6 @@ Client::Client()
 	this->_fdSocket = -1;
 	this->_keepAlive = false;
 	this->_time = this->getTimeNow();
-	this->_timeoutRequest = false;
 }
 
 Client::~Client()
@@ -50,11 +49,6 @@ bool const			&Client::getKeepAlive() const
 	return (this->_keepAlive);
 }	
 
-
-bool const	&Client::getTimeoutRequest() const
-{
-	return (this->_timeoutRequest);
-}	
 
 // SETTERS
 void	Client::setHostname(std::string newHostname)
@@ -129,11 +123,14 @@ void	Client::resetBuf()
 void	Client::resetClient()
 {
 	std::cout << GREEN << "in reset : " << this->_fdSocket << std::endl << RESET;
-	this->_buf.clear();
+	if (!this->_buf.empty())
+		this->_buf.clear();
 	this->_request.reset();
 	this->_keepAlive = false;
 	this->_timeRequest = this->getTimeNow();
-	this->_timeoutRequest = false;
+	this->_time = this->getTimeNow();
+	if (!this->_response.empty())
+		this->_response.clear();
 }
 
 void	Client::checkRequest(Server server)
@@ -141,10 +138,11 @@ void	Client::checkRequest(Server server)
 	this->_request.checkRequest(server.getMaxSize());
 }
 
-void	Client::checkTimeoutRequest()
+bool	Client::checkTimeoutRequest()
 {
 	if (std::difftime(this->getTimeNow(), this->_timeRequest) > MAXTIMEREQUEST)
-		this->_timeoutRequest = true;
+		return (true);
+	return (false);
 }
 
 bool	Client::checkTimeout()

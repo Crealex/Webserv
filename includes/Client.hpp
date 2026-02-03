@@ -22,7 +22,6 @@ class Client
 		bool		_keepAlive;
 		std::time_t	_timeRequest;
 		std::time_t	_time;
-		bool		_timeoutRequest;
 
 	public:
 		Client();
@@ -35,7 +34,6 @@ class Client
 		Request	const		&getRequest() const;
 		std::string const	&getResponse() const;
 		bool const			&getKeepAlive() const;
-		bool const			&getTimeoutRequest() const;
 
 		void	setHostname(std::string newHostname);
 		void	setFdClient(int newFd);
@@ -53,7 +51,7 @@ class Client
 		void	resetBuf();
 		void	resetClient();
 		void	checkRequest(Server server);
-		void	checkTimeoutRequest();
+		bool	checkTimeoutRequest();
 		bool	checkTimeout();
 };
 
