@@ -37,7 +37,7 @@ class CGI {
 		void	sendBody(std::string body);
 		void	closeAllFd();
 		void	checkSubprocess();
-		void	reset(Epoll &epoll);
+		void	reset();
 		void	setEnvp(Client &client, Request &req);
 		void	startSubprocess(const std::string path, const std::string interpreter);
 		void	constructFD(Epoll &epoll);

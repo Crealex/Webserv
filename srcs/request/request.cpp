@@ -298,6 +298,10 @@ void Request::parseHeader(std::string &buffer)
 		{
 		}
 	}
+
+	_URI = _host + _location;
+	size_t pos = _location.find_first_of('?', 0);
+	_query = _location.substr(pos + 1);
 }
 
 void Request::parseBody(std::string &buffer)
@@ -361,6 +365,15 @@ std::string Request::getContentType() const
 	return _ContentType;
 }
 
+std::string Request::getURI() const
+{
+	return _URI;
+}
+
+std::string Request::getQuery() const
+{
+	return _query;
+}
 
 std::string Request::getBody() const
 {
@@ -375,6 +388,15 @@ bool Request::getkeepAlive() const
 unsigned int Request::getContentLength() const
 {
 	return _ContentLength;
+}
+
+std::string Request::getStrContentLength() const
+{
+	std::stringstream ss;
+	std::string	str;
+	ss << _ContentLength;
+	ss >> str;
+	return str;
 }
 
 void	Request::setkeepAlive(bool b)

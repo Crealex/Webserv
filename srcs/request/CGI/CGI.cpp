@@ -67,7 +67,7 @@ void CGI::constructFD(Epoll &epoll)
 	epoll.addEpollFd(_pipeToCGI[1], EPOLLIN);
 }
 
-void CGI::reset(Epoll &epoll)
+void CGI::reset()
 {
 	if (_started && !_exited)
 		::kill(_childPid, SIGKILL);

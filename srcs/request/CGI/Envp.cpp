@@ -31,19 +31,19 @@ void Envp::setEnv(Client &client, Request &req)
 	(void)client;
 	_env.push_back("GATEWAY_INTERFACE=CGI/1.1");
 	_env.push_back("SERVER_PROTOCOL=HTTP/1.1");
-	_env.push_back("REQUEST_METHOD=" + req._method);
-	_env.push_back("REQUEST_URI=" + req._URI);
+	_env.push_back("REQUEST_METHOD=" + req.getMethod());
+	_env.push_back("REQUEST_URI=" + req.getURI());
 	_env.push_back("SCRIPT_FILENAME=");	// use Client to create those
 	_env.push_back("SCRIPT_NAME=");		// use Client to create those
-	_env.push_back("QUERY_STRING=" + req._query);
-	_env.push_back("CONTENT_TYPE=" + req._ContentType);
+	_env.push_back("QUERY_STRING=" + req.getQuery());
+	_env.push_back("CONTENT_TYPE=" + req.getContentType());
 	_env.push_back("CONTENT_LENGTH=" + req.getStrContentLength());
 	// _env.push_back("SERVER_NAME=" + conf.getAddressPort()[0].name);
 	// _env.push_back("SERVER_PORT=" + getInStr(client.getSockadd().sin_port);
-	_env.push_back("HTTP_ACCEPT=" + req._accept);
-	_env.push_back("HTTP_HOST=" + req._host);
-	_env.push_back("HTTP_LOCATION=" + req._location);
-	_env.push_back("HTTP_USER_AGENT=" + req._userAgent);
+	_env.push_back("HTTP_ACCEPT=" + req.getAccept());
+	_env.push_back("HTTP_HOST=" + req.getHost());
+	_env.push_back("HTTP_LOCATION=" + req.getLocation());
+	_env.push_back("HTTP_USER_AGENT=" + req.getUserAgent());
 }
 
 std::vector<std::string> Envp::getVec() const
@@ -60,7 +60,7 @@ char **Envp::getEnv() const
 	{
 		ret[i] = (char *)_env[i].c_str();
 	}
-	ret[i] == NULL;
+	ret[i] = NULL;
 
 	return ret;
 }

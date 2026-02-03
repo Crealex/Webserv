@@ -23,6 +23,8 @@ class Request {
 		std::string		_transferEncoding;
 		std::string		_ContentType;
 		unsigned int	_ContentLength;
+		std::string		_URI;
+		std::string		_query;
 		std::string		_body;
 		size_t			_bodySize;
 		bool			_keepAlive;
@@ -56,8 +58,11 @@ class Request {
 		std::string		getAccept() const;
 		std::string 	getTranferEncoding() const;
 		std::string		getContentType() const;
+		std::string		getURI() const;
+		std::string		getQuery() const;
 		std::string		getBody() const;
 		unsigned int	getContentLength() const;
+		std::string		getStrContentLength() const;
 
 		void	setkeepAlive(bool b);
 		void	setMethod(std::string str);
