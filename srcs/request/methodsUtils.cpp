@@ -60,7 +60,7 @@ std::string findMimeType(std::string file)
 {
 	std::string extension;
 
-	std::cout << "file in " << file << std::endl;
+	//std::cout << "file in " << file << std::endl;
 	extension = file.substr(file.find_last_of(".") + 1, file.length());
 	return MimeTypes::getType(extension);
 }
@@ -74,7 +74,7 @@ bool addContentType(std::string *resp, std::string accept, std::string file)
 	contentType = findMimeType(file);
 	while (std::getline(acceptSs, type,  ','))
 	{
-		//std::cout << "type: " << type << ", Content-Type: " << contentType << std::endl;
+		std::cout << "type: " << type << ", Content-Type: " << contentType << std::endl;
 		if (contentType == type || type == "*/*")
 		{
 			resp->append("Content-Type: " + contentType + "\n");
@@ -118,10 +118,19 @@ bool addLastModif(std::string *resp, std::string pathTarget)
 	char date[100];
 	tm *time;
 	time_t tt;
+	std::ifstream file(pathTarget.c_str());
 	std::string dateString;
 
-	if (stat(pathTarget.c_str(), &buff))
-		return (false);
+	if (!file.is_open())
+	{
+		std::time(&tt);
+		time = std::localtime(&tt);
+		std::strftime(date, 100, "Last-Modified: %a, %d %b %Y %X GMT\n", time);
+		resp->append(date);
+
+		return (true);
+	}
+	stat(pathTarget.c_str(), &buff);
 	tt = buff.st_mtim.tv_sec;
 	try {
 		time = std::localtime(&tt);
@@ -135,13 +144,38 @@ bool addLastModif(std::string *resp, std::string pathTarget)
 	return (true);
 }
 
-//	Content-Length: 1234
 bool addContentLenght(std::string *resp, std::string path)
 {
 	unsigned int size;
 	std::stringstream ss;
 	struct stat buff;
 
+	stat(path.c_str(), &buff);
+	size = buff.st_size;
+	ss << size;
+	try {
+		resp->append("Content-Length: " + ss.str() + "\n");
+	} catch (std::exception &e) {
+		return (false);
+	}
+	return (true);
+}
+
+//	Content-Length: 1234
+bool addContentLenght(std::string *resp, std::string path, std::string fileStr)
+{
+	unsigned int size;
+	std::stringstream ss;
+	struct stat buff;
+	std::ifstream file(path.c_str());
+
+	if (!file.is_open())
+	{
+		size = fileStr.size();
+		ss << size;
+		resp->append("Content-Length: " + ss.str() + "\n");
+		return (true);
+	}
 	stat(path.c_str(), &buff);
 	size = buff.st_size;
 	ss << size;

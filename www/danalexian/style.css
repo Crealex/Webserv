@@ -122,6 +122,9 @@ header {
   overflow: hidden;
 }
 
+img {
+  max-width: 100%;
+}
 footer {
   background: radial-gradient(
     circle,
