@@ -32,7 +32,6 @@ std::string createBodyHTML(unsigned int code, std::string mess)
 {
 	std::stringstream ss;
 
-	std::cout << "create body of error response" << std::endl;
 
 	ss << "<!doctype html>\n <html lang=\"en\">\n<head>\n \
 			<meta charset=\"UTF-8\" />\n \
@@ -102,7 +101,6 @@ const std::string ResponseError::createResponse(Server srv)
 		throw ResponseError(406, "Not acceptable", dataError);
 	if (!addDate(&resp))
 		throw ResponseError(500, "Can't add date", dataError);
-	std::cout << BOLD << YELLOW << "HEEEERRRREEEEEEEE" << std::endl;
 	if (!addLastModif(&resp, path))
 		throw ResponseError(500, "can't add last modif", dataError);
 	if (!addContentLenght(&resp, path, fileStr)) 
@@ -110,8 +108,6 @@ const std::string ResponseError::createResponse(Server srv)
 	addStartLine(&resp, this->_protocol, this->_code, this->_message);
 	resp.append("\r\n\r\n");
 	addBody(&resp, fileStr);
-	std::cout << "resp in error response: " << resp << std::endl;
 	return (resp);
-	// std::cout << "bonjour jespere ca marche" << std::endl;
 }
 
