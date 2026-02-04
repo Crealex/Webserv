@@ -3,7 +3,7 @@
 
 std::vector<std::string> Request::_v = Request::_acceptedType();
 
-Request::Request() : _ContentLength(0)
+Request::Request() : _ContentLength(0), _error(false)
 {
 	
 }
@@ -167,6 +167,11 @@ void Request::_checkPost()
 
 void Request::checkRequest(const unsigned int maxSize)
 {
+	if (_error)
+	{
+		throw ResponseError(400, "Error, bad request", *this);
+	}	
+
 	if (_method != "GET" &&
 		_method != "POST" &&
 		_method != "DELETE")
@@ -185,6 +190,11 @@ void Request::checkRequest(const unsigned int maxSize)
 		throw ResponseError(413, "Error, content too large", *this);
 	}
 
+	if (_ContentLength && !_transferEncoding.empty())
+	{
+		throw ResponseError(400, "Error, bad request", *this);
+	}
+
 	if (_method == "POST")
 		_checkPost();
 	else if (_method == "GET")
@@ -200,10 +210,13 @@ void Request::checkRequest(const unsigned int maxSize)
 void Request::setFirstLine(std::string &line)
 {
 	std::stringstream ss(line);
+	std::string check;
 
 	ss >> _method;
 	ss >> _location;
 	ss >>_protocol;
+	if (ss >> check)
+		_error = true;
 }
 
 /**
@@ -273,9 +286,8 @@ void Request::parseHeader(std::string &buffer)
 		ss >> word;
 		if (word == "Content-Length:")
 		{
-			unsigned int cLength;
-			ss >> cLength;
-			_ContentLength = cLength;
+			if (!(ss >> _ContentLength));
+				_error = true;
 			continue ;
 		}
 		if (word == "Connection:")
@@ -288,6 +300,8 @@ void Request::parseHeader(std::string &buffer)
 		try
 		{
 			std::string* strPtr = ptrMap.at(word);
+			if (!strPtr->empty())
+				_error = true;
 			std::string str;
 			while (ss >> word)
 				str.append(word + ' ');

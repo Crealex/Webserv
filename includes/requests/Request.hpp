@@ -26,6 +26,7 @@ class Request {
 		std::string		_body;
 		size_t			_bodySize;
 		bool			_keepAlive;
+		bool			_error;
 
 		void _checkPost();
 		void _checkGet();
