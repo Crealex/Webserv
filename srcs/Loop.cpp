@@ -279,33 +279,30 @@ void	Loop::runLoop()
 			{
 				this->_acceptClient(events[indexEvent].data.fd);
 			}
-			if (this->_isClientSocket(events[indexEvent].data.fd, idClient))
+			if (events[indexEvent].events & EPOLLIN && this->_isClientSocket(events[indexEvent].data.fd, idClient))
 			{
-				if (events[indexEvent].events & EPOLLIN)
+				if (!this->_getRequest(idClient))
 				{
-					if (!this->_getRequest(idClient))
-					{
-						this->_closeClients(idClient);
-						continue ;
-					}
-					this->_clients[idClient]->setTimeout();
-					this->_clients[idClient]->setTimeoutRequest();
-					std::cout << "request : " << std::endl;
-					this->_clients[idClient]->getRequest().printRequest();
+					this->_closeClients(idClient);
+					continue ;
 				}
-				if (events[indexEvent].events & EPOLLOUT)
+				this->_clients[idClient]->setTimeout();
+				this->_clients[idClient]->setTimeoutRequest();
+				std::cout << "request : " << std::endl;
+				this->_clients[idClient]->getRequest().printRequest();
+			}
+			if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient)))
+			{
+				std::cout << MAGENTA << "Before response : " << std::endl << RESET;
+				this->_createResponse(idClient);
+				std::cout << CYAN << "response : " << this->_clients[idClient]->getResponse() << std::endl << RESET;
+				this->_sendResponse(idClient);
+				if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
+					this->_closeClients(idClient);
+				else
 				{
-					std::cout << MAGENTA << "Before response : " << std::endl << RESET;
-					this->_createResponse(idClient);
-					std::cout << CYAN << "response : " << this->_clients[idClient]->getResponse() << std::endl << RESET;
-					this->_sendResponse(idClient);
-					if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
-						this->_closeClients(idClient);
-					else
-					{
-						this->_clients[idClient]->resetClient();
-						this->_epoll.setEvents(this->_clients[idClient], EPOLLIN|EPOLLET);
-					}
+					this->_clients[idClient]->resetClient();
+					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN|EPOLLET);
 				}
 			}
 		}
