@@ -265,6 +265,17 @@ void	Loop::runLoop()
 			// if yes check if the CGI have finish
 			// if yes send the response and close the client maybe ?
 			// if the subprocess had an error send a 500~ error and close client
+			Client *ptr = *(it);
+			// if (!(ptr->substarted))
+			//		continue;
+			try
+			{
+				ptr->checkCGI();
+			}
+			catch (...) // maybe catch Response error
+			{
+				// close client
+			}
 		}
 
 		epollCounterWait = ::epoll_wait(this->_epoll.getEpollFd(), events, this->_epoll.getNbSockets(), 2000);
