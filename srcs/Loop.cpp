@@ -255,7 +255,18 @@ void	Loop::runLoop()
 
 		epollCounterWait = 0;
 		idClient = 0;
-	
+
+		for (std::vector<Client *>::iterator it = _clients.begin();
+			it != _clients.end(); it++)
+		{
+			// TODO
+			// iter on all clients
+			// check if they have a CGI started
+			// if yes check if the CGI have finish
+			// if yes send the response and close the client maybe ?
+			// if the subprocess had an error send a 500~ error and close client
+		}
+
 		epollCounterWait = ::epoll_wait(this->_epoll.getEpollFd(), events, this->_epoll.getNbSockets(), 2000);
 		this->_checkAllTimeout();
 		if (epollCounterWait < 1)
@@ -280,11 +291,8 @@ void	Loop::runLoop()
 					this->_closeClients(idClient);
 					continue ;
 				}
-				std::cout << LIGHT_YELLOW << "After recv" << std::endl;
-				std::cout << "request : " << std::endl;
-				this->_clients[idClient]->getRequest().printRequest();
-				std::cout << RESET;
 			}
+
 			if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient))
 			{
 				std::cout << MAGENTA << "Before response : " << std::endl;

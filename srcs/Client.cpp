@@ -153,3 +153,27 @@ bool	Client::checkTimeout()
 		return (true);
 	return (false);
 }
+
+void	Client::startCGI(Server &serv, Epoll &epoll)
+{
+	if (_CGI.isCGI(_request.getLocation(), serv))
+	{
+		_CGI.setEnvp(*this, _request);
+		_CGI.constructFD(epoll);
+		// _CGI.startSubprocess()
+	}
+}
+
+void	Client::checkCGI()
+{
+	_CGI.checkSubprocess();
+	if (_CGI.subprocessExited())
+	{
+		_response = _CGI.getResponse();
+		// parse response if needed
+		if (::send(_fdSocket, _response.c_str(), _response.size(), 0) == -1)
+			throw std::runtime_error("Error sending response");
+		_CGI.reset();
+		// TODO found how to close the client when needed
+	}
+}

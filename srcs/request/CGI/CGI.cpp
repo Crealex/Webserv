@@ -51,8 +51,8 @@ void CGI::constructFD(Epoll &epoll)
 		throw std::runtime_error("Error, could not create pipe from CGI");
 	sockOptNonBlocking(_pipeFromCGI[0]);
 	sockOptNonBlocking(_pipeFromCGI[1]);
-	epoll.addEpollFd(_pipeFromCGI[0], EPOLLOUT);
-	epoll.addEpollFd(_pipeFromCGI[1], EPOLLIN);
+	// epoll.addEpollFd(_pipeFromCGI[0], EPOLLIN);
+	// epoll.addEpollFd(_pipeFromCGI[1], EPOLLIN);
 	if (::pipe(_pipeToCGI) != 0)
 	{
 		::close(_pipeFromCGI[0]);
@@ -63,8 +63,8 @@ void CGI::constructFD(Epoll &epoll)
 	}
 	sockOptNonBlocking(_pipeToCGI[0]);
 	sockOptNonBlocking(_pipeToCGI[1]);
-	epoll.addEpollFd(_pipeToCGI[0], EPOLLOUT);
-	epoll.addEpollFd(_pipeToCGI[1], EPOLLIN);
+	// epoll.addEpollFd(_pipeToCGI[0], EPOLLOUT);
+	// epoll.addEpollFd(_pipeToCGI[1], EPOLLIN);
 }
 
 void CGI::reset()
@@ -75,6 +75,8 @@ void CGI::reset()
 	_env = Envp();
 
 	_childPid = 0;
+	_started = false;
+	_exited = false;
 	closeAllFd();
 }
 
@@ -233,7 +235,6 @@ bool CGI::_cmpExt(std::string ext, std::map<std::string, std::string> map)
 bool CGI::isCGI(std::string path, Server server)
 {
 	std::string ext = _retExtension(path);
-	std::cout << BOLD << RED << "IN ISCGI()\n\tpath = " << path << "\n\text = " << ext << RESET << std::endl;
 	if (ext == path)
 	{
 		Location *loc = _retRightLoc(path, server);

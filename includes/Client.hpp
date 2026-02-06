@@ -4,6 +4,7 @@
 
 #include "includes.hpp"
 #include "requests/Request.hpp"
+#include "requests/CGI/CGI.hpp"
 #include <cstddef>
 #include <netinet/in.h>
 
@@ -18,6 +19,7 @@ class Client
 		std::string	_buf;
 		sockaddr_in	_sockadd;
 		Request		_request;
+		CGI			_CGI;
 		std::string	_response;
 		bool		_keepAlive;
 		std::time_t	_timeRequest;
@@ -50,6 +52,8 @@ class Client
 		
 		std::time_t	getTimeNow();
 
+		void	startCGI(Server &serv, Epoll &epoll);
+		void	checkCGI();
 		void	resetBuf();
 		void	resetClient();
 		void	checkRequest(Server server);
