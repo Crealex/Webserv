@@ -37,10 +37,8 @@ std::pair<unsigned int, std::string> Get::_findCodeMess(Server srv)
 	std::pair<unsigned int, std::string> ret;
 	int finded = -1;
 
-	std::cout << BOLD << "IN FIND CODE MESS" << RESET << std::endl;
 	for (size_t i = 0; i < srv.getLocations().size(); i++)
 	{
-	  std::cout << RED << "this->location: " << this->_location << ", srv location at " << i << ": " << srv.getLocations().at(i).getPath() << std::endl;;
 		if (this->_location == srv.getLocations().at(i).getPath())
 		{
 			finded = i;
@@ -56,6 +54,12 @@ std::pair<unsigned int, std::string> Get::_findCodeMess(Server srv)
 	return (ret);
 }
 
+/**
+ * @brief building the response for get request
+ *
+ * @param srv The server class
+ * @return A string with de response to send
+ */
 const std::string Get::createResponse(Server srv)
 {
 	std::string		resp;
@@ -88,7 +92,7 @@ const std::string Get::createResponse(Server srv)
 		isRedir = 1;
 		path = target;
 	}
-	std::cout << "complete path to get: " << path << std::endl;
+	//std::cout << "complete path to get: " << path << std::endl;
 
 	codeMess = _findCodeMess(srv);
 	if (!addContentType(&resp, this->_accept, path))
@@ -106,7 +110,7 @@ const std::string Get::createResponse(Server srv)
 	if (!addStartLine(&resp, this->_protocol, codeMess.first, codeMess.second))
 		throw ResponseError(500, "can't add start line", dataError);
 
-	std::cout << "end of get" << std::endl;
+	//std::cout << "end of get" << std::endl;
 	return (resp);
 }
 

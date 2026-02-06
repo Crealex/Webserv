@@ -22,7 +22,7 @@ std::string extractBoundary(std::string contentType)
 	if (find < contentType.length())
 	{
 		res = contentType.erase(0, contentType.find('=') + 1);
-		std::cout << "res boundary: " << res << std::endl;
+		//std::cout << "res boundary: " << res << std::endl;
 	}
 	while (!res.empty() && (res[res.length() - 1] == '\r' || res[res.length() - 1] == '\n'))                                        
 		res.erase(res.length() - 1); 
@@ -35,14 +35,6 @@ static bool addContentToFile(std::string body, std::ofstream *newFile)
 	return (true);
 }
 
-	//file.seekg(0, std::ios::end);
-	//size_t size = file.tellg();
-	//file.seekg(0, std::ios::beg);
-	//char* buffer = new char[size];
-	//file.read(buffer, size);
-	//std::string fileStr(buffer, size);
-	//delete[] buffer;
-// TODO: A continuer le moment venu...
 void Post::handlePostFile(std::string *resp, std::string boundary)
 {
 	std::size_t start;
@@ -50,17 +42,19 @@ void Post::handlePostFile(std::string *resp, std::string boundary)
 	std::size_t length;
 
 	(void)resp;
-	//if (this->_body.find("content-type"))
-	//	this->_contentType = this->_body.erase(0, 12);
 	start = this->_body.find("\r\n\r\n") + 4;
 	end = this->_body.rfind("--" + boundary);
-	std::cout << "Boundary recherché: [" << boundary << "]" << std::endl;  
-	std::cout << "Recherche de: [\\r\\n--" << boundary << "]" << std::endl;
 																			 
 	length = end - start;
 	this->_body = this->_body.substr(start, length);
 }
 
+/**
+ * @brief Build the http response when a request post is recieve
+ *
+ * @param srv The class Server
+ * @return A string with the resopnse to send
+ */
 const std::string Post::createResponse(Server srv)
 {
 	std::string resp;
@@ -74,7 +68,7 @@ const std::string Post::createResponse(Server srv)
 	dataError.setProtocol(this->_protocol);
 	dataError.setHost(this->_host);
 	dataError.setLocation(this->_location);
-	std::cout << "Body size: " << this->_body.size() << std::endl;
+	//std::cout << "Body size: " << this->_body.size() << std::endl;
 	target = findTarget(this->_location, srv.getLocations(), dataError, "POST");
 	path = srv.getRoot() + target;
 	if (this->_contentType.find("multipart/form-data") < this->_contentType.size())
