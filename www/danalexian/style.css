@@ -98,6 +98,11 @@ header {
   cursor: pointer;
 }
 
+button a {
+  text-decoration: none;
+  color: black;
+}
+
 ::file-selector-button:hover {
   border: 2px solid var(--current-line);
   cursor: pointer;
