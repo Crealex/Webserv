@@ -32,6 +32,12 @@ static std::string createFileStr(std::ifstream &file)
 	return fileStr;
 }
 
+/**
+ * @brief Identify the status and the message associted
+ *
+ * @param srv The class Server
+ * @return A pair with the a unisgned int (the code) and a std::string (the message)
+ */
 std::pair<unsigned int, std::string> Get::_findCodeMess(Server srv)
 {
 	std::pair<unsigned int, std::string> ret;
@@ -50,7 +56,17 @@ std::pair<unsigned int, std::string> Get::_findCodeMess(Server srv)
 	if (srv.getLocations().at(finded).getReturn().first.empty())
 		return (std::pair<unsigned int, std::string>(200, "OK"));
 	ret.first = srv.getLocations().at(finded).getReturn().second;
-	ret.second = srv.getLocations().at(finded).getReturn().first;
+	switch (ret.first) 
+	{
+		case 301:	ret.second = "Moved Permanently";
+					break;
+		case 307:	ret.second = "Temporary Redirect";
+					break;
+		case 308:	ret.second = "Permanent Redirect";
+					break;
+		default:	ret.second = "undefinded";
+					break;
+	}
 	return (ret);
 }
 
@@ -78,7 +94,7 @@ const std::string Get::createResponse(Server srv)
 	dataError.setUserAgent(this->_userAgent);
 
 	target = findTarget(this->_location, srv.getLocations(), dataError, "GET");
-	if (target.find("https") > target.size())
+	if (target.find("http") == std::string::npos)
 	{
 		path = srv.getRoot() + "/" + target; // TODO: Peut-etre retirer le /
 		file.open(path.c_str());
@@ -95,14 +111,19 @@ const std::string Get::createResponse(Server srv)
 	//std::cout << "complete path to get: " << path << std::endl;
 
 	codeMess = _findCodeMess(srv);
+	if (isRedir)
+	{
+		addLocation(&resp, path);
+		addContentLenght(&resp, ""); // Content-Length = 0
+		addStartLine(&resp, this->_protocol, codeMess.first, codeMess.second);
+		return (resp);
+	}
 	if (!addContentType(&resp, this->_accept, path))
 		throw ResponseError(406, "Not acceptable", dataError);
 	if (!addDate(&resp))
 		throw ResponseError(500, "Can't add date", dataError);
 	if (!addLastModif(&resp, path))
 		throw ResponseError(500, "can't add last modif", dataError);
-	if (isRedir)
-		addLocation(&resp, codeMess.second);
 	if (!addContentLenght(&resp, path))
 		throw ResponseError(500, "can't add content length", dataError);
 	if (!addBody(&resp, fileStr))
@@ -110,7 +131,6 @@ const std::string Get::createResponse(Server srv)
 	if (!addStartLine(&resp, this->_protocol, codeMess.first, codeMess.second))
 		throw ResponseError(500, "can't add start line", dataError);
 
-	//std::cout << "end of get" << std::endl;
 	return (resp);
 }
 
