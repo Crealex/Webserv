@@ -260,6 +260,7 @@ inline void Loop::_sendResponse(int idClient)
 
 void	Loop::runLoop()
 {
+	this->printSocket();
 	while (true)
 	{
 		int			idClient;
@@ -291,7 +292,7 @@ void	Loop::runLoop()
 				std::cout << "request : " << std::endl;
 				this->_clients[idClient]->getRequest().printRequest();
 			}
-			if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient)))
+			if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient))
 			{
 				std::cout << MAGENTA << "Before response : " << std::endl << RESET;
 				this->_createResponse(idClient);
@@ -309,3 +310,27 @@ void	Loop::runLoop()
 	}
 }
 
+void	Loop::printSocket()
+{
+	size_t	nbSock = this->_sockets.size();
+	size_t	sizeSocket;
+
+	for (size_t i = 0; i < nbSock; i++)
+	{
+		sizeSocket = this->_sockets[i]->getSockData().size();
+		for (size_t j = 0; j < sizeSocket; j++)
+		{
+			std::cout << GREEN << "Listen on ";
+			this->_sockets[i]->getSockData()[j]->printAddrPort();
+			std::cout << std::endl << RESET;
+		}
+	}
+}
+
+void	Loop::printSend(int idClient)
+{
+	std::cout << "SEND | On :  ";
+	this->_clients[idClient]->printAddPort();
+	std::cout << " | Request : ";
+	this->_clients[idClient]->getRequest()
+}

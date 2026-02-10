@@ -22,6 +22,9 @@ class Client
 		std::time_t	_timeRequest;
 		std::time_t	_time;
 
+
+		std::string	_intToIp();
+
 	public:
 		Client();
 		~Client();
@@ -50,6 +53,8 @@ class Client
 		void	checkRequest(Server server);
 		bool	checkTimeoutRequest();
 		bool	checkTimeout();
+
+		void	printAddPort();
 };
 
 #endif

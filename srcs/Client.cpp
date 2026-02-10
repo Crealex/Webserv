@@ -95,6 +95,37 @@ void	Client::setTimeout()
 
 //METHODS
 
+// PRIVATE
+std::string	Client::_intToIp()
+{
+	std::stringstream	toStr;
+	unsigned int		byte0;
+	unsigned int		byte1;
+	unsigned int		byte2;
+	unsigned int		byte3;
+	std::string			res;
+	uint32_t			val = this->_sockadd.sin_addr.s_addr;
+	
+	byte0 = val & 0xFF;
+	byte1 = (val >> 8) & 0xFF;
+	byte2 = (val >> 16) & 0xFF;
+	byte3 = (val >> 32) & 0xFF;
+	toStr << byte0;
+	res = toStr.str();
+	res.append(".");
+	toStr << byte1;
+	res.append(toStr.str());
+	res.append(".");
+	toStr << byte2;
+	res.append(toStr.str());
+	res.append(".");
+	toStr << byte3;
+	res.append(toStr.str());
+	return (res);
+}	
+
+
+// PUBLIC
 std::time_t	Client::getTimeNow()
 {
 	time_t	timestamp;
@@ -137,4 +168,11 @@ bool	Client::checkTimeout()
 	if (std::difftime(this->getTimeNow(), this->_time) > MAXTIME)
 		return (true);
 	return (false);
+}
+
+void	Client::printAddPort()
+{
+	std::cout << this->_intToIp();
+	std::cout << ":";
+	std::cout << ::ntohs(this->_sockadd.sin_port);
 }

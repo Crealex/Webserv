@@ -14,13 +14,18 @@ class SocketData
 		sockaddr_in	_sockadd;
 		int			_fdServer;
 
-		void	assignmentSocket(addPort_t addPort);
+		uint32_t 	_ipToUint(std::string s);
+		std::string	_intToIp();
+
+		void	_assignmentSocket(addPort_t addPort);
 	public:
 		SocketData(addPort_t);
 		~SocketData();
 
 		sockaddr_in	const	&getSockadd() const;
 		int	const			&getFdServer() const;
+
+		void	printAddrPort();
 };
 
 #endif

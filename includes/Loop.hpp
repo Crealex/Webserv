@@ -6,6 +6,8 @@
 #include "epoll/Epoll.hpp"
 #include "requests/ResponseError.hpp"
 
+class Logger;
+
 class Loop
 {
 	private:
@@ -36,6 +38,9 @@ class Loop
 		~Loop();
 
 		void	runLoop();
+
+		void	printSocket();
+		void	printSend(int idClient);
 };
 
 #endif
