@@ -323,15 +323,15 @@ void Request::parseBody(std::string &buffer)
 void	Request::printRequest() const
 {
 	std::cout 
-		<< "\tmethod = " << _method
-		<< "\n\tlocation = " << _location
-		<< "\n\tprotocol = " << _protocol
-		<< "\n\thost = " << _host
-		<< "\n\tuserAgent = " << _userAgent
-		<< "\n\taccept = " << _accept
-		<< "\n\tcontent type = " << _ContentType
-		<< "\n\tcontent length = " << _ContentLength
-		<< "\n\tbody = " << _body << std::endl;
+		<< "method = " << _method
+		<< "\nlocation = " << _location
+		<< "\nprotocol = " << _protocol
+		<< "\nhost = " << _host
+		<< "\nuserAgent = " << _userAgent
+		<< "\naccept = " << _accept
+		<< "\ncontent type = " << _ContentType
+		<< "\ncontent length = " << _ContentLength
+		<< "\nbody = " << _body << std::endl;
 }
 
 std::string Request::getMethod() const
