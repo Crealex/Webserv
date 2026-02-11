@@ -8,7 +8,7 @@
 #include <fstream>
 #include <string>
 #include <sys/types.h>
-Post::Post(Request requ) : Methods(requ), _contentType(requ.getContentType()), _contentLength(requ.getContentLength()), _body(requ.getBody())
+Post::Post(const Request &requ) : Methods(requ), _contentType(requ.getContentType()), _contentLength(requ.getContentLength()), _body(requ.getBody())
 {
 	std::cout << GREEN << "Default Post constructor called" << RESET << std::endl;
 }
@@ -55,7 +55,7 @@ void Post::handlePostFile(std::string *resp, std::string boundary)
  * @param srv The class Server
  * @return A string with the resopnse to send
  */
-const std::string Post::createResponse(Server srv)
+const std::string Post::createResponse(const Server &srv)
 {
 	std::string resp;
 	std::ofstream newFile;
@@ -65,10 +65,7 @@ const std::string Post::createResponse(Server srv)
 	std::string target;
 	ssize_t bodySize;
 
-	dataError.setProtocol(this->_protocol);
-	dataError.setHost(this->_host);
-	dataError.setLocation(this->_location);
-	//std::cout << "Body size: " << this->_body.size() << std::endl;
+	dataError = this->_createDataError();
 	target = findTarget(this->_location, srv.getLocations(), dataError, "POST");
 	path = srv.getRoot() + target;
 	if (this->_contentType.find("multipart/form-data") < this->_contentType.size())

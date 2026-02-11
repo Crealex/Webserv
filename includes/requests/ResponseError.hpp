@@ -1,7 +1,7 @@
 #ifndef RESPONSE_ERROR_HPP
 
 #define RESPONSE_ERROR_HPP
-#include "methodsClass.hpp"
+#include "Method.hpp"
 #include <exception>
 
 /**
@@ -17,8 +17,8 @@ class ResponseError : public std::exception, public Methods
 	ResponseError();
 
   public:
-	ResponseError(unsigned int code, std::string message, Request requ);
-	const std::string createResponse(Server srv);
+	ResponseError(unsigned int code, const std::string &message, const Request &requ);
+	const std::string createResponse(const Server &srv);
 	~ResponseError() _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW;
 };
 

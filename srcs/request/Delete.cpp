@@ -7,7 +7,7 @@
 #include <fstream>
 #include <string>
 
-Delete::Delete(Request requ) : Methods(requ)
+Delete::Delete(const Request &requ) : Methods(requ)
 {
 	std::cout << GREEN << "Default Delete constructor called" << RESET << std::endl;
 }
@@ -34,7 +34,7 @@ static std::string noContent(std::string protocol, Request dataError)
  * @param srv The class Server
  * @return A string with the response to send
  */
-const std::string Delete::createResponse(Server srv)
+const std::string Delete::createResponse(const Server &srv)
 {
 	std::ifstream	file;
 	std::string		contentFile;
@@ -43,10 +43,7 @@ const std::string Delete::createResponse(Server srv)
 	std::string		target;
 	Request			dataError;
 
-	dataError.setProtocol(this->_protocol);
-	dataError.setHost(this->_host);
-	dataError.setLocation(this->_location);
-
+	dataError = this->_createDataError();
 
 	target = findTarget(this->_location, srv.getLocations(), dataError, "DELETE");
 	// TODO: Verif si target est un file ou un dossier ou une redirection;
