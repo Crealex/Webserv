@@ -72,6 +72,7 @@ header {
   border-radius: 15px;
   padding: 5px;
   transition: 200ms ease-in-out;
+  margin-top: 10px;
 }
 
 .card button:hover {
@@ -96,6 +97,11 @@ header {
   padding: 5px;
   transition: 200ms ease-in-out;
   cursor: pointer;
+}
+
+button a {
+  text-decoration: none;
+  color: black;
 }
 
 ::file-selector-button:hover {

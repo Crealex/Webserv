@@ -28,6 +28,13 @@ std::string createFileStr(std::ifstream &file)
 	return fileStr;
 }
 
+/**
+ * @brief Building the html error pages when there is not specified
+ *
+ * @param code The error code
+ * @param mess The error message
+ * @return A string with the entire code of html error page
+ */
 std::string createBodyHTML(unsigned int code, std::string mess)
 {
 	std::stringstream ss;
@@ -76,6 +83,12 @@ std::string createBodyHTML(unsigned int code, std::string mess)
 	return (ss.str());
 }
 
+/**
+ * @brief Build the http response when a error page is needed
+ *
+ * @param srv The Server class
+ * @return A string with the http response to send
+ */
 const std::string ResponseError::createResponse(Server srv)
 {
 	std::string resp;

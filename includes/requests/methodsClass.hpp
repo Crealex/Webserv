@@ -34,6 +34,7 @@ bool	addContentLenght(std::string *resp, ssize_t bodySize);
 bool		addContentLenght(std::string *resp, std::string path, std::string fileStr);
 bool	addBody(std::string *resp, std::string file);
 bool	addLocation(std::string *resp, std::string host, std::string location);
+bool addLocation(std::string *resp, std::string location);
 bool	addContentType(std::string *resp, std::string type);
 std::string findTarget(std::string locPath, std::vector<Location> loc, Request dataError, std::string method);
 
