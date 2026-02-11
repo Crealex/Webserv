@@ -10,7 +10,6 @@
 #include <sys/types.h>
 Post::Post(const Request &requ) : Methods(requ), _contentType(requ.getContentType()), _contentLength(requ.getContentLength()), _body(requ.getBody())
 {
-	std::cout << GREEN << "Default Post constructor called" << RESET << std::endl;
 }
 
 std::string extractBoundary(std::string contentType)

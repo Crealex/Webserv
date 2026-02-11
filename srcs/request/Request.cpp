@@ -5,7 +5,6 @@ std::vector<std::string> Request::_v = Request::_acceptedType();
 
 Request::Request() : _ContentLength(0), _keepAlive(false), _error(false)
 {
-	
 }
 
 Request::Request(const Request& cpy)

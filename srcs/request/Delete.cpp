@@ -9,7 +9,6 @@
 
 Delete::Delete(const Request &requ) : Methods(requ)
 {
-	std::cout << GREEN << "Default Delete constructor called" << RESET << std::endl;
 }
 
 /**
