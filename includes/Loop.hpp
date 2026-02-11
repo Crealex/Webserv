@@ -40,7 +40,6 @@ class Loop
 		
 		void	_printSocket();
 		void	_printSend(int idClient);
-		void	_printCloseClient(int idClient);
 
 	public:
 		Loop(std::vector<Server> servers, std::vector<Socket *> sockets, int nbSockets);

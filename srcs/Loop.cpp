@@ -293,21 +293,20 @@ void	Loop::_printSend(int idClient)
 	std::cout << std::endl;
 }
 
-void	Loop::_printCloseClient(int idClient)
-{
-	std::cout << RED;
-	std::cout << "Close of client | Fd : ";
-	std::cout << this->_clients[idClient]->getFdClient();
-	std::cout << std::endl << RESET;
-}
-
 // PUBLIC
 
 void	Loop::runLoop()
 {
-	this->_printSocket();
+	bool	printSocket;
+
+	printSocket = true;
 	while (true)
 	{
+		if (printSocket == true)
+		{
+			this->_printSocket();
+			printSocket = false;
+		}
 		int			idClient;
 		int			epollCounterWait;
 		epoll_event	events[this->_epoll.getNbSockets()];
@@ -342,7 +341,6 @@ void	Loop::runLoop()
 				this->_printSend(idClient);
 				if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
 				{
-					this->_printCloseClient(idClient);
 					this->_closeClients(idClient);
 				}
 				else
@@ -350,6 +348,7 @@ void	Loop::runLoop()
 					this->_clients[idClient]->resetClient();
 					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN|EPOLLET);
 				}
+				printSocket = true;
 			}
 		}
 	}
