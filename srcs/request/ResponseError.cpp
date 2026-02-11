@@ -6,7 +6,7 @@
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/colors.hpp"
 
-ResponseError::ResponseError(unsigned int code, std::string message, Request requ): std::exception(), Methods(requ), _code(code), _message(message)
+ResponseError::ResponseError(unsigned int code, const std::string &message, const Request &requ): std::exception(), Methods(requ), _code(code), _message(message)
 {
 	//std::cout << LIGHT_RED << "DEBUG: Created exception error response" << RESET << std::endl;
 }
@@ -89,7 +89,7 @@ std::string createBodyHTML(unsigned int code, std::string mess)
  * @param srv The Server class
  * @return A string with the http response to send
  */
-const std::string ResponseError::createResponse(Server srv)
+const std::string ResponseError::createResponse(const Server &srv)
 {
 	std::string resp;
 	std::string path;
@@ -98,6 +98,7 @@ const std::string ResponseError::createResponse(Server srv)
 	Request dataError;
 	std::string fileStr;
 
+	dataError = this->_createDataError();
 	ss << this->_code;
 	path = srv.getRoot() + "/error/" + ss.str() + ".html";
 	file.open(path.c_str());
