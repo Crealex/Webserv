@@ -57,7 +57,6 @@ int main (int argc, char **argv)
 			std::cerr << RED << "Error : no socket for the webserv" << std::endl << RESET;
 			return (-2);
 		}
-		printSocketListen(sockets);
 		Loop	loop(servers, sockets, nbSockets);
 		loop.runLoop();
 	}

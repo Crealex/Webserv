@@ -11,7 +11,6 @@ Loop::Loop(std::vector<Server> servers, std::vector<Socket *> sockets, int nbSoc
 
 Loop::~Loop()
 {
-
 }
 
 // METHODS
@@ -56,7 +55,6 @@ void	Loop::_checkAllTimeout()
 		}
 	}
 }
-
 
 bool	Loop::_isServerSocket(int fd)
 {
@@ -201,9 +199,9 @@ bool	Loop::_getRequest(int idClient)
 	
 	recvStatus = this->_receiveRequest(idClient);
 	if (recvStatus == 0)
-	return (false);
+		return (false);
 	if (!this->_parsingRequest(idClient))
-	this->_getRequest(idClient);	
+		this->_getRequest(idClient);	
 	this->_checkBody(idClient);
 	this->_epoll.setEvents(this->_clients[idClient], EPOLLOUT);
 	this->_clients[idClient]->setTimeoutRequest();
@@ -235,18 +233,71 @@ void	Loop::_createResponse(int idClient)
 	}
 }
 
+void	Loop::_createTimeoutResponse(int idClient)
+{
+	try
+	{
+		if (this->_clients[idClient]->checkTimeoutRequest())
+			throw ResponseError(504, "Error: Gateway Timeout", this->_clients[idClient]->getRequest());
+	}
+	catch (ResponseError& e)
+	{
+		this->_clients[idClient]->setResponse(e.createResponse(this->_servers.at(this->_clients[idClient]->getHostname())));
+	}
+}
+
 inline void Loop::_sendResponse(int idClient)
 {
+	this->_createTimeoutResponse(idClient);
 	if (send(this->_clients[idClient]->getFdClient(), this->_clients[idClient]->getResponse().c_str(),
 		this->_clients[idClient]->getResponse().size(), 0) == -1)
 	{
 		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
+		this->_createTimeoutResponse(idClient);
 	}
 }
+
+void	Loop::_printSocket()
+{
+	size_t	nbSock = this->_sockets.size();
+	size_t	sizeSocket;
+
+	for (size_t i = 0; i < nbSock; i++)
+	{
+		sizeSocket = this->_sockets[i]->getSockData().size();
+		for (size_t j = 0; j < sizeSocket; j++)
+		{
+			std::cout << GREEN << "Listen on ";
+			this->_sockets[i]->getSockData()[j]->printAddrPort();
+			std::cout << std::endl << RESET;
+		}
+	}
+}
+
+void	Loop::_printSend(int idClient)
+{
+	std::cout << "SEND | On :  ";
+	this->_clients[idClient]->printAddPort();
+	std::cout << " | Request : ";
+	this->_clients[idClient]->getRequest().printRequestLine();
+	std::cout << " | Response : ";
+	std::cout << this->_clients[idClient]->getResponse();
+	std::cout << std::endl;
+}
+
+void	Loop::_printCloseClient(int idClient)
+{
+	std::cout << RED;
+	std::cout << "Close of client | Fd : ";
+	std::cout << this->_clients[idClient]->getFdClient();
+	std::cout << std::endl << RESET;
+}
+
 // PUBLIC
 
 void	Loop::runLoop()
 {
+	this->_printSocket();
 	while (true)
 	{
 		int			idClient;
@@ -265,34 +316,27 @@ void	Loop::runLoop()
 			if (events[indexEvent].events & EPOLLIN && this->_isServerSocket(events[indexEvent].data.fd))
 			{
 				this->_acceptClient(events[indexEvent].data.fd);
-				std::cout << CYAN << "After accept" << std::endl;
-				for (size_t i = 0; i < this->_clients.size(); i++)
-				{
-					std::cout << "Client " << i << " : " << this->_clients[i]->getFdClient() << " event : " << events[indexEvent].events << std::endl;
-				}
-				std::cout << RESET;
 			}
 			if (events[indexEvent].events & EPOLLIN && this->_isClientSocket(events[indexEvent].data.fd, idClient))
 			{
-				std::cout << LIGHT_YELLOW << "Before recv" << std::endl << RESET;
 				if (!this->_getRequest(idClient))
 				{
 					this->_closeClients(idClient);
 					continue ;
 				}
-				std::cout << LIGHT_YELLOW << "After recv" << std::endl;
-				std::cout << "request : " << std::endl;
-				this->_clients[idClient]->getRequest().printRequest();
-				std::cout << RESET;
+				this->_clients[idClient]->setTimeout();
+				this->_clients[idClient]->setTimeoutRequest();
 			}
 			if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient))
 			{
-				std::cout << MAGENTA << "Before response : " << std::endl;
 				this->_createResponse(idClient);
-				std::cout << this->_clients[idClient]->getResponse() << std::endl << RESET;
 				this->_sendResponse(idClient);
-				if (this->_clients[idClient]->getKeepAlive() == false)
+				this->_printSend(idClient);
+				if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
+				{
+					this->_printCloseClient(idClient);
 					this->_closeClients(idClient);
+				}
 				else
 				{
 					this->_clients[idClient]->resetClient();
@@ -301,9 +345,4 @@ void	Loop::runLoop()
 			}
 		}
 	}
-}
-
-std::vector<Client *> const	&Loop::getClients() const
-{
-	return (this->_clients);
 }
