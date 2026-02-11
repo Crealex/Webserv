@@ -2,7 +2,7 @@
 # define REQUEST_HPP
 
 # include "../includes.hpp"
-# include "methodsClass.hpp"
+# include "Method.hpp"
 # include "Post.hpp"
 # include "Get.hpp"
 # include "Delete.hpp"

@@ -11,7 +11,7 @@
 #include "../../includes/Server.hpp"
 #include "../../includes/requests/ResponseError.hpp"
 
-Get::Get(Request requ): Methods(requ), _userAgent(requ.getUserAgent()), _accept(requ.getAccept()) 
+Get::Get(const Request &requ): Methods(requ), _userAgent(requ.getUserAgent()), _accept(requ.getAccept()) 
 {
     // std::cout << GREEN << "Default Get constructor called" << RESET << std::endl;
 }
@@ -38,7 +38,7 @@ static std::string createFileStr(std::ifstream &file)
  * @param srv The class Server
  * @return A pair with the a unisgned int (the code) and a std::string (the message)
  */
-std::pair<unsigned int, std::string> Get::_findCodeMess(Server srv)
+std::pair<unsigned int, std::string> Get::_findCodeMess(const Server &srv)
 {
 	std::pair<unsigned int, std::string> ret;
 	int finded = -1;
@@ -76,7 +76,7 @@ std::pair<unsigned int, std::string> Get::_findCodeMess(Server srv)
  * @param srv The server class
  * @return A string with de response to send
  */
-const std::string Get::createResponse(Server srv)
+const std::string Get::createResponse(const Server &srv)
 {
 	std::string		resp;
 	std::ifstream	file;
@@ -87,10 +87,8 @@ const std::string Get::createResponse(Server srv)
 	std::pair<unsigned int, std::string> codeMess;
 	bool isRedir = 0;
 	
-	dataError.setProtocol(this->_protocol);
-	dataError.setHost(this->_host);
+	dataError = this->_createDataError();
 	dataError.setAccept(this->_accept);
-	dataError.setLocation(this->_location);
 	dataError.setUserAgent(this->_userAgent);
 
 	target = findTarget(this->_location, srv.getLocations(), dataError, "GET");
