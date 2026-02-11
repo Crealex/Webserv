@@ -112,8 +112,11 @@ const std::string Get::createResponse(const Server &srv)
 	if (isRedir)
 	{
 		addLocation(&resp, path);
-		addContentLenght(&resp, ""); // Content-Length = 0
+		addContentType(&resp, this->_accept, path);
+		addDate(&resp);
+		addContentLenght(&resp, 0); // Content-Length = 0
 		addStartLine(&resp, this->_protocol, codeMess.first, codeMess.second);
+		resp.append("\n\r\n\r");
 		return (resp);
 	}
 	if (!addContentType(&resp, this->_accept, path))
