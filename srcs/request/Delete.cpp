@@ -58,7 +58,7 @@ const std::string Delete::createResponse(const Server &srv)
 	if (!file.is_open())
 		throw (ResponseError(401, "Unauthorized", dataError));
 	std::getline(file, contentFile, '\0');
-	if (!addContentLenght(&resp, contentFile))
+	if (!addContentLenght(&resp, path))
 		throw (ResponseError(500, "can't add content length", dataError));
 	if (!addBody(&resp, contentFile))
 		throw (ResponseError(500, "can't add body", dataError));
