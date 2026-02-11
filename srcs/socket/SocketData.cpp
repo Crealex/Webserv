@@ -66,17 +66,8 @@ std::string	SocketData::_intToIp()
 	byte1 = (val >> 8) & 0xFF;
 	byte2 = (val >> 16) & 0xFF;
 	byte3 = (val >> 24) & 0xFF;
-	toStr << byte0;
+	toStr << byte0 << "." << byte1 << "." << byte2 << "." << byte3; 
 	res = toStr.str();
-	res.append(".");
-	toStr << byte1;
-	res.append(toStr.str());
-	res.append(".");
-	toStr << byte2;
-	res.append(toStr.str());
-	res.append(".");
-	toStr << byte3;
-	res.append(toStr.str());
 	return (res);
 }	
 

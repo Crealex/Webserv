@@ -13,7 +13,7 @@
 
 Get::Get(Request requ): Methods(requ), _userAgent(requ.getUserAgent()), _accept(requ.getAccept()) 
 {
-    std::cout << GREEN << "Default Get constructor called" << RESET << std::endl;
+    // std::cout << GREEN << "Default Get constructor called" << RESET << std::endl;
 }
 
 

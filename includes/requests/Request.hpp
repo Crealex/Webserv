@@ -43,7 +43,6 @@ class Request {
 		~Request();
 
 		void	printRequest() const;
-		void	printRequestLine() const;
 		void	parseHeader(std::string &buffer);
 		void	parseBody(std::string &buffer);
 		void	checkRequest(const unsigned int maxSize);
