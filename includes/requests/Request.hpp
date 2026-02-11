@@ -11,8 +11,8 @@ class Request {
 
 	private:
 
-		static std::vector<std::string> _v;
-		static std::vector<std::string> _acceptedType();
+		static std::vector<std::string>	_v;
+		static std::vector<std::string>	_acceptedType();
 		
 		std::string		_method;
 		std::string		_location;
@@ -28,12 +28,12 @@ class Request {
 		bool			_keepAlive;
 		bool			_error;
 
-		void _checkPost();
-		void _checkGet();
+		void	_checkPost();
+		void	_checkGet();
 
-		void setFirstLine(std::string &line);
-		std::string retBody(std::string &str);
-		std::map<std::string, std::string*> createMap();
+		void								setFirstLine(std::string &line);
+		std::string							retBody(std::string &str);
+		std::map<std::string, std::string*>	createMap();
 		
 	public:
 
@@ -42,11 +42,11 @@ class Request {
 		Request& operator=(const Request& src);
 		~Request();
 
-		void printRequest() const;
-		void parseHeader(std::string &buffer);
-		void parseBody(std::string &buffer);
-		void checkRequest(const unsigned int maxSize);
-		void reset();
+		void	printRequest() const;
+		void	parseHeader(std::string &buffer);
+		void	parseBody(std::string &buffer);
+		void	checkRequest(const unsigned int maxSize);
+		void	reset();
 
 		bool			getkeepAlive() const;
 		std::string		getMethod() const;

@@ -4,14 +4,11 @@
 Client::Client()
 {
 	this->_fdSocket = -1;
-	this->_keepAlive = false;
 	this->_time = this->getTimeNow();
-	this->_timeoutRequest = false;
 }
 
 Client::~Client()
 {
-	std::cout << RED << "IN THE DESTRUCTOR OF CLIENT : " << this->_fdSocket << std::endl << RESET;
 }
 
 // GETTERS
@@ -44,17 +41,6 @@ std::string const	&Client::getResponse() const
 {
 	return (this->_response);
 }
-
-bool const			&Client::getKeepAlive() const
-{
-	return (this->_keepAlive);
-}	
-
-
-bool const	&Client::getTimeoutRequest() const
-{
-	return (this->_timeoutRequest);
-}	
 
 // SETTERS
 void	Client::setHostname(std::string newHostname)
@@ -95,11 +81,6 @@ void	Client::setRequestBody()
 	this->_request.parseBody(this->_buf);
 }
 
-void	Client::setKeepAlive(bool newKeepAlive)
-{
-	this->_keepAlive = newKeepAlive;
-}
-
 void	Client::setTimeoutRequest()
 {
 	this->_timeRequest = this->getTimeNow();
@@ -113,6 +94,28 @@ void	Client::setTimeout()
 
 //METHODS
 
+// PRIVATE
+std::string	Client::_intToIp()
+{
+	std::stringstream	toStr;
+	unsigned int		byte0;
+	unsigned int		byte1;
+	unsigned int		byte2;
+	unsigned int		byte3;
+	std::string			res;
+	uint32_t			val = this->_sockadd.sin_addr.s_addr;
+	
+	byte0 = val & 0xFF;
+	byte1 = (val >> 8) & 0xFF;
+	byte2 = (val >> 16) & 0xFF;
+	byte3 = (val >> 24) & 0xFF;
+	toStr << byte0 << "." << byte1 << "." << byte2 << "." << byte3; 
+	res = toStr.str();
+	return (res);
+}	
+
+
+// PUBLIC
 std::time_t	Client::getTimeNow()
 {
 	time_t	timestamp;
@@ -129,11 +132,13 @@ void	Client::resetBuf()
 void	Client::resetClient()
 {
 	std::cout << GREEN << "in reset : " << this->_fdSocket << std::endl << RESET;
-	this->_buf.clear();
+	if (!this->_buf.empty())
+		this->_buf.clear();
 	this->_request.reset();
-	this->_keepAlive = false;
 	this->_timeRequest = this->getTimeNow();
-	this->_timeoutRequest = false;
+	this->_time = this->getTimeNow();
+	if (!this->_response.empty())
+		this->_response.clear();
 }
 
 void	Client::checkRequest(Server server)
@@ -141,10 +146,11 @@ void	Client::checkRequest(Server server)
 	this->_request.checkRequest(server.getMaxSize());
 }
 
-void	Client::checkTimeoutRequest()
+bool	Client::checkTimeoutRequest()
 {
 	if (std::difftime(this->getTimeNow(), this->_timeRequest) > MAXTIMEREQUEST)
-		this->_timeoutRequest = true;
+		return (true);
+	return (false);
 }
 
 bool	Client::checkTimeout()
@@ -152,4 +158,14 @@ bool	Client::checkTimeout()
 	if (std::difftime(this->getTimeNow(), this->_time) > MAXTIME)
 		return (true);
 	return (false);
+}
+
+void	Client::printAddPort()
+{
+	std::stringstream	port;
+
+	port << ::ntohs(this->_sockadd.sin_port);
+	std::cout << this->_intToIp();
+	std::cout << ":";
+	std::cout << port.str();
 }

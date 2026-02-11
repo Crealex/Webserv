@@ -3,7 +3,7 @@
 
 std::vector<std::string> Request::_v = Request::_acceptedType();
 
-Request::Request() : _ContentLength(0), _error(false)
+Request::Request() : _ContentLength(0), _keepAlive(false), _error(false)
 {
 	
 }
@@ -104,7 +104,6 @@ void Request::reset()
 
 void Request::_checkGet()
 {
-	std::cout << "in checkGET" << std::endl;
 	if (_userAgent.empty() || 
 		_accept.empty())
 	{
@@ -323,7 +322,7 @@ void Request::parseBody(std::string &buffer)
 
 void	Request::printRequest() const
 {
-	std::cout << std::endl << std::endl
+	std::cout 
 		<< "\tmethod = " << _method
 		<< "\n\tlocation = " << _location
 		<< "\n\tprotocol = " << _protocol

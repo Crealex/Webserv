@@ -8,6 +8,5 @@
 #include <sys/socket.h>
 
 std::vector<Socket *>	createSocket(std::vector<Server> srvs, int &nbSockets);
-void					printSocketListen(std::vector<Socket *> sockets);
 
 #endif
