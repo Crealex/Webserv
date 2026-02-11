@@ -45,11 +45,11 @@ uint32_t SocketData::_ipToUint(std::string s)
 	{
 		if (byte0 >= 256 || byte1 >= 256 || byte2 >= 256 || byte3 >= 256)
 			throw std::invalid_argument(RED "Error : bytes not right in IP address : higher than 256" RESET);
-		else
-		throw std::invalid_argument(RED "Error : bytes not right in IP address" RESET);
-		result = (byte3 << 24) + (byte2 << 16) + (byte1 << 8) + byte0;
-		return (result);
 	}
+	else
+		throw std::invalid_argument(RED "Error : bytes not right in IP address" RESET);
+	result = (byte3 << 24) + (byte2 << 16) + (byte1 << 8) + byte0;
+	return (result);
 }
 
 std::string	SocketData::_intToIp()
@@ -65,7 +65,7 @@ std::string	SocketData::_intToIp()
 	byte0 = val & 0xFF;
 	byte1 = (val >> 8) & 0xFF;
 	byte2 = (val >> 16) & 0xFF;
-	byte3 = (val >> 32) & 0xFF;
+	byte3 = (val >> 24) & 0xFF;
 	toStr << byte0;
 	res = toStr.str();
 	res.append(".");

@@ -109,7 +109,7 @@ std::string	Client::_intToIp()
 	byte0 = val & 0xFF;
 	byte1 = (val >> 8) & 0xFF;
 	byte2 = (val >> 16) & 0xFF;
-	byte3 = (val >> 32) & 0xFF;
+	byte3 = (val >> 24) & 0xFF;
 	toStr << byte0;
 	res = toStr.str();
 	res.append(".");

@@ -256,11 +256,48 @@ inline void Loop::_sendResponse(int idClient)
 		this->_createTimeoutResponse(idClient);
 	}
 }
+
+void	Loop::_printSocket()
+{
+	size_t	nbSock = this->_sockets.size();
+	size_t	sizeSocket;
+
+	for (size_t i = 0; i < nbSock; i++)
+	{
+		sizeSocket = this->_sockets[i]->getSockData().size();
+		for (size_t j = 0; j < sizeSocket; j++)
+		{
+			std::cout << GREEN << "Listen on ";
+			this->_sockets[i]->getSockData()[j]->printAddrPort();
+			std::cout << std::endl << RESET;
+		}
+	}
+}
+
+void	Loop::_printSend(int idClient)
+{
+	std::cout << "SEND | On :  ";
+	this->_clients[idClient]->printAddPort();
+	std::cout << " | Request : ";
+	this->_clients[idClient]->getRequest().printRequestLine();
+	std::cout << " | Response : ";
+	std::cout << this->_clients[idClient]->getResponse();
+	std::cout << std::endl;
+}
+
+void	Loop::_printCloseClient(int idClient)
+{
+	std::cout << RED;
+	std::cout << "Close of client | Fd : ";
+	std::cout << this->_clients[idClient]->getFdClient();
+	std::cout << std::endl << RESET;
+}
+
 // PUBLIC
 
 void	Loop::runLoop()
 {
-	this->printSocket();
+	this->_printSocket();
 	while (true)
 	{
 		int			idClient;
@@ -289,17 +326,17 @@ void	Loop::runLoop()
 				}
 				this->_clients[idClient]->setTimeout();
 				this->_clients[idClient]->setTimeoutRequest();
-				std::cout << "request : " << std::endl;
-				this->_clients[idClient]->getRequest().printRequest();
 			}
 			if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient))
 			{
-				std::cout << MAGENTA << "Before response : " << std::endl << RESET;
 				this->_createResponse(idClient);
-				std::cout << CYAN << "response : " << this->_clients[idClient]->getResponse() << std::endl << RESET;
 				this->_sendResponse(idClient);
+				this->_printSend(idClient);
 				if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
+				{
+					this->_printCloseClient(idClient);
 					this->_closeClients(idClient);
+				}
 				else
 				{
 					this->_clients[idClient]->resetClient();
@@ -308,29 +345,4 @@ void	Loop::runLoop()
 			}
 		}
 	}
-}
-
-void	Loop::printSocket()
-{
-	size_t	nbSock = this->_sockets.size();
-	size_t	sizeSocket;
-
-	for (size_t i = 0; i < nbSock; i++)
-	{
-		sizeSocket = this->_sockets[i]->getSockData().size();
-		for (size_t j = 0; j < sizeSocket; j++)
-		{
-			std::cout << GREEN << "Listen on ";
-			this->_sockets[i]->getSockData()[j]->printAddrPort();
-			std::cout << std::endl << RESET;
-		}
-	}
-}
-
-void	Loop::printSend(int idClient)
-{
-	std::cout << "SEND | On :  ";
-	this->_clients[idClient]->printAddPort();
-	std::cout << " | Request : ";
-	this->_clients[idClient]->getRequest()
 }

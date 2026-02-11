@@ -335,6 +335,20 @@ void	Request::printRequest() const
 		<< "\n\tbody = " << _body << std::endl;
 }
 
+void	Request::printRequestLine() const
+{
+	std::cout << std::endl << std::endl
+		<< "method = " << _method << ", "
+		<< "location = " << _location << ", "
+		<< "protocol = " << _protocol << ", "
+		<< "host = " << _host << ", "
+		<< "userAgent = " << _userAgent << ", "
+		<< "accept = " << _accept << ", "
+		<< "content type = " << _ContentType << ", "
+		<< "content length = " << _ContentLength << ", "
+		<< "body = " << _body;
+}
+
 std::string Request::getMethod() const
 {
 	return _method;
