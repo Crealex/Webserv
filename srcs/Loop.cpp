@@ -277,11 +277,17 @@ void	Loop::_printSocket()
 void	Loop::_printSend(int idClient)
 {
 	std::cout << CYAN << std::endl;
+	std::cout << BOLD;
 	std::cout << "SEND" << std::endl;
+	std::cout << RESET << CYAN;
 	std::cout << "On : " << this->_clients[idClient]->getRequest().getHost();
-	std::cout << std::endl <<"Request : " << std::endl;
+	std::cout << std::endl << BOLD;
+	std::cout << std::endl << "Request : " << std::endl;
+	std::cout << RESET << CYAN;
 	this->_clients[idClient]->getRequest().printRequest();
-	std::cout << std::endl <<"Response : " << std::endl;
+	std::cout << BOLD;
+	std::cout << std::endl << "Response : " << std::endl;
+	std::cout << RESET << CYAN;
 	std::cout << this->_clients[idClient]->getResponse();
 	std::cout << RESET;
 	std::cout << std::endl;
