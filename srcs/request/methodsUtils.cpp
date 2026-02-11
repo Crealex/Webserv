@@ -25,7 +25,11 @@ std::string findTarget(std::string locPath, std::vector<Location> loc, Request d
 		if (loc.at(i).getPath() == locPath)
 		{
 			if (!loc.at(i).getMethodValue(method))
-				throw ResponseError(405, "Method not allowed", dataError);
+			{
+				if (loc.at(i).getReturn().first.empty())
+					throw ResponseError(405, "Method not allowed", dataError);
+				return (loc.at(i).getReturn().first);
+			}
 			if (loc.at(i).getAutoIndex())
 				return loc.at(i).getPath();
 			else if (!loc.at(i).getIndex().empty())
@@ -71,10 +75,15 @@ bool addContentType(std::string *resp, std::string accept, std::string file)
 	std::stringstream acceptSs(accept);
 	std::string type;
 
+	if (file.find("http") < file.size())
+	{
+		resp->append("Content-Type: text/html\n");
+		return (true);
+	}
 	contentType = findMimeType(file);
 	while (std::getline(acceptSs, type,  ','))
 	{
-		std::cout << "type: " << type << ", Content-Type: " << contentType << std::endl;
+		//std::cout << "type: " << type << ", Content-Type: " << contentType << std::endl;
 		if (contentType == type || type == "*/*")
 		{
 			resp->append("Content-Type: " + contentType + "\n");
@@ -150,6 +159,11 @@ bool addContentLenght(std::string *resp, std::string path)
 	std::stringstream ss;
 	struct stat buff;
 
+	if (path.find("http") < path.size())
+	{
+		resp->append("Content-Length: 0\n");
+		return true;
+	}
 	stat(path.c_str(), &buff);
 	size = buff.st_size;
 	ss << size;
@@ -220,3 +234,14 @@ bool addLocation(std::string *resp, std::string host, std::string location)
 	return (true);
 }
 
+bool addLocation(std::string *resp, std::string location)
+{
+	try
+	{
+		resp->append("Location: " + location + "\n");
+	} catch (std::exception &e)
+	{
+		return (false);
+	}
+	return (true);
+}

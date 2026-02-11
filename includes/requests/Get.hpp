@@ -9,6 +9,7 @@ class Get: public Methods
     private:
 		std::string	_userAgent;
 		std::string	_accept;
+		std::pair<unsigned int, std::string> _findCodeMess(Server srv);
 
     public:
         Get(Request requ);

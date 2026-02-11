@@ -286,7 +286,7 @@ void Request::parseHeader(std::string &buffer)
 		ss >> word;
 		if (word == "Content-Length:")
 		{
-			if (!(ss >> _ContentLength));
+			if (!(ss >> _ContentLength))
 				_error = true;
 			continue ;
 		}

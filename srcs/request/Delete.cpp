@@ -13,7 +13,7 @@ Delete::Delete(Request requ) : Methods(requ)
 }
 
 /**
- * @brief
+ * @brief handling when there is no content
  *
  * @param protocol
  */
@@ -28,6 +28,12 @@ static std::string noContent(std::string protocol, Request dataError)
 	return (resp);
 }
 
+/**
+ * @brief Build the http response when a delete request is recieve
+ *
+ * @param srv The class Server
+ * @return A string with the response to send
+ */
 const std::string Delete::createResponse(Server srv)
 {
 	std::ifstream	file;
