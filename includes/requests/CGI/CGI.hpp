@@ -28,7 +28,7 @@ class CGI {
 		CGI& operator=(const CGI& src);
 		~CGI();
 
-		int		getReadFD() const;
+		const int	&getReadFD() const;
 		
 		int		getChildPid();
 		char	*getResponse();

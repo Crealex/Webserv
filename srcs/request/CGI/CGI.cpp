@@ -274,7 +274,7 @@ bool CGI::isCGI(std::string path, Server server)
 	}
 }
 
-int CGI::getReadFD() const
+const int &CGI::getReadFD() const
 {
 	return _pipeFromCGI[0];
 }
