@@ -3,7 +3,7 @@ SRCS	= $(addprefix srcs/, Server.cpp main.cpp printDebug.cpp Client.cpp Loop.cpp
 PARSING	= $(addprefix srcs/parsing_config/, createStructV2.cpp Location.cpp)
 SOCKET  = $(addprefix srcs/socket/, createSocket.cpp Socket.cpp SocketData.cpp)
 REQUEST = $(addprefix srcs/request/, methodsUtils.cpp Delete.cpp Get.cpp Method.cpp MimeTypes.cpp Post.cpp Request.cpp ResponseError.cpp)
-EPOLL   = $(addprefix srcs/epoll/, Epoll.cpp addEpollFd.cpp)
+EPOLL   = $(addprefix srcs/epoll/, Epoll.cpp)
 OBJS	= ${SRCS:%.cpp=${OBJDIR}/%.o}
 OBJPARS	= ${PARSING:%.cpp=${OBJDIR}/%.o}
 OBJSOCK	= ${SOCKET:%.cpp=${OBJDIR}/%.o}

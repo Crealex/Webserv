@@ -7,7 +7,7 @@ struct server;
 class Config;
 
 void	printConfigStruct(structParse config);
-void printConfigClass(Config conf);
-void printStructV2(server srv);
+void 	printConfigClass(Config conf);
+void 	printStructV2(server srv);
 
 #endif // DEBUG_HPP

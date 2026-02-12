@@ -1,8 +1,5 @@
-#include "../includes/Server.hpp"
 #include "../includes/printDebug.hpp"
 #include "../includes/includes.hpp"
-#include "../includes/socket/includeSocket.hpp"
-#include "../includes/socket/includeClient.hpp"
 #include "../includes/Loop.hpp"
 
 static bool	isDuplicateServer(Server temp, std::vector<Server> res)

@@ -17,6 +17,8 @@ class Loop
 		Epoll							_epoll;
 		std::string						_hostnameOfSrvSock;
 
+		void	_sockOptNonBlocking(int &socketFd);
+
 		void	_createMapServer(std::vector<Server> servers);
 
 		void	_closeClients(int idClient);
