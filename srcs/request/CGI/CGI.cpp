@@ -3,7 +3,10 @@
 
 CGI::CGI() : _started(false), _exited(false)
 {
-
+	_pipeFromCGI[0] = -1;
+	_pipeFromCGI[1] = -1;
+	_pipeToCGI[0] = -1;
+	_pipeToCGI[1] = -1;
 }
 
 CGI::CGI(const CGI& cpy)
@@ -51,7 +54,7 @@ void CGI::constructFD(Epoll &epoll)
 		throw std::runtime_error("Error, could not create pipe from CGI");
 	sockOptNonBlocking(_pipeFromCGI[0]);
 	sockOptNonBlocking(_pipeFromCGI[1]);
-	// epoll.addEpollFd(_pipeFromCGI[0], EPOLLIN);
+	epoll.addEpollFd(_pipeFromCGI[0], EPOLLIN);
 	// epoll.addEpollFd(_pipeFromCGI[1], EPOLLIN);
 	if (::pipe(_pipeToCGI) != 0)
 	{
@@ -119,18 +122,21 @@ void CGI::startSubprocess(const std::string path, const std::string interpreter)
 		::dup2(_pipeFromCGI[1], STDOUT_FILENO);
 		::close(_pipeFromCGI[1]);
 
-		char **args = new char*[3];
-		args[0] = const_cast<char *>(interpreter.c_str());
-		args[1] = const_cast<char *>(path.c_str());
-		args[2] = NULL;
+		std::cout << "je suis le CGI coucou" << std::endl;
+		(void)path;
+		(void)interpreter;
+		// char **args = new char*[3];
+		// args[0] = const_cast<char *>(interpreter.c_str());
+		// args[1] = const_cast<char *>(path.c_str());
+		// args[2] = NULL;
 
-		char **env = _env.getEnv();
-		if (::execve(args[0], args, env) == -1)
-		{
-			delete env;
-			delete[] args;
-			throw std::runtime_error("Error, could'nt create subprocess");
-		}
+		// char **env = _env.getEnv();
+		// if (::execve(args[0], args, env) == -1)
+		// {
+		// 	delete env;
+		// 	delete[] args;
+		// 	throw std::runtime_error("Error, could'nt create subprocess");
+		// }
 	}
 	else 
 	{
@@ -266,4 +272,9 @@ bool CGI::isCGI(std::string path, Server server)
 		else
 			return false;
 	}
+}
+
+int CGI::getReadFD() const
+{
+	return _pipeFromCGI[0];
 }

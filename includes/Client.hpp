@@ -31,6 +31,7 @@ class Client
 		~Client();
 
 		std::string const	&getHostname() const;
+		int const			&getFDCGI() const;
 		int const			&getFdClient() const;
 		std::string const	&getBuf() const;
 		sockaddr_in const	&getSockadd() const;
@@ -52,6 +53,7 @@ class Client
 		
 		std::time_t	getTimeNow();
 
+		bool	isCGI(Server &serv);
 		void	startCGI(Server &serv, Epoll &epoll);
 		void	checkCGI();
 		void	resetBuf();

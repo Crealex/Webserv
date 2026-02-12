@@ -29,6 +29,7 @@ class Loop
 		int		_receiveRequest(int idClient);
 		bool	_getRequest(int idClient);
 		void	_sendResponse(int idClient);
+		bool	_isCGI(int fd, int &idClient);
 
 	public:
 		Loop(std::vector<Server> servers, std::vector<Socket *> sockets, int nbSockets);

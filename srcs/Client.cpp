@@ -20,6 +20,11 @@ std::string const	&Client::getHostname() const
 	return (this->_hostname);
 }
 
+int const &Client::getFDCGI() const
+{
+	return _CGI.getReadFD();
+}
+
 int const	&Client::getFdClient() const
 {
 	return (this->_fdSocket);
@@ -154,14 +159,16 @@ bool	Client::checkTimeout()
 	return (false);
 }
 
+bool Client::isCGI(Server &serv)
+{
+	return _CGI.isCGI(_request.getLocation(), serv);
+}
+
 void	Client::startCGI(Server &serv, Epoll &epoll)
 {
-	if (_CGI.isCGI(_request.getLocation(), serv))
-	{
-		_CGI.setEnvp(*this, _request);
-		_CGI.constructFD(epoll);
-		// _CGI.startSubprocess()
-	}
+	_CGI.setEnvp(*this, _request);
+	_CGI.constructFD(epoll);
+	_CGI.startSubprocess("path", "interpreter");
 }
 
 void	Client::checkCGI()
@@ -171,8 +178,9 @@ void	Client::checkCGI()
 	{
 		_response = _CGI.getResponse();
 		// parse response if needed
-		if (::send(_fdSocket, _response.c_str(), _response.size(), 0) == -1)
-			throw std::runtime_error("Error sending response");
+		std::cout << BOLD << RED << "CGI RESPONSE : " << RESET << _response << std::endl;
+		// if (::send(_fdSocket, _response.c_str(), _response.size(), 0) == -1)
+		// 	throw std::runtime_error("Error sending response");
 		_CGI.reset();
 		// TODO found how to close the client when needed
 	}
