@@ -17,13 +17,12 @@ ResponseError::~ResponseError() _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW
 
 std::string createFileStr(std::ifstream &file)
 {
+	std::string fileStr;
 	file.seekg(0, std::ios::end);
 	size_t size = file.tellg();
 	file.seekg(0, std::ios::beg);
-	char* buffer = new char[size];
-	file.read(buffer, size);
-	std::string fileStr(buffer, size);
-	delete[] buffer;
+	fileStr.resize(size);
+	file.read(&fileStr[0], size);
 
 	return fileStr;
 }
