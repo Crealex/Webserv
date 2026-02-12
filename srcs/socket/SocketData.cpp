@@ -1,10 +1,4 @@
 #include "../../includes/socket/SocketData.hpp"
-#include <sstream>
-#include <string>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <cstdio>
-#include <fcntl.h>
 
 SocketData::SocketData(addPort_t addPort)
 {

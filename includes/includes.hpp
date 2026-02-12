@@ -20,6 +20,8 @@
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <sys/epoll.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 #include <utility>
 
@@ -28,7 +30,6 @@
 class Socket;
 class Server;
 
-void					sockOptNonBlocking(int &socketFd);
 std::vector<Socket *>	createSocket(std::vector<Server> srvs, int &nbSockets);
 
 #endif

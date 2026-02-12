@@ -1,13 +1,7 @@
 
 #include "../../includes/requests/Post.hpp"
-#include "../../includes/colors.hpp"
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseError.hpp"
-#include <cstddef>
-#include <exception>
-#include <fstream>
-#include <string>
-#include <sys/types.h>
 Post::Post(const Request &requ) : Methods(requ), _contentType(requ.getContentType()), _contentLength(requ.getContentLength()), _body(requ.getBody())
 {
 }
