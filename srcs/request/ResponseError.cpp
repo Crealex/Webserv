@@ -57,7 +57,7 @@ std::string createBodyHTML(unsigned int code, std::string mess)
   			flex-direction: column;\n \
   			color: #f8f8f2;\n \
 			}\n \
-			div {\n \
+			.errorDisplay {\n \
 			  width: 100%;\n \
 			  max-height: 100vh;\n \
 			  display: flex;\n \
