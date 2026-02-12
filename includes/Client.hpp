@@ -21,10 +21,11 @@ class Client
 		Request		_request;
 		CGI			_CGI;
 		std::string	_response;
-		bool		_keepAlive;
 		std::time_t	_timeRequest;
 		std::time_t	_time;
-		bool		_timeoutRequest;
+
+
+		std::string	_intToIp();
 
 	public:
 		Client();
@@ -37,8 +38,6 @@ class Client
 		sockaddr_in const	&getSockadd() const;
 		Request	const		&getRequest() const;
 		std::string const	&getResponse() const;
-		bool const			&getKeepAlive() const;
-		bool const			&getTimeoutRequest() const;
 
 		void	setHostname(std::string newHostname);
 		void	setFdClient(int newFd);
@@ -47,7 +46,6 @@ class Client
 		void	setRequestHeader(std::string &str);
 		void	setRequestBody();
 		void	setResponse(const std::string &str);
-		void	setKeepAlive(bool newKeepAlive);
 		void	setTimeoutRequest();
 		void	setTimeout();
 		
@@ -59,8 +57,10 @@ class Client
 		void	resetBuf();
 		void	resetClient();
 		void	checkRequest(Server server);
-		void	checkTimeoutRequest();
+		bool	checkTimeoutRequest();
 		bool	checkTimeout();
+
+		void	printAddPort();
 };
 
 #endif

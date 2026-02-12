@@ -1,9 +1,9 @@
 NAME	= webServ
 SRCS	= $(addprefix srcs/, Server.cpp main.cpp printDebug.cpp Client.cpp Loop.cpp)
-PARSING	= $(addprefix srcs/parsing_config/, createStructV2.cpp parseRoot.cpp parseAddressPort.cpp parseErrorPage.cpp parseMaxSize.cpp parseHostname.cpp parseUtils.cpp Location.cpp)
 CGI		= $(addprefix srcs/request/CGI/, CGI.cpp Envp.cpp)
-SOCKET  = $(addprefix srcs/socket/, createSocket.cpp Socket.cpp SocketData.cpp printSocket.cpp)
-REQUEST = $(addprefix srcs/request/, methodsUtils.cpp Delete.cpp Get.cpp MethodsClass.cpp MimeTypes.cpp Post.cpp request.cpp ResponseError.cpp)
+PARSING	= $(addprefix srcs/parsing_config/, createStructV2.cpp Location.cpp)
+SOCKET  = $(addprefix srcs/socket/, createSocket.cpp Socket.cpp SocketData.cpp)
+REQUEST = $(addprefix srcs/request/, methodsUtils.cpp Delete.cpp Get.cpp Method.cpp MimeTypes.cpp Post.cpp Request.cpp ResponseError.cpp)
 EPOLL   = $(addprefix srcs/epoll/, Epoll.cpp addEpollFd.cpp)
 OBJS	= ${SRCS:%.cpp=${OBJDIR}/%.o}
 OBJPARS	= ${PARSING:%.cpp=${OBJDIR}/%.o}
@@ -76,5 +76,5 @@ display_ascii:
 		cat ascii_art.txt; \
 	fi
 	@echo "$(END)"
-	@echo "${BOLD}${L_PURPLE} ✨CPP-Module09-ex00✨ ${GREEN}is ready 🎉 ${END}"
+	@echo "${BOLD}${L_PURPLE} ✨CPP-Module09-ex00✨ ${GREEN} is ready 🎉 ${END}"
 	@echo "${BOLD}${BLUE}➜ Use ./${NAME} to run the program${END}"

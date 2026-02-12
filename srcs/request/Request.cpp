@@ -3,9 +3,8 @@
 
 std::vector<std::string> Request::_v = Request::_acceptedType();
 
-Request::Request() : _ContentLength(0)
+Request::Request() : _ContentLength(0), _keepAlive(false), _error(false)
 {
-	
 }
 
 Request::Request(const Request& cpy)
@@ -104,7 +103,6 @@ void Request::reset()
 
 void Request::_checkGet()
 {
-	std::cout << "in checkGET" << std::endl;
 	if (_userAgent.empty() || 
 		_accept.empty())
 	{
@@ -167,6 +165,11 @@ void Request::_checkPost()
 
 void Request::checkRequest(const unsigned int maxSize)
 {
+	if (_error)
+	{
+		throw ResponseError(400, "Error, bad request", *this);
+	}	
+
 	if (_method != "GET" &&
 		_method != "POST" &&
 		_method != "DELETE")
@@ -185,6 +188,11 @@ void Request::checkRequest(const unsigned int maxSize)
 		throw ResponseError(413, "Error, content too large", *this);
 	}
 
+	if (_ContentLength && !_transferEncoding.empty())
+	{
+		throw ResponseError(400, "Error, bad request", *this);
+	}
+
 	if (_method == "POST")
 		_checkPost();
 	else if (_method == "GET")
@@ -200,10 +208,13 @@ void Request::checkRequest(const unsigned int maxSize)
 void Request::setFirstLine(std::string &line)
 {
 	std::stringstream ss(line);
+	std::string check;
 
 	ss >> _method;
 	ss >> _location;
 	ss >>_protocol;
+	if (ss >> check)
+		_error = true;
 }
 
 /**
@@ -273,9 +284,8 @@ void Request::parseHeader(std::string &buffer)
 		ss >> word;
 		if (word == "Content-Length:")
 		{
-			unsigned int cLength;
-			ss >> cLength;
-			_ContentLength = cLength;
+			if (!(ss >> _ContentLength))
+				_error = true;
 			continue ;
 		}
 		if (word == "Connection:")
@@ -288,6 +298,8 @@ void Request::parseHeader(std::string &buffer)
 		try
 		{
 			std::string* strPtr = ptrMap.at(word);
+			if (!strPtr->empty())
+				_error = true;
 			std::string str;
 			while (ss >> word)
 				str.append(word + ' ');
@@ -313,16 +325,16 @@ void Request::parseBody(std::string &buffer)
 
 void	Request::printRequest() const
 {
-	std::cout << std::endl << std::endl
-		<< "\tmethod = " << _method
-		<< "\n\tlocation = " << _location
-		<< "\n\tprotocol = " << _protocol
-		<< "\n\thost = " << _host
-		<< "\n\tuserAgent = " << _userAgent
-		<< "\n\taccept = " << _accept
-		<< "\n\tcontent type = " << _ContentType
-		<< "\n\tcontent length = " << _ContentLength
-		<< "\n\tbody = " << _body << std::endl;
+	std::cout 
+		<< "method = " << _method
+		<< "\nlocation = " << _location
+		<< "\nprotocol = " << _protocol
+		<< "\nhost = " << _host
+		<< "\nuserAgent = " << _userAgent
+		<< "\naccept = " << _accept
+		<< "\ncontent type = " << _ContentType
+		<< "\ncontent length = " << _ContentLength
+		<< "\nbody = " << _body << std::endl;
 }
 
 std::string Request::getMethod() const

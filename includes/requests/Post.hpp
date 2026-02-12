@@ -1,7 +1,7 @@
 #ifndef POST_HPP
 # define POST_HPP
 
-#include "methodsClass.hpp"
+#include "Method.hpp"
 # include "../includes.hpp"
 
 class Post: public Methods
@@ -12,8 +12,8 @@ class Post: public Methods
 		std::string		_body;
 		void handlePostFile(std::string *resp, std::string boundary);
     public:
-		Post(Request requ);
-		const std::string	createResponse(Server srv);
+		Post(const Request &requ);
+		const std::string	createResponse(const Server &srv);
 };
 
 #endif // !POST_HPP

@@ -2,14 +2,14 @@
 # define DELETE_HPP
 
 # include "../includes.hpp"
-# include "methodsClass.hpp"
+# include "Method.hpp"
 
 class Delete: public Methods
 {
     private:
 		
     public:
-        Delete(Request requ); 
-		const std::string createResponse(Server srv);
+        Delete(const Request &requ); 
+		const std::string createResponse(const Server &srv);
 };
 #endif // !DELETE_HPP

@@ -44,7 +44,7 @@ document.querySelectorAll(".card button").forEach((btn) =>
           headers: {
             "Content-Type": "text/plain",
           },
-          body: "Je suis le test de la method post, et si je réussis je suis content",
+          body: "Je suis le test de la method post, et si je réussis je suis content, ",
         });
     } else if (method === "DELETE") {
       if (endpoint) response = await fetch(endpoint, { method: "DELETE" });

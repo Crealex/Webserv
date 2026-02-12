@@ -7,13 +7,12 @@
 #include <fstream>
 #include <string>
 
-Delete::Delete(Request requ) : Methods(requ)
+Delete::Delete(const Request &requ) : Methods(requ)
 {
-	std::cout << GREEN << "Default Delete constructor called" << RESET << std::endl;
 }
 
 /**
- * @brief
+ * @brief handling when there is no content
  *
  * @param protocol
  */
@@ -28,7 +27,13 @@ static std::string noContent(std::string protocol, Request dataError)
 	return (resp);
 }
 
-const std::string Delete::createResponse(Server srv)
+/**
+ * @brief Build the http response when a delete request is recieve
+ *
+ * @param srv The class Server
+ * @return A string with the response to send
+ */
+const std::string Delete::createResponse(const Server &srv)
 {
 	std::ifstream	file;
 	std::string		contentFile;
@@ -37,10 +42,7 @@ const std::string Delete::createResponse(Server srv)
 	std::string		target;
 	Request			dataError;
 
-	dataError.setProtocol(this->_protocol);
-	dataError.setHost(this->_host);
-	dataError.setLocation(this->_location);
-
+	dataError = this->_createDataError();
 
 	target = findTarget(this->_location, srv.getLocations(), dataError, "DELETE");
 	// TODO: Verif si target est un file ou un dossier ou une redirection;
@@ -55,7 +57,7 @@ const std::string Delete::createResponse(Server srv)
 	if (!file.is_open())
 		throw (ResponseError(401, "Unauthorized", dataError));
 	std::getline(file, contentFile, '\0');
-	if (!addContentLenght(&resp, contentFile))
+	if (!addContentLenght(&resp, path))
 		throw (ResponseError(500, "can't add content length", dataError));
 	if (!addBody(&resp, contentFile))
 		throw (ResponseError(500, "can't add body", dataError));

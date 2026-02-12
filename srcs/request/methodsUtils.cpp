@@ -25,7 +25,11 @@ std::string findTarget(std::string locPath, std::vector<Location> loc, Request d
 		if (loc.at(i).getPath() == locPath)
 		{
 			if (!loc.at(i).getMethodValue(method))
-				throw ResponseError(405, "Method not allowed", dataError);
+			{
+				if (loc.at(i).getReturn().first.empty())
+					throw ResponseError(405, "Method not allowed", dataError);
+				return (loc.at(i).getReturn().first);
+			}
 			if (loc.at(i).getAutoIndex())
 				return loc.at(i).getPath();
 			else if (!loc.at(i).getIndex().empty())
@@ -60,7 +64,7 @@ std::string findMimeType(std::string file)
 {
 	std::string extension;
 
-	std::cout << "file in " << file << std::endl;
+	//std::cout << "file in " << file << std::endl;
 	extension = file.substr(file.find_last_of(".") + 1, file.length());
 	return MimeTypes::getType(extension);
 }
@@ -71,6 +75,11 @@ bool addContentType(std::string *resp, std::string accept, std::string file)
 	std::stringstream acceptSs(accept);
 	std::string type;
 
+	if (file.find("http") < file.size())
+	{
+		resp->append("Content-Type: text/html\n");
+		return (true);
+	}
 	contentType = findMimeType(file);
 	while (std::getline(acceptSs, type,  ','))
 	{
@@ -118,10 +127,19 @@ bool addLastModif(std::string *resp, std::string pathTarget)
 	char date[100];
 	tm *time;
 	time_t tt;
+	std::ifstream file(pathTarget.c_str());
 	std::string dateString;
 
-	if (stat(pathTarget.c_str(), &buff))
-		return (false);
+	if (!file.is_open())
+	{
+		std::time(&tt);
+		time = std::localtime(&tt);
+		std::strftime(date, 100, "Last-Modified: %a, %d %b %Y %X GMT\n", time);
+		resp->append(date);
+
+		return (true);
+	}
+	stat(pathTarget.c_str(), &buff);
 	tt = buff.st_mtim.tv_sec;
 	try {
 		time = std::localtime(&tt);
@@ -135,13 +153,43 @@ bool addLastModif(std::string *resp, std::string pathTarget)
 	return (true);
 }
 
-//	Content-Length: 1234
 bool addContentLenght(std::string *resp, std::string path)
 {
 	unsigned int size;
 	std::stringstream ss;
 	struct stat buff;
 
+	if (path.find("http") < path.size())
+	{
+		resp->append("Content-Length: 0\n");
+		return true;
+	}
+	stat(path.c_str(), &buff);
+	size = buff.st_size;
+	ss << size;
+	try {
+		resp->append("Content-Length: " + ss.str() + "\n");
+	} catch (std::exception &e) {
+		return (false);
+	}
+	return (true);
+}
+
+//	Content-Length: 1234
+bool addContentLenght(std::string *resp, std::string path, std::string fileStr)
+{
+	unsigned int size;
+	std::stringstream ss;
+	struct stat buff;
+	std::ifstream file(path.c_str());
+
+	if (!file.is_open())
+	{
+		size = fileStr.size();
+		ss << size;
+		resp->append("Content-Length: " + ss.str() + "\n");
+		return (true);
+	}
 	stat(path.c_str(), &buff);
 	size = buff.st_size;
 	ss << size;
@@ -186,3 +234,14 @@ bool addLocation(std::string *resp, std::string host, std::string location)
 	return (true);
 }
 
+bool addLocation(std::string *resp, std::string location)
+{
+	try
+	{
+		resp->append("Location: " + location + "\n");
+	} catch (std::exception &e)
+	{
+		return (false);
+	}
+	return (true);
+}

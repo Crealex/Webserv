@@ -8,13 +8,14 @@ std::map<std::string, std::string> MimeTypes::initMap()
 	m["html"] = "text/html";
 	m["css"] = "text/css";
 	m["png"] = "image/png";
+	m["jpg"] = "image/png";
 	m["mp4"] = "video/mp4";
 	m["md"] = "text/markdown";
 	m["json"] = "application/json";
 	m["js"] = "text/javascript";
 	m["mp3"] = "audio/mpeg";
-	m["jpeg"] = "image/jpeg";
-	m["jpg"] = "image/jpeg";
+	//m["jpeg"] = "image/jpeg";
+	//m["jpg"] = "image/jpeg";
 	m["csv"] = "text/csv";
 	m["gif"] = "image/gif";
 	m["wav"] = "audio/wav";
