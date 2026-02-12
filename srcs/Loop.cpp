@@ -16,6 +16,15 @@ Loop::~Loop()
 // METHODS
 // PRIVATE
 
+void	Loop::_sockOptNonBlocking(int &socketFd)
+{
+		int	opt;
+
+		opt = 1;
+		::fcntl(socketFd, F_SETFL, O_NONBLOCK);
+		::setsockopt(socketFd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(int));
+}
+
 void	Loop::_createMapServer(std::vector<Server> servers)
 {
 	int	nbServers;
@@ -115,7 +124,7 @@ void	Loop::_acceptClient(int fd)
 				break ;
 			}
 		}
-		sockOptNonBlocking(fdClient);
+		this->_sockOptNonBlocking(fdClient);
 		newClient = new Client();
 		newClient->setFdClient(fdClient);
 		newClient->setSockadd(newSockadd);

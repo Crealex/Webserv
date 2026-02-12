@@ -1,10 +1,4 @@
 #include "../../includes/socket/SocketData.hpp"
-#include <sstream>
-#include <string>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <cstdio>
-#include <fcntl.h>
 
 SocketData::SocketData(addPort_t addPort)
 {
@@ -31,6 +25,15 @@ int const	&SocketData::getFdServer() const
 
 // METHODS
 // PRIVATE
+
+void	SocketData::_sockOptNonBlocking(int &socketFd)
+{
+		int	opt;
+
+		opt = 1;
+		::fcntl(socketFd, F_SETFL, O_NONBLOCK);
+		::setsockopt(socketFd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(int));
+}
 
 uint32_t SocketData::_ipToUint(std::string s)
 {
@@ -81,10 +84,10 @@ void	SocketData::_assignmentSocket(addPort_t addPort)
 	socketFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (socketFd != -1)
 	{
-		sockOptNonBlocking(socketFd);
+		this->_sockOptNonBlocking(socketFd);
 		this->_fdServer = (socketFd);
 	}
-}
+}	
 
 // PUBLIC
 void	SocketData::printAddrPort()
@@ -92,4 +95,4 @@ void	SocketData::printAddrPort()
 	std::cout << this->_intToIp();
 	std::cout << ":";
 	std::cout << ::ntohs(this->_sockadd.sin_port);
-}
+}	

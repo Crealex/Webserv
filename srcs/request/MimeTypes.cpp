@@ -1,6 +1,5 @@
 #include "../../includes/requests/MimeTypes.hpp"
 #include <exception>
-#include <map>
 
 std::map<std::string, std::string> MimeTypes::initMap()
 {

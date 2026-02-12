@@ -2,7 +2,6 @@
 
 #define RESPONSE_ERROR_HPP
 #include "Method.hpp"
-#include <exception>
 
 /**
  * @class ResponseError

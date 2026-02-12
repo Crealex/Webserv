@@ -1,7 +1,6 @@
 #include "../includes/includes.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/printDebug.hpp"
-#include <exception>
 
 // Constructor & Destructor
 

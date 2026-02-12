@@ -1,7 +1,6 @@
 #include "../../includes/includes.hpp"
 #include "../../includes/Server.hpp"
 #include "../../includes/socket/Socket.hpp"
-#include <arpa/inet.h>
 
 static int	listenSocket(std::vector<Socket *> &sockets, size_t &i, size_t &j, size_t &sizeSockData)
 {

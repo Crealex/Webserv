@@ -4,8 +4,6 @@
 
 #include "includes.hpp"
 #include "requests/Request.hpp"
-#include <cstddef>
-#include <netinet/in.h>
 
 #define MAXTIMEREQUEST 15
 #define MAXTIME 30
