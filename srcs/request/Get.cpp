@@ -10,17 +10,20 @@ Get::Get(const Request &requ): Methods(requ), _userAgent(requ.getUserAgent()), _
 }
 
 
-// *** Create response
-//
+/**
+ * @brief Create un string with de content of the file
+ *
+ * @param file 
+ * @return 
+ */
 static std::string createFileStr(std::ifstream &file)
 {
+	std::string fileStr;
 	file.seekg(0, std::ios::end);
 	size_t size = file.tellg();
 	file.seekg(0, std::ios::beg);
-	char* buffer = new char[size];
-	file.read(buffer, size);
-	std::string fileStr(buffer, size);
-	delete[] buffer;
+	fileStr.resize(size);
+	file.read(&fileStr[0], size);
 
 	return fileStr;
 }
@@ -89,7 +92,6 @@ const std::string Get::createResponse(const Server &srv)
 	{
 		path = srv.getRoot() + "/" + target; // TODO: Peut-etre retirer le /
 		file.open(path.c_str());
-		// *************************
 		if (!file.is_open())
 			throw ResponseError(404, "Not found", dataError);
 		fileStr = createFileStr(file);
@@ -99,7 +101,6 @@ const std::string Get::createResponse(const Server &srv)
 		isRedir = 1;
 		path = target;
 	}
-	//std::cout << "complete path to get: " << path << std::endl;
 
 	codeMess = _findCodeMess(srv);
 	if (isRedir)
@@ -128,77 +129,3 @@ const std::string Get::createResponse(const Server &srv)
 	return (resp);
 }
 
-
-// *** TEST MAIN ***
-
-// static bool	isDuplicateServer(Server temp, std::vector<Server> res)
-// {
-// 	int	sizeRes;
-//
-// 	sizeRes = res.size();
-// 	for (int i = 0; i < sizeRes; i++)
-// 	{
-// 		if (res[i].getHostname() == temp.getHostname())
-// 			return (true);
-// 	}
-// 	return (false);
-// }
-//
-// static std::vector<Server>	createServers(std::string path)
-// {
-// 	std::vector<Server>	res;
-// 	int					sizeStructSrv;
-// 	std::vector<server>	structServers;
-//
-// 	structServers = createVectStructSrv(path);
-// 	sizeStructSrv = structServers.size();
-// 	for (int i = 0; i < sizeStructSrv; i++)
-// 	{
-// 		Server	temp(structServers[i]);
-// 		if (isDuplicateServer(temp, res))
-// 			throw std::invalid_argument(RED "Error : this server exists already" RESET);
-// 		res.push_back(temp);
-// 	}
-// 	return (res);
-// }
-//
-// int main(void)
-// {
-// 	Request requ;
-//
-// 	requ._accept = "text/html";
-// 	requ._host = "pipou";
-// 	requ._location = "/";
-// 	requ._protocol = "HTTP/1.1";
-// 	requ._userAgent = "Firefox";
-//
-// 	std::vector<Server> srvs;
-// 	try 
-// 	{
-// 		srvs = createServers("danalexian.conf");
-// 		Get		resp(requ);
-// 		std::cout << "resp: " << std::endl;
-// 		std::cout << resp.createResponse(srvs.at(0)) << std::endl;
-//
-// 	}
-// 	catch (ResponseError &e)
-// 	{
-// 		std::cout << e.createResponse(srvs.at(0)) << std::endl;
-// 	}
-// 	catch (std::exception &e)
-// 	{
-// 		std::cout << e.what() << std::endl;
-// 	}
-//
-// }
-
-// compile: c++ -Werror -Wall -Werror request/MethodsClass.cpp parsing_config/createStructV2.cpp parsing_config/Location.cpp Server.cpp request/Get.cpp request/ResponseError.cpp
-//*** RESPONSE EXAMPLE ***
-//	HTTP/1.1 200 OK
-//	Content-Type: text/html; charset=UTF-8
-//	Date: Fri, 21 Jun 2024 14:18:33 GMT
-//	Last-Modified: Thu, 17 Oct 2019 07:18:26 GMT
-//	Content-Length: 1234
-//	
-//	<!doctype html>
-//	<!-- Contenu HTML -->

@@ -13,13 +13,12 @@ ResponseError::~ResponseError() _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW
 
 std::string createFileStr(std::ifstream &file)
 {
+	std::string fileStr;
 	file.seekg(0, std::ios::end);
 	size_t size = file.tellg();
 	file.seekg(0, std::ios::beg);
-	char* buffer = new char[size];
-	file.read(buffer, size);
-	std::string fileStr(buffer, size);
-	delete[] buffer;
+	fileStr.resize(size);
+	file.read(&fileStr[0], size);
 
 	return fileStr;
 }
@@ -53,7 +52,7 @@ std::string createBodyHTML(unsigned int code, std::string mess)
   			flex-direction: column;\n \
   			color: #f8f8f2;\n \
 			}\n \
-			div {\n \
+			.errorDisplay {\n \
 			  width: 100%;\n \
 			  max-height: 100vh;\n \
 			  display: flex;\n \
