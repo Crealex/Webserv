@@ -3,7 +3,6 @@
 #define SOCKETDATA_HPP
 
 #include "../includes.hpp"
-#include <netinet/in.h>
 
 typedef std::pair<std::string, unsigned int> addPort_t;
 
