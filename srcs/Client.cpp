@@ -9,6 +9,9 @@ Client::Client()
 
 Client::~Client()
 {
+	std::cout << RED;
+	std::cout << "Close of client : " << this->_fdSocket;
+	std::cout << std::endl << RESET;
 }
 
 // GETTERS
@@ -131,7 +134,6 @@ void	Client::resetBuf()
 
 void	Client::resetClient()
 {
-	std::cout << GREEN << "in reset : " << this->_fdSocket << std::endl << RESET;
 	if (!this->_buf.empty())
 		this->_buf.clear();
 	this->_request.reset();

@@ -258,8 +258,8 @@ void	Loop::_createTimeoutResponse(int idClient)
 inline void Loop::_sendResponse(int idClient)
 {
 	this->_createTimeoutResponse(idClient);
-	if (send(this->_clients[idClient]->getFdClient(), this->_clients[idClient]->getResponse().c_str(),
-		this->_clients[idClient]->getResponse().size(), 0) == -1)
+	while (send(this->_clients[idClient]->getFdClient(), this->_clients[idClient]->getResponse().c_str(),
+		this->_clients[idClient]->getResponse().size(), MSG_NOSIGNAL) == -1)
 	{
 		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
 		this->_createTimeoutResponse(idClient);
@@ -302,21 +302,20 @@ void	Loop::_printSend(int idClient)
 	std::cout << std::endl;
 }
 
-void	Loop::_printCloseClient(int idClient)
-{
-	std::cout << RED;
-	std::cout << "Close of client | Fd : ";
-	std::cout << this->_clients[idClient]->getFdClient();
-	std::cout << std::endl << RESET;
-}
-
 // PUBLIC
 
 void	Loop::runLoop()
 {
-	this->_printSocket();
+	bool	printSocket;
+
+	printSocket = true;
 	while (true)
 	{
+		if (printSocket == true)
+		{
+			this->_printSocket();
+			printSocket = false;
+		}
 		int			idClient;
 		int			epollCounterWait;
 		epoll_event	events[this->_epoll.getNbSockets()];
@@ -351,7 +350,6 @@ void	Loop::runLoop()
 				this->_printSend(idClient);
 				if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
 				{
-					this->_printCloseClient(idClient);
 					this->_closeClients(idClient);
 				}
 				else
@@ -359,6 +357,7 @@ void	Loop::runLoop()
 					this->_clients[idClient]->resetClient();
 					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN|EPOLLET);
 				}
+				printSocket = true;
 			}
 		}
 	}

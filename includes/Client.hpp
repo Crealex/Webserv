@@ -5,7 +5,7 @@
 #include "includes.hpp"
 #include "requests/Request.hpp"
 
-#define MAXTIMEREQUEST 15
+#define MAXTIMEREQUEST 3
 #define MAXTIME 30
 
 class Client
