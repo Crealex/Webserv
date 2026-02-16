@@ -149,7 +149,7 @@ const std::string Get::createResponse(const Server &srv)
 		if (!this->_isAllowedAutoIndex(srv))
 			throw ResponseError(401, "Unauthorized", dataError);
 		std::cout << this->_location << " is autoindex" << std::endl;
-		fileStr = createHTMLAutoIndex(path);
+		fileStr = createHTMLAutoIndex(path, this->_location);
 		if (!addContentType(&resp, "text/html"))
 			throw ResponseError(406, "Not acceptable", dataError);
 		if (!addDate(&resp))
