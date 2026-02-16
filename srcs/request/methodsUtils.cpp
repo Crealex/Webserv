@@ -222,23 +222,23 @@ bool addBody(std::string *resp, std::string file)
 	return (true);
 }
 
-bool addLocation(std::string *resp, std::string host, std::string location)
-{
-	try
-	{
-		resp->append("Location: " + host + location);
-	} catch (std::exception &e)
-	{
-		return (false);
-	}
-	return (true);
-}
+//bool addLocation(std::string *resp, std::string host, std::string location)
+//{
+//	try
+//	{
+//		resp->append("Location: " + host + location);
+//	} catch (std::exception &e)
+//	{
+//		return (false);
+//	}
+//	return (true);
+//}
 
 bool addLocation(std::string *resp, std::string location)
 {
 	try
 	{
-		resp->append("Location: " + location + "\n");
+		resp->append("Location: " + location);
 	} catch (std::exception &e)
 	{
 		return (false);

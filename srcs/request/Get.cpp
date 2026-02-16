@@ -10,6 +10,7 @@
 #include <vector>
 #include "../../includes/Server.hpp"
 #include "../../includes/requests/ResponseError.hpp"
+#include "../../includes/requests/ResponseBuilder.hpp"
 
 Get::Get(const Request &requ): Methods(requ), _userAgent(requ.getUserAgent()), _accept(requ.getAccept()) 
 {
@@ -81,7 +82,6 @@ std::pair<unsigned int, std::string> Get::_findCodeMess(const Server &srv)
  */
 const std::string Get::createResponse(const Server &srv)
 {
-	std::string		resp;
 	std::ifstream	file;
 	std::string		path;
 	Request			dataError;
@@ -94,6 +94,7 @@ const std::string Get::createResponse(const Server &srv)
 	dataError.setAccept(this->_accept);
 	dataError.setUserAgent(this->_userAgent);
 
+	ResponseBuilder	resp(dataError, this->_protocol);
 	target = findTarget(this->_location, srv.getLocations(), dataError, "GET");
 	if (target.find("http") == std::string::npos)
 	{
@@ -112,6 +113,11 @@ const std::string Get::createResponse(const Server &srv)
 	codeMess = _findCodeMess(srv);
 	if (isRedir)
 	{
+		resp.location(path)
+			.contentType(this->_accept, path)
+			.date().contentLength(0)
+			.startLine(codeMess.first, codeMess.second)
+			.
 		addLocation(&resp, path);
 		addContentType(&resp, this->_accept, path);
 		addDate(&resp);

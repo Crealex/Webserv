@@ -21,6 +21,7 @@ public:
     ResponseBuilder& body(const std::string& content);
     ResponseBuilder& location(const std::string& loc);
     ResponseBuilder& startLine(unsigned int code, const std::string& message);
+	ResponseBuilder& append(const std::string &str);
     std::string build();
 };
 
