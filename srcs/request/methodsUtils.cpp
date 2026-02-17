@@ -77,7 +77,7 @@ bool addContentType(std::string *resp, std::string accept, std::string file)
 	while (std::getline(acceptSs, type,  ','))
 	{
 		//std::cout << "type: " << type << ", Content-Type: " << contentType << std::endl;
-		if (contentType == type || type == "*/*")
+		if (contentType == type || contentType.compare(0, 3, "*/*"))
 		{
 			resp->append("Content-Type: " + contentType + "\n");
 			return (true);

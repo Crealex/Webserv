@@ -42,4 +42,7 @@ std::string	findTarget(std::string locPath, std::vector<Location> loc, Request d
 Methods*	createMethod(std::string buffer, size_t maxSize, bool &ret);
 Request		createRequest(std::string buffer, size_t maxSize);
 
+// autoIndex.cpp
+std::string createHTMLAutoIndex(const std::string &path, const std::string &location);
+
 #endif
