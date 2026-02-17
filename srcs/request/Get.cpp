@@ -66,6 +66,31 @@ std::pair<unsigned int, std::string> Get::_findCodeMess(const Server &srv)
 	return (ret);
 }
 
+bool Get::_isAllowedAutoIndex(const Server &srv)
+{
+	for (size_t i = 0; i < srv.getLocations().size(); i++)
+	{
+		if (this->_location == srv.getLocations().at(i).getPath() || this->_location == srv.getLocations().at(i).getPath() + "/")
+		{
+			if (srv.getLocations().at(i).getAutoIndex())
+				return (true);
+			break ;
+		}
+	}
+	return (false);
+}
+
+
+
+bool isDir(const std::string &path)
+{
+	struct stat structStat;
+	stat(path.c_str(), &structStat);
+	if (S_ISDIR(structStat.st_mode))
+		return (true);
+	return (false);
+}
+
 /**
  * @brief building the response for get request
  *
@@ -79,7 +104,7 @@ const std::string Get::createResponse(const Server &srv)
 	std::string		path;
 	Request			dataError;
 	std::string		target;
-	std::string fileStr;
+	std::string		fileStr;
 	std::pair<unsigned int, std::string> codeMess;
 	bool isRedir = 0;
 	
@@ -90,7 +115,7 @@ const std::string Get::createResponse(const Server &srv)
 	target = findTarget(this->_location, srv.getLocations(), dataError, "GET");
 	if (target.find("http") == std::string::npos)
 	{
-		path = srv.getRoot() + "/" + target; // TODO: Peut-etre retirer le /
+		path = srv.getRoot() + "/" + target;
 		file.open(path.c_str());
 		if (!file.is_open())
 			throw ResponseError(404, "Not found", dataError);
@@ -111,21 +136,47 @@ const std::string Get::createResponse(const Server &srv)
 		addContentLenght(&resp, 0); // Content-Length = 0
 		addStartLine(&resp, this->_protocol, codeMess.first, codeMess.second);
 		resp.append("\n\r\n\r");
-		return (resp);
 	}
-	if (!addContentType(&resp, this->_accept, path))
-		throw ResponseError(406, "Not acceptable", dataError);
-	if (!addDate(&resp))
-		throw ResponseError(500, "Can't add date", dataError);
-	if (!addLastModif(&resp, path))
-		throw ResponseError(500, "can't add last modif", dataError);
-	if (!addContentLenght(&resp, path))
-		throw ResponseError(500, "can't add content length", dataError);
-	if (!addBody(&resp, fileStr))
-		throw ResponseError(500, "can't add body", dataError);
-	if (!addStartLine(&resp, this->_protocol, codeMess.first, codeMess.second))
-		throw ResponseError(500, "can't add start line", dataError);
+	else if (isDir(path))
+	{
+		if (!this->_isAllowedAutoIndex(srv))
+			throw ResponseError(401, "Unauthorized", dataError);
+		try {
+			fileStr = createHTMLAutoIndex(path, this->_location);
+		}
+		catch (...) {
+			throw ResponseError(500, "Error with building HTML autoIndex", dataError);
+		}
+		if (!addContentType(&resp, "text/html"))
+			throw ResponseError(406, "Not acceptable", dataError);
+		if (!addDate(&resp))
+			throw ResponseError(500, "Can't add date", dataError);
+		if (!addLastModif(&resp, path))
+			throw ResponseError(500, "can't add last modif", dataError);
+		if (!addContentLenght(&resp, fileStr.size()))
+			throw ResponseError(500, "can't add content length", dataError);
+		if (!addBody(&resp, fileStr))
+			throw ResponseError(500, "can't add body", dataError);
+		if (!addStartLine(&resp, this->_protocol, codeMess.first, codeMess.second))
+			throw ResponseError(500, "can't add start line", dataError);
+		resp.append("\r\n\r\n");
 
+	}
+	else
+	{
+		if (!addContentType(&resp, this->_accept, path))
+			throw ResponseError(406, "Not acceptable", dataError);
+		if (!addDate(&resp))
+			throw ResponseError(500, "Can't add date", dataError);
+		if (!addLastModif(&resp, path))
+			throw ResponseError(500, "can't add last modif", dataError);
+		if (!addContentLenght(&resp, path))
+			throw ResponseError(500, "can't add content length", dataError);
+		if (!addBody(&resp, fileStr))
+			throw ResponseError(500, "can't add body", dataError);
+		if (!addStartLine(&resp, this->_protocol, codeMess.first, codeMess.second))
+			throw ResponseError(500, "can't add start line", dataError);
+	}
 	return (resp);
 }
 

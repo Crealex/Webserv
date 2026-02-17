@@ -20,6 +20,7 @@ html {
   display: flex;
   flex-direction: column;
   color: var(--foregrund);
+  margin: 0 auto;
 }
 
 .errorDisplay {
