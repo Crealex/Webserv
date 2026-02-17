@@ -1,13 +1,6 @@
 #include "../../includes/requests/Get.hpp"
 #include "../../includes/colors.hpp"
 #include "../../includes/requests/Request.hpp"
-#include <cstddef>
-#include <exception>
-#include <fstream>
-#include <string>
-#include <sys/stat.h>
-#include <utility>
-#include <vector>
 #include "../../includes/Server.hpp"
 #include "../../includes/requests/ResponseError.hpp"
 

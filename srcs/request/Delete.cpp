@@ -1,15 +1,11 @@
 
 #include "../../includes/requests/Delete.hpp"
-#include "../../includes/colors.hpp"
 #include "../../includes/includes.hpp"
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseError.hpp"
-#include <fstream>
-#include <string>
 
 Delete::Delete(const Request &requ) : Methods(requ)
 {
-	std::cout << GREEN << "Default Delete constructor called" << RESET << std::endl;
 }
 
 /**

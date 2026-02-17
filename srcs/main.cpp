@@ -1,8 +1,5 @@
-#include "../includes/Server.hpp"
 #include "../includes/printDebug.hpp"
 #include "../includes/includes.hpp"
-#include "../includes/socket/includeSocket.hpp"
-#include "../includes/socket/includeClient.hpp"
 #include "../includes/Loop.hpp"
 
 static bool	isDuplicateServer(Server temp, std::vector<Server> res)
@@ -64,6 +61,6 @@ int main (int argc, char **argv)
 	{
 		std::cout << RED << e.what() << RESET << std::endl;
 	}
-	std::cout << RED << "help end" << std::endl;
+	std::cout << RED << "help end" << std::endl << RESET;
 	return 0;
 }

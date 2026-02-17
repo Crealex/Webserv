@@ -1,13 +1,6 @@
 
 #include "../../includes/includes.hpp"
 #include "../../includes/requests/MimeTypes.hpp"
-#include <ctime>
-#include <exception>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseError.hpp"
 

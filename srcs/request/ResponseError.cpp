@@ -1,8 +1,4 @@
 #include "../../includes/requests/ResponseError.hpp"
-#include <cstddef>
-#include <exception>
-#include <fstream>
-#include <sstream>
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/colors.hpp"
 

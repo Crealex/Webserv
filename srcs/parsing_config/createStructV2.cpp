@@ -1,14 +1,6 @@
 #include "../../includes/configStruct.hpp"
 #include "../../includes/colors.hpp"
 #include "../../includes/printDebug.hpp"
-#include <cstddef>
-#include <exception>
-#include <fstream>
-#include <iostream>
-#include <map>
-#include <sstream>
-#include <stdexcept>
-#include <vector>
 
 struct bracketData {
 	bool inServer;
