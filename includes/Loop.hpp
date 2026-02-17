@@ -40,6 +40,7 @@ class Loop
 		void	_createTimeoutResponse(int idClient);
 		void	_sendResponse(int idClient);
 		
+		void	_printTime();
 		void	_printSocket();
 		void	_printSend(int idClient);
 

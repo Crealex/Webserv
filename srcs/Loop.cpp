@@ -266,6 +266,18 @@ inline void Loop::_sendResponse(int idClient)
 	}
 }
 
+void	Loop::_printTime()
+{
+	std::time_t timeNow;
+	struct tm	*timeDisplay;
+	char		display[100];
+
+	std::time(&timeNow);
+	timeDisplay = std::localtime(&timeNow);
+	std::strftime(display, sizeof(display), "Date: %a, %d.%m.%Y - %X", timeDisplay);
+	std::cout << display;
+}
+
 void	Loop::_printSocket()
 {
 	size_t	nbSock = this->_sockets.size();
@@ -276,7 +288,8 @@ void	Loop::_printSocket()
 		sizeSocket = this->_sockets[i]->getSockData().size();
 		for (size_t j = 0; j < sizeSocket; j++)
 		{
-			std::cout << GREEN << "Listen on ";
+			std::cout << GREEN;
+			std::cout << "Listen on : ";
 			this->_sockets[i]->getSockData()[j]->printAddrPort();
 			std::cout << std::endl << RESET;
 		}
@@ -289,6 +302,8 @@ void	Loop::_printSend(int idClient)
 	std::cout << BOLD;
 	std::cout << "SEND" << std::endl;
 	std::cout << RESET << CYAN;
+	this->_printTime();
+	std::cout << std::endl;
 	std::cout << "On : " << this->_clients[idClient]->getRequest().getHost();
 	std::cout << std::endl << BOLD;
 	std::cout << std::endl << "Request : " << std::endl;
