@@ -77,7 +77,7 @@ bool Get::_isAllowedAutoIndex(const Server &srv)
 {
 	for (size_t i = 0; i < srv.getLocations().size(); i++)
 	{
-		if (this->_location == srv.getLocations().at(i).getPath())
+		if (this->_location == srv.getLocations().at(i).getPath() || this->_location == srv.getLocations().at(i).getPath() + "/")
 		{
 			if (srv.getLocations().at(i).getAutoIndex())
 				return (true);
@@ -148,8 +148,12 @@ const std::string Get::createResponse(const Server &srv)
 	{
 		if (!this->_isAllowedAutoIndex(srv))
 			throw ResponseError(401, "Unauthorized", dataError);
-		std::cout << this->_location << " is autoindex" << std::endl;
-		fileStr = createHTMLAutoIndex(path, this->_location);
+		try {
+			fileStr = createHTMLAutoIndex(path, this->_location);
+		}
+		catch (...) {
+			throw ResponseError(500, "Error with building HTML autoIndex", dataError);
+		}
 		if (!addContentType(&resp, "text/html"))
 			throw ResponseError(406, "Not acceptable", dataError);
 		if (!addDate(&resp))

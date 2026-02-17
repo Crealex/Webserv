@@ -4,6 +4,7 @@
 #include <ctime>
 #include <dirent.h>
 #include <sstream>
+#include <stdexcept>
 #include <sys/stat.h>
 #include <vector>
 
@@ -19,6 +20,8 @@ std::vector<fileInfo> fillFileInfos(const std::string &path)
 	struct stat fileStat;
 
 	dir = opendir(path.c_str());
+	if (!dir)
+		throw std::runtime_error("Error wuth opendir");
 	structDir = readdir(dir);
 	while (structDir)
 	{
@@ -43,7 +46,25 @@ std::vector<fileInfo> fillFileInfos(const std::string &path)
 	return (filesInfos);
 }
 
-std::string listContents(std::vector<fileInfo> files)
+static std::string buildPath(const std::string& location, const std::string& name)
+{
+	std::string ret;
+
+	ret = location + "/" + name;
+	if (name == ".")
+		ret = location;
+	else if (name == "..")
+	{
+		size_t lastSlash = location.rfind('/');
+		if (lastSlash != std::string::npos && lastSlash > 0)
+			ret = location.substr(0, lastSlash);
+		else
+			ret = "/";
+	}
+	return (ret);
+}
+
+std::string listContents(std::vector<fileInfo> files, const std::string &path)
 {
 	std::stringstream ret;
 	char date[256];
@@ -56,7 +77,7 @@ std::string listContents(std::vector<fileInfo> files)
 	{
 		time = std::localtime(&files.at(i).lastModified);
 		std::strftime(date, 100, "%d %b %Y %X GMT", time);
-		ret << "<tr><td>" << files.at(i).name << (files.at(i).isDir ? "/ " :  " ") << "</td><td>"<< files.at(i).size << "b</td><td>" << date << "</td></tr>\n";
+		ret << "<tr><td><a href=\"" << buildPath(path, files.at(i).name) << "\">" << files.at(i).name << (files.at(i).isDir ? "/ " :  " ") << "</a></td><td>"<< files.at(i).size * 0.00125 << "kb</td><td>" << date << "</td></tr>\n";
 	}
 	ret << "</table>\n";
 	return (ret.str());
@@ -70,13 +91,13 @@ std::string createHTMLAutoIndex(const std::string &path, const std::string &loca
 	filesInfos = fillFileInfos(path);
 	body << "<!doctype html>\n<html lang=\"en\">\n \
 			<head>\n \
-			<link href=\"./style.css\" rel=\"stylesheet\"/>\n \
-			<link rel=\"icon\" type=\"image/png\" href=\"./LogoDAK.png\"</head>\
+			<link href=\"/style.css\" rel=\"stylesheet\"/>\n \
+			<link rel=\"icon\" type=\"image/png\" href=\"/LogoDAK.png\"</head>\
 			<body>\n \
 			<main>\n \
 			<div class=\"intro\">\n \
 			<h2>Content list of " << location << "</h2>\n \
-			" << listContents(filesInfos) << "\
+			" << listContents(filesInfos, location) << "\
 			</div>\n \
 			</main>\n \
 			</body>\n \
