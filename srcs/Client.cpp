@@ -9,8 +9,17 @@ Client::Client()
 
 Client::~Client()
 {
+	std::time_t timeNow;
+	struct tm	*timeDisplay;
+	char		display[100];
+
+	std::time(&timeNow);
+	timeDisplay = std::localtime(&timeNow);
+	std::strftime(display, sizeof(display), "Date: %a, %d.%m.%Y - %X", timeDisplay);
+
 	std::cout << RED;
-	std::cout << "Close of client : " << this->_fdSocket;
+	std::cout << "Close of client with fd : " << this->_fdSocket;
+	std::cout << "\t" << display;
 	std::cout << std::endl << RESET;
 }
 
@@ -121,7 +130,7 @@ std::string	Client::_intToIp()
 // PUBLIC
 std::time_t	Client::getTimeNow()
 {
-	time_t	timestamp;
+	std::time_t	timestamp;
 	
 	std::time(&timestamp);
 	return (timestamp);
