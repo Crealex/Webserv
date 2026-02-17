@@ -20,9 +20,29 @@ class Server
 	std::vector<Location>				_locations;
 	std::pair<std::string, std::string>	_cgiHandler;
 
-	void	parseElt(struct server data);
+	std::vector<std::string>	_getValue(std::string data);
+	bool						_isValidDigit(std::string str);
+	unsigned int				_checkDigitValue(std::string str, bool isMaxSize);
 
-	void printAtt() const;
+	std::string	_parseHostname(std::string data);
+
+	std::string _parseRoot(std::string data);
+
+	std::string				_keywordAddress(std::string word);
+	bool					_isPrivate(std::vector<std::string> infos);
+	bool					_isValidAddress(std::vector<std::string> infos);
+	std::string				_checkAddress(std::string addressPort, size_t colon);
+	bool					_isDuplicate(std::string add, unsigned int port, std::vector<addPort_t> res);
+	std::vector<addPort_t>	_parseAddressPort(std::vector<std::string> data);
+	
+	std::map<unsigned int, std::string>	_parseErrorPage(std::vector<std::string> data);
+
+	void			_checkMetricPrefix(std::vector<std::string> &infos);
+	unsigned int	_parseMaxSize(std::string data);
+
+	void	_parseElt(struct server data);
+
+	void	_printAtt() const;
 
   public:
 	Server();

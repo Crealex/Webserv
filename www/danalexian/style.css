@@ -141,3 +141,29 @@ footer {
   border-radius: 5px;
   margin-top: 20px;
 }
+table,
+th,
+td {
+  border: 1px solid var(--foregrund);
+  border-collapse: collapse;
+}
+table {
+  margin: 10px auto;
+  text-align: left;
+}
+table tr {
+  gap: 10px;
+}
+table tr th {
+  font-weight: bolder;
+  padding: 10px 15px;
+}
+
+table tr td {
+  gap: 10px;
+  padding: 10px 15px;
+}
+
+table a {
+  color: var(--foregrund);
+}

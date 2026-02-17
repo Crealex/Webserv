@@ -16,6 +16,15 @@ Loop::~Loop()
 // METHODS
 // PRIVATE
 
+void	Loop::_sockOptNonBlocking(int &socketFd)
+{
+		int	opt;
+
+		opt = 1;
+		::fcntl(socketFd, F_SETFL, O_NONBLOCK);
+		::setsockopt(socketFd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(int));
+}
+
 void	Loop::_createMapServer(std::vector<Server> servers)
 {
 	int	nbServers;
@@ -115,7 +124,7 @@ void	Loop::_acceptClient(int fd)
 				break ;
 			}
 		}
-		sockOptNonBlocking(fdClient);
+		this->_sockOptNonBlocking(fdClient);
 		newClient = new Client();
 		newClient->setFdClient(fdClient);
 		newClient->setSockadd(newSockadd);
@@ -249,12 +258,24 @@ void	Loop::_createTimeoutResponse(int idClient)
 inline void Loop::_sendResponse(int idClient)
 {
 	this->_createTimeoutResponse(idClient);
-	if (send(this->_clients[idClient]->getFdClient(), this->_clients[idClient]->getResponse().c_str(),
-		this->_clients[idClient]->getResponse().size(), 0) == -1)
+	while (send(this->_clients[idClient]->getFdClient(), this->_clients[idClient]->getResponse().c_str(),
+		this->_clients[idClient]->getResponse().size(), MSG_NOSIGNAL) == -1)
 	{
 		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
 		this->_createTimeoutResponse(idClient);
 	}
+}
+
+void	Loop::_printTime()
+{
+	std::time_t timeNow;
+	struct tm	*timeDisplay;
+	char		display[100];
+
+	std::time(&timeNow);
+	timeDisplay = std::localtime(&timeNow);
+	std::strftime(display, sizeof(display), "Date: %a, %d.%m.%Y - %X", timeDisplay);
+	std::cout << display;
 }
 
 void	Loop::_printSocket()
@@ -267,7 +288,8 @@ void	Loop::_printSocket()
 		sizeSocket = this->_sockets[i]->getSockData().size();
 		for (size_t j = 0; j < sizeSocket; j++)
 		{
-			std::cout << GREEN << "Listen on ";
+			std::cout << GREEN;
+			std::cout << "Listen on : ";
 			this->_sockets[i]->getSockData()[j]->printAddrPort();
 			std::cout << std::endl << RESET;
 		}
@@ -277,31 +299,38 @@ void	Loop::_printSocket()
 void	Loop::_printSend(int idClient)
 {
 	std::cout << CYAN << std::endl;
+	std::cout << BOLD;
 	std::cout << "SEND" << std::endl;
+	std::cout << RESET << CYAN;
+	this->_printTime();
+	std::cout << std::endl;
 	std::cout << "On : " << this->_clients[idClient]->getRequest().getHost();
-	std::cout << std::endl <<"Request : " << std::endl;
+	std::cout << std::endl << BOLD;
+	std::cout << std::endl << "Request : " << std::endl;
+	std::cout << RESET << CYAN;
 	this->_clients[idClient]->getRequest().printRequest();
-	std::cout << std::endl <<"Response : " << std::endl;
+	std::cout << BOLD;
+	std::cout << std::endl << "Response : " << std::endl;
+	std::cout << RESET << CYAN;
 	std::cout << this->_clients[idClient]->getResponse();
 	std::cout << RESET;
 	std::cout << std::endl;
-}
-
-void	Loop::_printCloseClient(int idClient)
-{
-	std::cout << RED;
-	std::cout << "Close of client | Fd : ";
-	std::cout << this->_clients[idClient]->getFdClient();
-	std::cout << std::endl << RESET;
 }
 
 // PUBLIC
 
 void	Loop::runLoop()
 {
-	this->_printSocket();
+	bool	printSocket;
+
+	printSocket = true;
 	while (true)
 	{
+		if (printSocket == true)
+		{
+			this->_printSocket();
+			printSocket = false;
+		}
 		int			idClient;
 		int			epollCounterWait;
 		epoll_event	events[this->_epoll.getNbSockets()];
@@ -336,7 +365,6 @@ void	Loop::runLoop()
 				this->_printSend(idClient);
 				if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
 				{
-					this->_printCloseClient(idClient);
 					this->_closeClients(idClient);
 				}
 				else
@@ -344,6 +372,7 @@ void	Loop::runLoop()
 					this->_clients[idClient]->resetClient();
 					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN|EPOLLET);
 				}
+				printSocket = true;
 			}
 		}
 	}

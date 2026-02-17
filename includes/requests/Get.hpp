@@ -10,6 +10,7 @@ class Get: public Methods
 		std::string	_userAgent;
 		std::string	_accept;
 		std::pair<unsigned int, std::string> _findCodeMess(const Server &srv);
+		bool	_isAllowedAutoIndex(const Server &srv);
 
     public:
         Get(const Request &requ);
