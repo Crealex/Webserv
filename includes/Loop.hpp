@@ -5,6 +5,7 @@
 #include "includes.hpp"
 #include "epoll/Epoll.hpp"
 #include "requests/ResponseError.hpp"
+#include "Logger.hpp"
 
 class Logger;
 
