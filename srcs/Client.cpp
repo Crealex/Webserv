@@ -12,6 +12,11 @@ Client::~Client()
 }
 
 // GETTERS
+bool const &Client::getIsCGI() const
+{
+	return (this->_isCGI);
+}
+
 std::string const	&Client::getHostname() const
 {
 	return (this->_hostname);
@@ -165,32 +170,73 @@ bool	Client::checkTimeout()
 	return (false);
 }
 
-bool Client::isCGI(Server &serv)
+void Client::isCGI(Server &serv)
 {
-	return _CGI.isCGI(_request.getLocation(), serv);
+	_isCGI = _CGI.isCGI(_request.getLocation(), serv);
 }
 
 void	Client::startCGI(Server &serv, Epoll &epoll)
 {
 	_CGI.setEnvp(serv, _request);
 	_CGI.constructFD(epoll);
-	_CGI.startSubprocess("path", "interpreter");
+
+	std::string interpreter;
+	std::string path;
+
+	for (size_t i = 0; i < serv.getLocations().size(); i++)
+	{
+		if (_request.getLocation() == serv.getLocations()[i].getPath())
+		{
+			std::string index = serv.getLocations()[i].getIndex();
+			int pos = index.find('.');
+			index.erase(0, pos);
+			interpreter = serv.getLocations()[i].getCgiHandler().at(index);
+		}
+	}
+
+	path = _request.getLocation();
+
+	if (path.find('.') == std::string::npos)
+	{
+		for (size_t i = 0; i < serv.getLocations().size(); i++)
+		{
+			if (serv.getLocations()[i].getPath() == path)
+			{
+				path = serv.getRoot() + _request.getLocation() + '/' + serv.getLocations()[i].getIndex();
+				break ;
+			}
+		}
+	}
+	std::cout << "path = " << path << " - interpreter = " << interpreter << std::endl;
+	_CGI.startSubprocess(path, interpreter);
 }
 
-void	Client::checkCGI()
+bool	Client::checkCGI(Server &serv)
 {
-	_CGI.checkSubprocess();
+	// std::cout << MAGENTA << BOLD << "checking CGI" << RESET << std::endl;
+	try
+	{
+		_CGI.checkSubprocess(this->_request);
+	}
+	catch (ResponseError &e)
+	{
+		_response = e.createResponse(serv);
+		::send(_fdSocket, _response.c_str(), _response.size(), 0);
+		return true;
+	}
 	if (_CGI.subprocessExited())
 	{
 		_response = _CGI.getResponse();
 		// parse response if needed
 		std::cout << BOLD << RED << "CGI RESPONSE : " << RESET << _response << std::endl;
-		// if (::send(_fdSocket, _response.c_str(), _response.size(), 0) == -1)
-		// 	throw std::runtime_error("Error sending response");
+		if (::send(_fdSocket, _response.c_str(), _response.size(), 0) == -1)
+			throw std::runtime_error("Error sending response");
 		_CGI.reset();
-		// TODO found how to close the client when needed
+		return true;
 	}
+	return false;
 }
+
 void	Client::printAddPort()
 {
 	std::stringstream	port;

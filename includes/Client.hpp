@@ -8,12 +8,13 @@
 #include <cstddef>
 #include <netinet/in.h>
 
-#define MAXTIMEREQUEST 15
-#define MAXTIME 30
+#define MAXTIMEREQUEST 500
+#define MAXTIME 1000
 
 class Client
 {
 	private:
+		bool		_isCGI;
 		std::string	_hostname;
 		int			_fdSocket;
 		std::string	_buf;
@@ -31,6 +32,7 @@ class Client
 		Client();
 		~Client();
 
+		bool const			&getIsCGI() const;
 		std::string const	&getHostname() const;
 		int const			&getFDCGI() const;
 		int const			&getFdClient() const;
@@ -51,9 +53,9 @@ class Client
 		
 		std::time_t	getTimeNow();
 
-		bool	isCGI(Server &serv);
+		bool	checkCGI(Server &serv);
+		void	isCGI(Server &serv);
 		void	startCGI(Server &serv, Epoll &epoll);
-		void	checkCGI();
 		void	resetBuf();
 		void	resetClient();
 		void	checkRequest(Server server);

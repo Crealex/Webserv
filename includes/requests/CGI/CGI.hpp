@@ -1,9 +1,11 @@
 #include "../../includes.hpp"
 #include "../../epoll/Epoll.hpp"
+#include "../../requests/ResponseError.hpp"
 #include "Envp.hpp"
 
 #ifndef CGI_HPP
 # define CGI_HPP
+
 
 class Epoll;
 
@@ -32,14 +34,14 @@ class CGI {
 
 		const int	&getReadFD() const;
 		
-		int		getChildPid();
-		char	*getResponse();
-		bool	subprocessStarted();
-		bool	subprocessExited();
+		int			getChildPid();
+		bool		subprocessStarted();
+		bool		subprocessExited();
+		std::string	getResponse();
 		
 		void	sendBody(std::string body);
 		void	closeAllFd();
-		void	checkSubprocess();
+		void	checkSubprocess(Request &req);
 		void	reset();
 		void	setEnvp(Server &serv, Request &req);
 		void	startSubprocess(const std::string path, const std::string interpreter);

@@ -1,5 +1,6 @@
 #include "../../../includes/requests/CGI/CGI.hpp"
 #include <sys/wait.h>
+#include <cstdlib>
 
 CGI::CGI() : _started(false), _exited(false)
 {
@@ -55,7 +56,7 @@ void CGI::setEnvp(Server &serv, Request &req)
 		{
 			if (serv.getLocations()[i].getPath() == name)
 			{
-				name += serv.getLocations()[i].getIndex();
+				name += '/' + serv.getLocations()[i].getIndex();
 				break ;
 			}
 		}
@@ -71,7 +72,7 @@ void CGI::constructFD(Epoll &epoll)
 		throw std::runtime_error("Error, could not create pipe from CGI");
 	sockOptNonBlocking(_pipeFromCGI[0]);
 	sockOptNonBlocking(_pipeFromCGI[1]);
-	epoll.addEpollFd(_pipeFromCGI[0], EPOLLIN);
+	epoll.addEpollFd(_pipeFromCGI[0], EPOLLOUT|EPOLLET);
 	// epoll.addEpollFd(_pipeFromCGI[1], EPOLLIN);
 	if (::pipe(_pipeToCGI) != 0)
 	{
@@ -139,21 +140,23 @@ void CGI::startSubprocess(const std::string path, const std::string interpreter)
 		::dup2(_pipeFromCGI[1], STDOUT_FILENO);
 		::close(_pipeFromCGI[1]);
 
-		std::cout << "je suis le CGI coucou" << std::endl;
-		(void)path;
-		(void)interpreter;
-		// char **args = new char*[3];
-		// args[0] = const_cast<char *>(interpreter.c_str());
-		// args[1] = const_cast<char *>(path.c_str());
-		// args[2] = NULL;
+		// ::write(1, "CGI start\n", 10);
+		// (void)path;
+		// (void)interpreter;	
+		// ::exit(0);
 
-		// char **env = _env.getEnv();
-		// if (::execve(args[0], args, env) == -1)
-		// {
-		// 	delete env;
-		// 	delete[] args;
-		// 	throw std::runtime_error("Error, could'nt create subprocess");
-		// }
+		char **args = new char*[3];
+		args[0] = const_cast<char *>(interpreter.c_str());
+		args[1] = const_cast<char *>(path.c_str());
+		args[2] = NULL;
+
+		char **env = _env.getEnv();
+		if (::execve(args[0], args, env) == -1)
+		{
+			delete[] env;
+			delete[] args;
+			::exit(1);
+		}
 	}
 	else 
 	{
@@ -188,36 +191,41 @@ void CGI::sendBody(std::string body)
 	}
 }
 
-char *CGI::getResponse()
+std::string CGI::getResponse()
 {
 	std::string ret;
 
 	if (_exited)
 	{
 		char buff[1024];
-		while (::read(_pipeFromCGI[0], buff, 1024) != 0)
+		int byteread;
+		while ((byteread = ::read(_pipeFromCGI[0], buff, 1024)) != 0)
 		{
-			ret += buff;
+			std::cout << "buff = " << buff << std::endl;
+			std::cout << "byte = " << byteread << std::endl;
+			ret.append(buff, byteread);
 		}
+		if (byteread == -1)
+			throw std::logic_error("Error dans read");
 		::close(_pipeFromCGI[0]);
 		_pipeFromCGI[0] = -1;
 	}
 
-	return const_cast<char *>(ret.c_str());
+	return ret;
 }
 
-void CGI::checkSubprocess()
+void CGI::checkSubprocess(Request &req)
 {
 	if (_started)
 	{
 		int status;
 		int ret = ::waitpid(_childPid, &status, WNOHANG);
 		if (ret == -1)
-			throw std::runtime_error("Error, waitpid could'nt wait subprocess");
+			throw ResponseError(500, "Error: couldn't wait the CGI process", req);
 		if (ret == 0)
 			return;
 		if (!WIFEXITED(status) || WEXITSTATUS(status))
-			throw std::runtime_error("Error, subprocess exited non normally");
+			throw ResponseError(500, "Error: CGI subprocess didn't normally exited", req);
 		_exited = true;
 	}
 }
