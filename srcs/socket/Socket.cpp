@@ -48,5 +48,6 @@ std::vector<SocketData *>::iterator	Socket::getEnd()
 
 void	Socket::eraseSocket(int i)
 {
+	delete this->_sockData[i];
 	this->_sockData.erase(this->getBegin() + i);
 }

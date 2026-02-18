@@ -48,6 +48,7 @@ static int	bindSocket(std::vector<Socket *> &sockets)
 		}
 		if (sockets[i]->getSockData().size() == 0)
 		{
+			delete sockets[i];
 			sockets.erase(sockets.begin() + i);
 			i--;
 			sizeSockets--;

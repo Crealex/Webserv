@@ -148,34 +148,36 @@ std::string	Server::_keywordAddress(std::string word)
 		throw std::invalid_argument(RED "Error : invalid IP address, not a valid keyword" RESET);
 }
 
-bool	Server::_isPrivate(std::vector<std::string> infos)
-{
-	if (infos[0].size() == 2 && infos[0].compare("10") == 0)
-		return (true);
-	else if (infos[0].size() == 3 && infos[0].compare("172") == 0)
-	{
-		if (infos[1].size() == 2 && (infos[0].compare("31") <= 0 && infos[0].compare("16") > 0))
-			return (true);
-	}
-	else if (infos[0].size() == 3 && infos[0].compare("192") == 0 && infos[1].size() == 3 && infos[1].compare("168") == 0)
-		return (true);
-	return (false);
-}
+// bool	Server::_isPrivate(std::vector<std::string> infos)
+// {
+	// (void)infos;
+	// if (infos[0].size() == 2 && infos[0].compare("10") == 0)
+	// 	return (true);
+	// else if (infos[0].size() == 3 && infos[0].compare("172") == 0)
+	// {
+	// 	if (infos[1].size() == 2 && (infos[0].compare("31") <= 0 && infos[0].compare("16") > 0))
+	// 		return (true);
+	// }
+	// else if (infos[0].size() == 3 && infos[0].compare("192") == 0 && infos[1].size() == 3 && infos[1].compare("168") == 0)
+	// 	return (true);
+// 	return (false);
+// }
 
-bool	Server::_isValidAddress(std::vector<std::string> infos)
-{
-	size_t	nbInfos;
-	size_t	sizeElt;
+// bool	Server::_isValidAddress(std::vector<std::string> infos)
+// {
+// 	(void)infos;
+	// size_t	nbInfos;
+	// size_t	sizeElt;
 
-	nbInfos = infos.size();
-	for (size_t i = 0; i < nbInfos; i++)
-	{
-		sizeElt = infos[i].size();
-		if (sizeElt > 3 || (sizeElt == 3 && infos[i].compare("255") > 0))
-			return (false);
-	}
-	return (true);
-}
+	// nbInfos = infos.size();
+	// for (size_t i = 0; i < nbInfos; i++)
+	// {
+	// 	sizeElt = infos[i].size();
+	// 	if (sizeElt > 3 || (sizeElt == 3 && infos[i].compare("255") > 0))
+	// 		return (false);
+	// }
+// 	return (true);
+// }
 
 std::string	Server::_checkAddress(std::string addressPort, size_t colon)
 {
@@ -201,8 +203,8 @@ std::string	Server::_checkAddress(std::string addressPort, size_t colon)
 				result = this->_keywordAddress(infos[0]);
 				break;
 			case 4:	
-				if (this->_isPrivate(infos) || !this->_isValidAddress(infos))
-					throw std::invalid_argument(RED "Error : invalid IP address, IP address is either private or doesn't exist" RESET);
+				// if (this->_isPrivate(infos) || !this->_isValidAddress(infos))
+				// 	throw std::invalid_argument(RED "Error : invalid IP address, IP address is either private or doesn't exist" RESET);
 				result = address;	
 				break;
 			default:	
