@@ -3,6 +3,7 @@
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/Server.hpp"
 #include "../../includes/requests/ResponseError.hpp"
+#include "../../includes/requests/ResponseBuilder.hpp"
 
 Get::Get(const Request &requ): Methods(requ), _userAgent(requ.getUserAgent()), _accept(requ.getAccept()) 
 {
@@ -99,7 +100,6 @@ bool isDir(const std::string &path)
  */
 const std::string Get::createResponse(const Server &srv)
 {
-	std::string		resp;
 	std::ifstream	file;
 	std::string		path;
 	Request			dataError;
@@ -112,6 +112,7 @@ const std::string Get::createResponse(const Server &srv)
 	dataError.setAccept(this->_accept);
 	dataError.setUserAgent(this->_userAgent);
 
+	ResponseBuilder	resp(dataError, this->_protocol);
 	target = findTarget(this->_location, srv.getLocations(), dataError, "GET");
 	if (target.find("http") == std::string::npos)
 	{
@@ -130,12 +131,11 @@ const std::string Get::createResponse(const Server &srv)
 	codeMess = _findCodeMess(srv);
 	if (isRedir)
 	{
-		addLocation(&resp, path);
-		addContentType(&resp, this->_accept, path);
-		addDate(&resp);
-		addContentLenght(&resp, 0); // Content-Length = 0
-		addStartLine(&resp, this->_protocol, codeMess.first, codeMess.second);
-		resp.append("\n\r\n\r");
+		resp.location(path)
+			.contentType(this->_accept, path)
+			.date().contentLength(0)
+			.startLine(codeMess.first, codeMess.second)
+			.append("\r\n\r\n");
 	}
 	else if (isDir(path))
 	{
@@ -147,20 +147,13 @@ const std::string Get::createResponse(const Server &srv)
 		catch (...) {
 			throw ResponseError(500, "Error with building HTML autoIndex", dataError);
 		}
-		if (!addContentType(&resp, "text/html"))
-			throw ResponseError(406, "Not acceptable", dataError);
-		if (!addDate(&resp))
-			throw ResponseError(500, "Can't add date", dataError);
-		if (!addLastModif(&resp, path))
-			throw ResponseError(500, "can't add last modif", dataError);
-		if (!addContentLenght(&resp, fileStr.size()))
-			throw ResponseError(500, "can't add content length", dataError);
-		if (!addBody(&resp, fileStr))
-			throw ResponseError(500, "can't add body", dataError);
-		if (!addStartLine(&resp, this->_protocol, codeMess.first, codeMess.second))
-			throw ResponseError(500, "can't add start line", dataError);
-		resp.append("\r\n\r\n");
-
+		resp.contentType("text/html")
+			.date()
+			.lastModified(path)
+			.contentLength(fileStr.size())
+			.body(fileStr)
+			.startLine(codeMess.first, codeMess.second)
+			.append("\r\n\r\n");
 	}
 	else
 	{
@@ -177,6 +170,6 @@ const std::string Get::createResponse(const Server &srv)
 		if (!addStartLine(&resp, this->_protocol, codeMess.first, codeMess.second))
 			throw ResponseError(500, "can't add start line", dataError);
 	}
-	return (resp);
+	return (resp.build());
 }
 

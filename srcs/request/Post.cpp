@@ -78,7 +78,7 @@ const std::string Post::createResponse(const Server &srv)
 		throw(ResponseError(500, "Can't add content type", dataError));
 	if (!addContentToFile(this->_body, &newFile)) // need some test
 		throw(ResponseError(500, "Can't add content file", dataError));
-	if (!addLocation(&resp, this->_host, this->_location))
+	if (!addLocation(&resp, path))
 		throw(ResponseError(500, "Can't add Location", dataError));
 	resp.append("\n");
 	if (!addLastModif(&resp, path))
