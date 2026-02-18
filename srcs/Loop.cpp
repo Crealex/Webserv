@@ -331,6 +331,7 @@ void	Loop::runLoop()
 			this->_printSocket();
 			printSocket = false;
 		}
+		handleCmd();
 		int			idClient;
 		int			epollCounterWait;
 		epoll_event	events[this->_epoll.getNbSockets()];

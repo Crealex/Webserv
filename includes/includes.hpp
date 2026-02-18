@@ -32,4 +32,6 @@ class Server;
 
 std::vector<Socket *>	createSocket(std::vector<Server> srvs, int &nbSockets);
 
+// cmdhandl.cpp
+void	handleCmd();
 #endif

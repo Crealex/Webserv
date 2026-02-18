@@ -1,5 +1,5 @@
 NAME	= webServ
-SRCS	= $(addprefix srcs/, Server.cpp main.cpp printDebug.cpp Client.cpp Loop.cpp)
+SRCS	= $(addprefix srcs/, Server.cpp main.cpp printDebug.cpp Client.cpp Loop.cpp handleCmd.cpp)
 PARSING	= $(addprefix srcs/parsing_config/, createStructV2.cpp Location.cpp)
 SOCKET  = $(addprefix srcs/socket/, createSocket.cpp Socket.cpp SocketData.cpp)
 REQUEST = $(addprefix srcs/request/, methodsUtils.cpp Delete.cpp Get.cpp Method.cpp MimeTypes.cpp Post.cpp Request.cpp ResponseError.cpp autoIndex.cpp ResponseBuilder.cpp)
