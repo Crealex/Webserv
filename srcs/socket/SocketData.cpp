@@ -44,13 +44,13 @@ uint32_t SocketData::_ipToUint(std::string s)
 	unsigned int		byte3;
 	uint32_t			result;
 	
-	if (std::sscanf(s.c_str(), "%u.%u.%u.%u", &byte0, &byte1, &byte2, &byte3) == 4)
-	{
-		if (byte0 >= 256 || byte1 >= 256 || byte2 >= 256 || byte3 >= 256)
-			throw std::invalid_argument(RED "Error : bytes not right in IP address : higher than 256" RESET);
-	}
-	else
-		throw std::invalid_argument(RED "Error : bytes not right in IP address" RESET);
+	std::sscanf(s.c_str(), "%u.%u.%u.%u", &byte0, &byte1, &byte2, &byte3);
+	// {
+	// 	if (byte0 >= 256 || byte1 >= 256 || byte2 >= 256 || byte3 >= 256)
+	// 		throw std::invalid_argument(RED "Error : bytes not right in IP address : higher than 256" RESET);
+	// }
+	// else
+	// 	throw std::invalid_argument(RED "Error : bytes not right in IP address" RESET);
 	result = (byte3 << 24) + (byte2 << 16) + (byte1 << 8) + byte0;
 	return (result);
 }
