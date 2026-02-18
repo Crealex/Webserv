@@ -3,7 +3,7 @@
 #include "../../includes/requests/ResponseError.hpp"
 #include <sys/types.h>
 
-ResponseBuilder::ResponseBuilder(const Request& dataError, const std::string& protocol): _requ(dataError), _protocol(protocol), _resp("")
+ResponseBuilder::ResponseBuilder(const Request& dataError, const std::string& protocol): _resp(""), _requ(dataError), _protocol(protocol)
 {
 
 }
