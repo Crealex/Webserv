@@ -28,24 +28,41 @@ CGI::~CGI()
 	closeAllFd();
 }
 
-inline int CGI::getChildPid()
+int CGI::getChildPid()
 {
 	return _childPid;
 }
 
-inline bool CGI::subprocessStarted()
+bool CGI::subprocessStarted()
 {
 	return _started;
 }
 
-inline bool CGI::subprocessExited()
+bool CGI::subprocessExited()
 {
 	return _exited;
 }
 
-inline void CGI::setEnvp(Client &client, Request &req)
+void CGI::setEnvp(Server &serv, Request &req)
 {
-	_env.setEnv(client, req);
+	std::string name;
+	std::string filename;
+
+	name = req.getLocation();
+	if (name.find('.') == std::string::npos)
+	{
+		for (size_t i = 0; i < serv.getLocations().size(); i++)
+		{
+			if (serv.getLocations()[i].getPath() == name)
+			{
+				name += serv.getLocations()[i].getIndex();
+				break ;
+			}
+		}
+	}
+	filename = serv.getRoot() + name;
+
+	_env.setEnv(filename, name, req);
 }
 
 void CGI::constructFD(Epoll &epoll)

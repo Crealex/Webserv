@@ -1,6 +1,5 @@
 #include "../../includes.hpp"
 #include "../Request.hpp"
-#include "../../Client.hpp"
 
 #ifndef ENVP_HPP
 # define ENVP_HPP
@@ -18,7 +17,7 @@ class Envp {
 		Envp& operator=(const Envp& src);
 		~Envp();
 
-		void	setEnv(Client &client, Request &req);
+		void	setEnv(std::string filename, std::string name, Request &req);
 		
 		char**	getEnv() const;
 		std::vector<std::string> getVec() const;

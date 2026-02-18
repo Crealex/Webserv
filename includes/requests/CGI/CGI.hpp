@@ -5,6 +5,8 @@
 #ifndef CGI_HPP
 # define CGI_HPP
 
+class Epoll;
+
 class CGI {
 
 	private:
@@ -39,7 +41,7 @@ class CGI {
 		void	closeAllFd();
 		void	checkSubprocess();
 		void	reset();
-		void	setEnvp(Client &client, Request &req);
+		void	setEnvp(Server &serv, Request &req);
 		void	startSubprocess(const std::string path, const std::string interpreter);
 		void	constructFD(Epoll &epoll);
 

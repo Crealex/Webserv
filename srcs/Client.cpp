@@ -172,7 +172,7 @@ bool Client::isCGI(Server &serv)
 
 void	Client::startCGI(Server &serv, Epoll &epoll)
 {
-	_CGI.setEnvp(*this, _request);
+	_CGI.setEnvp(serv, _request);
 	_CGI.constructFD(epoll);
 	_CGI.startSubprocess("path", "interpreter");
 }

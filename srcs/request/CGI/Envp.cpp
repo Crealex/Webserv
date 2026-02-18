@@ -26,15 +26,14 @@ Envp::~Envp()
 	
 }
 
-void Envp::setEnv(Client &client, Request &req)
+void Envp::setEnv(std::string filename, std::string name, Request &req)
 {
-	(void)client;
 	_env.push_back("GATEWAY_INTERFACE=CGI/1.1");
 	_env.push_back("SERVER_PROTOCOL=HTTP/1.1");
 	_env.push_back("REQUEST_METHOD=" + req.getMethod());
 	_env.push_back("REQUEST_URI=" + req.getURI());
-	_env.push_back("SCRIPT_FILENAME=");	// use Client to create those
-	_env.push_back("SCRIPT_NAME=");		// use Client to create those
+	_env.push_back("SCRIPT_FILENAME=" + filename);
+	_env.push_back("SCRIPT_NAME=" + name);
 	_env.push_back("QUERY_STRING=" + req.getQuery());
 	_env.push_back("CONTENT_TYPE=" + req.getContentType());
 	_env.push_back("CONTENT_LENGTH=" + req.getStrContentLength());
