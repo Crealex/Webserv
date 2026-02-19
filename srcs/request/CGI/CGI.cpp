@@ -201,8 +201,6 @@ std::string CGI::getResponse()
 		int byteread;
 		while ((byteread = ::read(_pipeFromCGI[0], buff, 1024)) != 0)
 		{
-			std::cout << "buff = " << buff << std::endl;
-			std::cout << "byte = " << byteread << std::endl;
 			ret.append(buff, byteread);
 		}
 		if (byteread == -1)

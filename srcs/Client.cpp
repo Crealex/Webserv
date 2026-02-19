@@ -207,8 +207,31 @@ void	Client::startCGI(Server &serv, Epoll &epoll)
 			}
 		}
 	}
-	std::cout << "path = " << path << " - interpreter = " << interpreter << std::endl;
 	_CGI.startSubprocess(path, interpreter);
+}
+
+std::string	Client::_getSizeBody()
+{
+	int pos = _response.find("\r\n\r\n");
+	pos += 4;
+	int size = _response.size() - pos;
+
+	std::stringstream ss;
+	std::string ret;
+	ss << size;
+	ss >> ret;
+	return ret;
+}
+
+void	Client::_checkCGIResponse()
+{
+	int pos = _response.find("\r\n", 0);
+	pos += 2;
+	std::string ContentLength = "ContentLength: ";
+	ContentLength.append(_getSizeBody());
+	_response.insert(pos, ContentLength);
+	_response = "HTTP/1.1 200 OK\r\n" + _response;
+	// TODO parsing and error handling if needed
 }
 
 bool	Client::checkCGI(Server &serv)
@@ -227,8 +250,8 @@ bool	Client::checkCGI(Server &serv)
 	if (_CGI.subprocessExited())
 	{
 		_response = _CGI.getResponse();
-		// parse response if needed
-		std::cout << BOLD << RED << "CGI RESPONSE : " << RESET << _response << std::endl;
+		_checkCGIResponse();
+		std::cout << BOLD << RED << "CGI RESPONSE : \n" << RESET << _response << std::endl;
 		if (::send(_fdSocket, _response.c_str(), _response.size(), 0) == -1)
 			throw std::runtime_error("Error sending response");
 		_CGI.reset();

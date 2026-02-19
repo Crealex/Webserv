@@ -8,8 +8,8 @@
 #include <cstddef>
 #include <netinet/in.h>
 
-#define MAXTIMEREQUEST 500
-#define MAXTIME 1000
+#define MAXTIMEREQUEST 5
+#define MAXTIME 15
 
 class Client
 {
@@ -27,6 +27,8 @@ class Client
 
 
 		std::string	_intToIp();
+		std::string	_getSizeBody();
+		void		_checkCGIResponse();
 
 	public:
 		Client();
