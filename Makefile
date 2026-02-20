@@ -1,5 +1,6 @@
 NAME	= webServ
 SRCS	= $(addprefix srcs/, Server.cpp main.cpp printDebug.cpp Client.cpp Loop.cpp)
+CGI		= $(addprefix srcs/request/CGI/, CGI.cpp Envp.cpp)
 PARSING	= $(addprefix srcs/parsing_config/, createStructV2.cpp Location.cpp)
 SOCKET  = $(addprefix srcs/socket/, createSocket.cpp Socket.cpp SocketData.cpp)
 REQUEST = $(addprefix srcs/request/, methodsUtils.cpp Delete.cpp Get.cpp Method.cpp MimeTypes.cpp Post.cpp Request.cpp ResponseError.cpp autoIndex.cpp ResponseBuilder.cpp)
@@ -8,6 +9,7 @@ OBJS	= ${SRCS:%.cpp=${OBJDIR}/%.o}
 OBJPARS	= ${PARSING:%.cpp=${OBJDIR}/%.o}
 OBJSOCK	= ${SOCKET:%.cpp=${OBJDIR}/%.o}
 OBJREQ	= ${REQUEST:%.cpp=${OBJDIR}/%.o}
+OBJCGI	= ${CGI:%.cpp=${OBJDIR}/%.o}
 OBJEPO	= ${EPOLL:%.cpp=${OBJDIR}/%.o}
 OBJDIR	= objets
 CFLAGS	= -Werror -Wextra -Wall -std=c++98 -g3
@@ -26,12 +28,12 @@ BLUE     := $(shell printf "\033[34m")
 BLACK    := $(shell printf "\033[1;90m")
 
 # Counter or compiled
-TOTAL_FILES := $(words $(SRCS) $(PARSING) $(SOCKET) $(REQUEST) $(EPOLL))
+TOTAL_FILES := $(words $(SRCS) $(PARSING) $(SOCKET) $(REQUEST) $(CGI) $(EPOLL))
 CURRENT_FILE = 0
 all:	${NAME} display_ascii
 
-${NAME}:	${OBJS} ${OBJPARS} ${OBJSOCK} ${OBJREQ} ${OBJEPO}
-	@${CC} ${CFLAGS} ${OBJS} ${OBJPARS} ${OBJSOCK} ${OBJREQ} ${OBJEPO} -o ${NAME}
+${NAME}:	${OBJS} ${OBJPARS} ${OBJSOCK} ${OBJREQ} ${OBJCGI} ${OBJEPO}
+	@${CC} ${CFLAGS} ${OBJS} ${OBJPARS} ${OBJSOCK} ${OBJREQ} ${OBJCGI} ${OBJEPO} -o ${NAME}
 	@echo "${BOLD}${GREEN}📦 Link complete: ${NAME}${END}"
 
 ${OBJDIR}/%.o: %.cpp | ${OBJDIR}
@@ -46,6 +48,7 @@ ${OBJDIR}:
 	@mkdir -p ${OBJDIR}/srcs/parsing_config
 	@mkdir -p ${OBJDIR}/srcs/socket
 	@mkdir -p ${OBJDIR}/srcs/request
+	@mkdir -p ${OBJDIR}/srcs/request/CGI
 	@mkdir -p ${OBJDIR}/srcs/epoll
 	@echo "${BOLD}${BLUE}📁 Created objects directory${END}"
 

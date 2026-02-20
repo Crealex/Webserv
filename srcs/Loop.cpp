@@ -102,6 +102,23 @@ bool	Loop::_isClientSocket(int fd, int &idClient)
 	return (false);
 }
 
+bool	Loop::_isCGI(int fd, int &idClient)
+{
+	int	sizeClients;
+
+	std::cout << RED << BOLD << "fd = " << fd << RESET << std::endl;
+	sizeClients = this->_clients.size();
+	for (int i = 0; i < sizeClients; i++)
+	{
+		if (fd == this->_clients[i]->getFDCGI())
+		{
+			idClient = i;
+			return (true);
+		}
+	}
+	return (false);
+}
+
 void	Loop::_acceptClient(int fd)
 {
 	int 		fdClient;
@@ -337,7 +354,7 @@ void	Loop::runLoop()
 
 		epollCounterWait = 0;
 		idClient = 0;
-	
+
 		epollCounterWait = ::epoll_wait(this->_epoll.getEpollFd(), events, this->_epoll.getNbSockets(), 2000);
 		this->_checkAllTimeout();
 		if (epollCounterWait < 1)
@@ -357,8 +374,28 @@ void	Loop::runLoop()
 				}
 				this->_clients[idClient]->setTimeout();
 				this->_clients[idClient]->setTimeoutRequest();
+				_clients[idClient]->isCGI(_servers[_clients[idClient]->getHostname()]);
+				if (_clients[idClient]->getIsCGI())
+				{
+					_clients[idClient]->startCGI(_servers[_clients[idClient]->getHostname()], _epoll);
+				}
 			}
-			if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient))
+			if (_clients[idClient]->getIsCGI())
+			{
+				if (!_clients[idClient]->checkCGI(_servers[_clients[idClient]->getHostname()]))
+					continue ;
+				if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
+				{
+					// this->_printCloseClient(idClient);
+					this->_closeClients(idClient);
+				}
+				else
+				{
+					this->_clients[idClient]->resetClient();
+					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN|EPOLLET);
+				}
+			}
+			else if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient) && !_clients[idClient]->getIsCGI())
 			{
 				this->_createResponse(idClient);
 				this->_sendResponse(idClient);

@@ -16,7 +16,7 @@ class Location {
 		std::string						_uploadPath;
 		std::string						_path;
 		std::map<std::string, bool>		_allowedMethods;
-		std::map<pairString>			_cgiHandler;
+		std::map<pairString>			_cgiHandler;	// first = ext, second = interpreter
 		std::pair<std::string, size_t>	_ret;
 
 	public:
