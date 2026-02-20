@@ -1,21 +1,29 @@
-#include "../includes/Server.hpp"
 #include "../includes/printDebug.hpp"
 #include "../includes/includes.hpp"
-#include "../includes/socket/includeSocket.hpp"
-#include "../includes/socket/includeClient.hpp"
 #include "../includes/Loop.hpp"
 
-static bool	isDuplicateServer(Server temp, std::vector<Server> res)
+static void	isDuplicateServer(Server temp, std::vector<Server> res)
 {
 	int	sizeRes;
+	int	sizeAddPort;
+	int	sizeAPTemp;
 
 	sizeRes = res.size();
 	for (int i = 0; i < sizeRes; i++)
 	{
+		sizeAddPort = res[i].getAddressPort().size();
+		for (int j = 0; j < sizeAddPort; j++)
+		{
+			sizeAPTemp = temp.getAddressPort().size();
+			for (int k = 0; k < sizeAPTemp; k++)
+			{
+				if (res[i].getAddressPort()[j].first == temp.getAddressPort()[k].first && res[i].getAddressPort()[j].second == temp.getAddressPort()[k].second)
+					throw std::invalid_argument(RED "Error : an add/port couple already exists with another hostname" RESET);
+			}
+		}
 		if (res[i].getHostname() == temp.getHostname())
-			return (true);
+			throw std::invalid_argument(RED "Error : this server exists already" RESET);
 	}
-	return (false);
 }
 
 static std::vector<Server>	createServers(std::string path)
@@ -29,8 +37,7 @@ static std::vector<Server>	createServers(std::string path)
 	for (int i = 0; i < sizeStructSrv; i++)
 	{
 		Server	temp(structServers[i]);
-		if (isDuplicateServer(temp, res))
-			throw std::invalid_argument(RED "Error : this server exists already" RESET);
+		isDuplicateServer(temp, res);
 		res.push_back(temp);
 	}
 	return (res);
@@ -64,6 +71,6 @@ int main (int argc, char **argv)
 	{
 		std::cout << RED << e.what() << RESET << std::endl;
 	}
-	std::cout << RED << "help end" << std::endl;
+	std::cout << RED << "help end" << std::endl << RESET;
 	return 0;
 }

@@ -1,15 +1,9 @@
 #include "../../includes/requests/Get.hpp"
 #include "../../includes/colors.hpp"
 #include "../../includes/requests/Request.hpp"
-#include <cstddef>
-#include <exception>
-#include <fstream>
-#include <string>
-#include <sys/stat.h>
-#include <utility>
-#include <vector>
 #include "../../includes/Server.hpp"
 #include "../../includes/requests/ResponseError.hpp"
+#include "../../includes/requests/ResponseBuilder.hpp"
 
 Get::Get(const Request &requ): Methods(requ), _userAgent(requ.getUserAgent()), _accept(requ.getAccept()) 
 {
@@ -17,17 +11,20 @@ Get::Get(const Request &requ): Methods(requ), _userAgent(requ.getUserAgent()), _
 }
 
 
-// *** Create response
-//
+/**
+ * @brief Create un string with de content of the file
+ *
+ * @param file 
+ * @return 
+ */
 static std::string createFileStr(std::ifstream &file)
 {
+	std::string fileStr;
 	file.seekg(0, std::ios::end);
 	size_t size = file.tellg();
 	file.seekg(0, std::ios::beg);
-	char* buffer = new char[size];
-	file.read(buffer, size);
-	std::string fileStr(buffer, size);
-	delete[] buffer;
+	fileStr.resize(size);
+	file.read(&fileStr[0], size);
 
 	return fileStr;
 }
@@ -70,6 +67,31 @@ std::pair<unsigned int, std::string> Get::_findCodeMess(const Server &srv)
 	return (ret);
 }
 
+bool Get::_isAllowedAutoIndex(const Server &srv)
+{
+	for (size_t i = 0; i < srv.getLocations().size(); i++)
+	{
+		if (this->_location == srv.getLocations().at(i).getPath() || this->_location == srv.getLocations().at(i).getPath() + "/")
+		{
+			if (srv.getLocations().at(i).getAutoIndex())
+				return (true);
+			break ;
+		}
+	}
+	return (false);
+}
+
+
+
+bool isDir(const std::string &path)
+{
+	struct stat structStat;
+	stat(path.c_str(), &structStat);
+	if (S_ISDIR(structStat.st_mode))
+		return (true);
+	return (false);
+}
+
 /**
  * @brief building the response for get request
  *
@@ -78,25 +100,24 @@ std::pair<unsigned int, std::string> Get::_findCodeMess(const Server &srv)
  */
 const std::string Get::createResponse(const Server &srv)
 {
-	std::string		resp;
 	std::ifstream	file;
 	std::string		path;
 	Request			dataError;
 	std::string		target;
-	std::string fileStr;
-	std::pair<unsigned int, std::string> codeMess;
-	bool isRedir = 0;
+	std::string		fileStr;
+	std::pair<unsigned int, std::string>	codeMess;
+	bool			isRedir = 0;
 	
 	dataError = this->_createDataError();
 	dataError.setAccept(this->_accept);
 	dataError.setUserAgent(this->_userAgent);
 
+	ResponseBuilder	resp(dataError, this->_protocol);
 	target = findTarget(this->_location, srv.getLocations(), dataError, "GET");
 	if (target.find("http") == std::string::npos)
 	{
-		path = srv.getRoot() + "/" + target; // TODO: Peut-etre retirer le /
+		path = srv.getRoot() + "/" + target;
 		file.open(path.c_str());
-		// *************************
 		if (!file.is_open())
 			throw ResponseError(404, "Not found", dataError);
 		fileStr = createFileStr(file);
@@ -106,106 +127,44 @@ const std::string Get::createResponse(const Server &srv)
 		isRedir = 1;
 		path = target;
 	}
-	//std::cout << "complete path to get: " << path << std::endl;
 
 	codeMess = _findCodeMess(srv);
 	if (isRedir)
 	{
-		addLocation(&resp, path);
-		addContentType(&resp, this->_accept, path);
-		addDate(&resp);
-		addContentLenght(&resp, 0); // Content-Length = 0
-		addStartLine(&resp, this->_protocol, codeMess.first, codeMess.second);
-		resp.append("\n\r\n\r");
-		return (resp);
+		resp.location(path)
+			.contentType(this->_accept, path)
+			.date().contentLength(0)
+			.startLine(codeMess.first, codeMess.second)
+			.append("\r\n\r\n");
 	}
-	if (!addContentType(&resp, this->_accept, path))
-		throw ResponseError(406, "Not acceptable", dataError);
-	if (!addDate(&resp))
-		throw ResponseError(500, "Can't add date", dataError);
-	if (!addLastModif(&resp, path))
-		throw ResponseError(500, "can't add last modif", dataError);
-	if (!addContentLenght(&resp, path))
-		throw ResponseError(500, "can't add content length", dataError);
-	if (!addBody(&resp, fileStr))
-		throw ResponseError(500, "can't add body", dataError);
-	if (!addStartLine(&resp, this->_protocol, codeMess.first, codeMess.second))
-		throw ResponseError(500, "can't add start line", dataError);
-
-	return (resp);
+	else if (isDir(path))
+	{
+		if (!this->_isAllowedAutoIndex(srv))
+			throw ResponseError(401, "Unauthorized", dataError);
+		try {
+			fileStr = createHTMLAutoIndex(path, this->_location);
+		}
+		catch (...) {
+			throw ResponseError(500, "Error with building HTML autoIndex", dataError);
+		}
+		resp.contentType("text/html")
+			.date()
+			.lastModified(path)
+			.contentLength(fileStr.size())
+			.body(fileStr)
+			.startLine(codeMess.first, codeMess.second)
+			.append("\r\n\r\n");
+	}
+	else
+	{
+		resp.contentType(this->_accept, path)
+			.date()
+			.lastModified(path)
+			.contentLength(path)
+			.body(fileStr)
+			.startLine(codeMess.first, codeMess.second)
+			.append("\r\n\r\n");
+	}
+	return (resp.build());
 }
 
-
-// *** TEST MAIN ***
-
-// static bool	isDuplicateServer(Server temp, std::vector<Server> res)
-// {
-// 	int	sizeRes;
-//
-// 	sizeRes = res.size();
-// 	for (int i = 0; i < sizeRes; i++)
-// 	{
-// 		if (res[i].getHostname() == temp.getHostname())
-// 			return (true);
-// 	}
-// 	return (false);
-// }
-//
-// static std::vector<Server>	createServers(std::string path)
-// {
-// 	std::vector<Server>	res;
-// 	int					sizeStructSrv;
-// 	std::vector<server>	structServers;
-//
-// 	structServers = createVectStructSrv(path);
-// 	sizeStructSrv = structServers.size();
-// 	for (int i = 0; i < sizeStructSrv; i++)
-// 	{
-// 		Server	temp(structServers[i]);
-// 		if (isDuplicateServer(temp, res))
-// 			throw std::invalid_argument(RED "Error : this server exists already" RESET);
-// 		res.push_back(temp);
-// 	}
-// 	return (res);
-// }
-//
-// int main(void)
-// {
-// 	Request requ;
-//
-// 	requ._accept = "text/html";
-// 	requ._host = "pipou";
-// 	requ._location = "/";
-// 	requ._protocol = "HTTP/1.1";
-// 	requ._userAgent = "Firefox";
-//
-// 	std::vector<Server> srvs;
-// 	try 
-// 	{
-// 		srvs = createServers("danalexian.conf");
-// 		Get		resp(requ);
-// 		std::cout << "resp: " << std::endl;
-// 		std::cout << resp.createResponse(srvs.at(0)) << std::endl;
-//
-// 	}
-// 	catch (ResponseError &e)
-// 	{
-// 		std::cout << e.createResponse(srvs.at(0)) << std::endl;
-// 	}
-// 	catch (std::exception &e)
-// 	{
-// 		std::cout << e.what() << std::endl;
-// 	}
-//
-// }
-
-// compile: c++ -Werror -Wall -Werror request/MethodsClass.cpp parsing_config/createStructV2.cpp parsing_config/Location.cpp Server.cpp request/Get.cpp request/ResponseError.cpp
-//*** RESPONSE EXAMPLE ***
-//	HTTP/1.1 200 OK
-//	Content-Type: text/html; charset=UTF-8
-//	Date: Fri, 21 Jun 2024 14:18:33 GMT
-//	Last-Modified: Thu, 17 Oct 2019 07:18:26 GMT
-//	Content-Length: 1234
-//	
-//	<!doctype html>
-//	<!-- Contenu HTML -->

@@ -8,8 +8,8 @@
 #include <cstddef>
 #include <netinet/in.h>
 
-#define MAXTIMEREQUEST 5
-#define MAXTIME 15
+#define MAXTIMEREQUEST 3
+#define MAXTIME 30
 
 class Client
 {

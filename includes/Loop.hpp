@@ -17,6 +17,8 @@ class Loop
 		Epoll							_epoll;
 		std::string						_hostnameOfSrvSock;
 
+		void	_sockOptNonBlocking(int &socketFd);
+
 		void	_createMapServer(std::vector<Server> servers);
 
 		void	_closeClients(int idClient);
@@ -39,9 +41,9 @@ class Loop
 		void	_sendResponse(int idClient);
 		bool	_isCGI(int fd, int &idClient);
 		
+		void	_printTime();
 		void	_printSocket();
 		void	_printSend(int idClient);
-		void	_printCloseClient(int idClient);
 
 	public:
 		Loop(std::vector<Server> servers, std::vector<Socket *> sockets, int nbSockets);

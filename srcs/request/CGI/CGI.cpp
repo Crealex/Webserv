@@ -44,6 +44,15 @@ bool CGI::subprocessExited()
 	return _exited;
 }
 
+void	CGI::_sockOptNonBlocking(int &socketFd)
+{
+		int	opt;
+
+		opt = 1;
+		::fcntl(socketFd, F_SETFL, O_NONBLOCK);
+		::setsockopt(socketFd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(int));
+}
+
 void CGI::setEnvp(Server &serv, Request &req)
 {
 	std::string name;
@@ -70,8 +79,8 @@ void CGI::constructFD(Epoll &epoll)
 {
 	if (::pipe(_pipeFromCGI) != 0)
 		throw std::runtime_error("Error, could not create pipe from CGI");
-	sockOptNonBlocking(_pipeFromCGI[0]);
-	sockOptNonBlocking(_pipeFromCGI[1]);
+	_sockOptNonBlocking(_pipeFromCGI[0]);
+	_sockOptNonBlocking(_pipeFromCGI[1]);
 	epoll.addEpollFd(_pipeFromCGI[0], EPOLLOUT|EPOLLET);
 	// epoll.addEpollFd(_pipeFromCGI[1], EPOLLIN);
 	if (::pipe(_pipeToCGI) != 0)
@@ -82,8 +91,8 @@ void CGI::constructFD(Epoll &epoll)
 		_pipeFromCGI[1] = -1;
 		throw std::runtime_error("Error, could not create pipe to CGI");
 	}
-	sockOptNonBlocking(_pipeToCGI[0]);
-	sockOptNonBlocking(_pipeToCGI[1]);
+	_sockOptNonBlocking(_pipeToCGI[0]);
+	_sockOptNonBlocking(_pipeToCGI[1]);
 	// epoll.addEpollFd(_pipeToCGI[0], EPOLLOUT);
 	// epoll.addEpollFd(_pipeToCGI[1], EPOLLIN);
 }
@@ -218,6 +227,7 @@ void CGI::checkSubprocess(Request &req)
 	{
 		int status;
 		int ret = ::waitpid(_childPid, &status, WNOHANG);
+		// std::cout << std::boolalpha << "ret = " << ret << " - exit status = " << WEXITSTATUS(status) << " - ifexited = " << WIFEXITED(status) << std::endl;
 		if (ret == -1)
 			throw ResponseError(500, "Error: couldn't wait the CGI process", req);
 		if (ret == 0)

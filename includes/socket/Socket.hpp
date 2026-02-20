@@ -3,7 +3,6 @@
 #define SOCKET_HPP
 
 #include "SocketData.hpp"
-#include <poll.h>
 #include "../Server.hpp"
 
 class Socket

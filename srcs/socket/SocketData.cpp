@@ -1,10 +1,4 @@
 #include "../../includes/socket/SocketData.hpp"
-#include <sstream>
-#include <string>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <cstdio>
-#include <fcntl.h>
 
 SocketData::SocketData(addPort_t addPort)
 {
@@ -32,6 +26,15 @@ int const	&SocketData::getFdServer() const
 // METHODS
 // PRIVATE
 
+void	SocketData::_sockOptNonBlocking(int &socketFd)
+{
+		int	opt;
+
+		opt = 1;
+		::fcntl(socketFd, F_SETFL, O_NONBLOCK);
+		::setsockopt(socketFd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(int));
+}
+
 uint32_t SocketData::_ipToUint(std::string s)
 {
 	std::stringstream	toBytes;
@@ -41,13 +44,13 @@ uint32_t SocketData::_ipToUint(std::string s)
 	unsigned int		byte3;
 	uint32_t			result;
 	
-	if (std::sscanf(s.c_str(), "%u.%u.%u.%u", &byte0, &byte1, &byte2, &byte3) == 4)
-	{
-		if (byte0 >= 256 || byte1 >= 256 || byte2 >= 256 || byte3 >= 256)
-			throw std::invalid_argument(RED "Error : bytes not right in IP address : higher than 256" RESET);
-	}
-	else
-		throw std::invalid_argument(RED "Error : bytes not right in IP address" RESET);
+	std::sscanf(s.c_str(), "%u.%u.%u.%u", &byte0, &byte1, &byte2, &byte3);
+	// {
+	// 	if (byte0 >= 256 || byte1 >= 256 || byte2 >= 256 || byte3 >= 256)
+	// 		throw std::invalid_argument(RED "Error : bytes not right in IP address : higher than 256" RESET);
+	// }
+	// else
+	// 	throw std::invalid_argument(RED "Error : bytes not right in IP address" RESET);
 	result = (byte3 << 24) + (byte2 << 16) + (byte1 << 8) + byte0;
 	return (result);
 }
@@ -81,10 +84,10 @@ void	SocketData::_assignmentSocket(addPort_t addPort)
 	socketFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (socketFd != -1)
 	{
-		sockOptNonBlocking(socketFd);
+		this->_sockOptNonBlocking(socketFd);
 		this->_fdServer = (socketFd);
 	}
-}
+}	
 
 // PUBLIC
 void	SocketData::printAddrPort()
@@ -92,4 +95,4 @@ void	SocketData::printAddrPort()
 	std::cout << this->_intToIp();
 	std::cout << ":";
 	std::cout << ::ntohs(this->_sockadd.sin_port);
-}
+}	

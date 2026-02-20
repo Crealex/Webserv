@@ -10,7 +10,7 @@ class Post: public Methods
 		std::string		_contentType;
 		unsigned int	_contentLength;
 		std::string		_body;
-		void handlePostFile(std::string *resp, std::string boundary);
+		void			_handlePostFile(std::string boundary);
     public:
 		Post(const Request &requ);
 		const std::string	createResponse(const Server &srv);
