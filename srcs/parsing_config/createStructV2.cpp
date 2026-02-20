@@ -31,6 +31,7 @@ void rmWhiteSpaces(std::string *line)
 static void updateLocationBracket(std::string &line, server *srv, bracketData *brackets)
 {
 	unsigned int locI;
+
 	if (brackets->inLocation == true)
 		throw std::invalid_argument("Error, missing closing bracket for the previous location");
 	brackets->inLocation = true;
