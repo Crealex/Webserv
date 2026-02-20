@@ -8,8 +8,6 @@
 #include <sys/stat.h>
 #include <vector>
 
-//TODO: Faire la gestion des erreurs pour toutes les fonctions ci-dessus
-
 std::vector<fileInfo> fillFileInfos(const std::string &path)
 {
 	std::vector<fileInfo> filesInfos;

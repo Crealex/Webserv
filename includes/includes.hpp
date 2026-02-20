@@ -15,6 +15,7 @@
 #include <sstream>
 
 #include <cstddef>
+#include <cstdlib>
 #include <ctime>
 #include <dirent.h>
 #include <fcntl.h>
@@ -33,4 +34,6 @@ class Server;
 
 std::vector<Socket *>	createSocket(std::vector<Server> srvs, int &nbSockets);
 
+// cmdhandl.cpp
+void	handleCmd();
 #endif

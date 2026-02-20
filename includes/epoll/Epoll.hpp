@@ -5,6 +5,8 @@
 #include "../socket/Socket.hpp"
 #include "../Client.hpp"
 
+class Client;
+
 class Epoll
 {
 	private:

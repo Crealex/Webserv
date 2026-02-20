@@ -1,4 +1,5 @@
 #include "../includes/Client.hpp"
+#include "../includes/requests/Method.hpp"
 
 // CONSTRUCTOR & DESTRUCTOR
 Client::Client()
@@ -24,9 +25,19 @@ Client::~Client()
 }
 
 // GETTERS
+bool const &Client::getIsCGI() const
+{
+	return (this->_isCGI);
+}
+
 std::string const	&Client::getHostname() const
 {
 	return (this->_hostname);
+}
+
+int const &Client::getFDCGI() const
+{
+	return _CGI.getReadFD();
 }
 
 int const	&Client::getFdClient() const
@@ -148,6 +159,7 @@ void	Client::resetClient()
 	this->_request.reset();
 	this->_timeRequest = this->getTimeNow();
 	this->_time = this->getTimeNow();
+	this->_isCGI = false;
 	if (!this->_response.empty())
 		this->_response.clear();
 }
@@ -169,6 +181,91 @@ bool	Client::checkTimeout()
 	if (std::difftime(this->getTimeNow(), this->_time) > MAXTIME)
 		return (true);
 	return (false);
+}
+
+void Client::isCGI(Server &serv)
+{
+	_isCGI = _CGI.isCGI(_request.getLocation(), serv);
+}
+
+void	Client::startCGI(Server &serv, Epoll &epoll)
+{
+	_CGI.setEnvp(serv, _request);
+	_CGI.constructFD(epoll);
+	std::string interpreter;
+	std::string path;
+
+	for (size_t i = 0; i < serv.getLocations().size(); i++)
+	{
+		if (_request.getLocation() == serv.getLocations()[i].getPath())
+		{
+			std::string index = serv.getLocations()[i].getIndex();
+			int pos = index.find('.');
+			index.erase(0, pos);
+			interpreter = serv.getLocations()[i].getCgiHandler().at(index);
+		}
+	}
+
+	path = _request.getLocation();
+
+	if (path.find('.') == std::string::npos)
+	{
+		for (size_t i = 0; i < serv.getLocations().size(); i++)
+		{
+			if (serv.getLocations()[i].getPath() == path)
+			{
+				path = serv.getRoot() + _request.getLocation() + '/' + serv.getLocations()[i].getIndex();
+				break ;
+			}
+		}
+	}
+	_CGI.startSubprocess(path, interpreter);
+}
+
+int	Client::_getSizeBody()
+{
+	int pos = _response.find("\r\n\r\n");
+	pos += 4;
+	int size = _response.size() - pos;
+
+	return size;
+}
+
+void	Client::_checkCGIResponse()
+{
+	_response.append("\r\n\r\n");
+	int ContentLength = _getSizeBody();
+	std::string head;
+	addStartLine(&head, "HTTP/1.1", 200, "OK");
+	addDate(&head);
+	addContentLenght(&head, ContentLength);
+	_response = head + _response;
+}
+
+bool	Client::checkCGI(Server &serv)
+{
+	// std::cout << MAGENTA << BOLD << "checking CGI" << RESET << std::endl;
+	try
+	{
+		_CGI.checkSubprocess(this->_request);
+	}
+	catch (ResponseError &e)
+	{
+		_response = e.createResponse(serv);
+		::send(_fdSocket, _response.c_str(), _response.size(), 0);
+		return true;
+	}
+	if (_CGI.subprocessExited())
+	{
+		_response = _CGI.getResponse();
+		_checkCGIResponse();
+		std::cout << BOLD << RED << "CGI RESPONSE : \n" << RESET << _response << std::endl;
+		if (::send(_fdSocket, _response.c_str(), _response.size(), 0) == -1)
+			throw std::runtime_error("Error sending response");
+		_CGI.reset();
+		return true;
+	}
+	return false;
 }
 
 void	Client::printAddPort()

@@ -2,6 +2,8 @@
 #include "../../includes/requests/Post.hpp"
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseError.hpp"
+#include "../../includes/requests/ResponseBuilder.hpp"
+
 Post::Post(const Request &requ) : Methods(requ), _contentType(requ.getContentType()), _contentLength(requ.getContentLength()), _body(requ.getBody())
 {
 }
@@ -15,29 +17,20 @@ std::string extractBoundary(std::string contentType)
 	if (find < contentType.length())
 	{
 		res = contentType.erase(0, contentType.find('=') + 1);
-		//std::cout << "res boundary: " << res << std::endl;
 	}
 	while (!res.empty() && (res[res.length() - 1] == '\r' || res[res.length() - 1] == '\n'))                                        
 		res.erase(res.length() - 1); 
 	return (res);
 }
 
-static bool addContentToFile(std::string body, std::ofstream *newFile)
-{
-	*newFile << body;
-	return (true);
-}
-
-void Post::handlePostFile(std::string *resp, std::string boundary)
+void Post::_handlePostFile(std::string boundary)
 {
 	std::size_t start;
 	std::size_t end;
 	std::size_t length;
 
-	(void)resp;
 	start = this->_body.find("\r\n\r\n") + 4;
 	end = this->_body.rfind("--" + boundary);
-																			 
 	length = end - start;
 	this->_body = this->_body.substr(start, length);
 }
@@ -50,7 +43,6 @@ void Post::handlePostFile(std::string *resp, std::string boundary)
  */
 const std::string Post::createResponse(const Server &srv)
 {
-	std::string resp;
 	std::ofstream newFile;
 	Request dataError;
 	std::string path;
@@ -59,12 +51,13 @@ const std::string Post::createResponse(const Server &srv)
 	ssize_t bodySize;
 
 	dataError = this->_createDataError();
+	ResponseBuilder resp(dataError, this->_protocol);
 	target = findTarget(this->_location, srv.getLocations(), dataError, "POST");
 	path = srv.getRoot() + target;
 	if (this->_contentType.find("multipart/form-data") < this->_contentType.size())
 	{
 		boundary = extractBoundary(this->_contentType);
-		handlePostFile(&resp, boundary);
+		_handlePostFile(boundary);
 		newFile.open(path.c_str(), std::ios::binary);
 	}
 	else {
@@ -74,22 +67,16 @@ const std::string Post::createResponse(const Server &srv)
 
 	if (!newFile.is_open())
 		throw (ResponseError(401, "Unauthorized", dataError));
-	if (!addContentType(&resp, this->_contentType))
-		throw(ResponseError(500, "Can't add content type", dataError));
-	if (!addContentToFile(this->_body, &newFile)) // need some test
-		throw(ResponseError(500, "Can't add content file", dataError));
-	if (!addLocation(&resp, this->_host, this->_location))
-		throw(ResponseError(500, "Can't add Location", dataError));
-	resp.append("\n");
-	if (!addLastModif(&resp, path))
-		throw ResponseError(500, "can't add last modif", dataError);
-	if (!addContentLenght(&resp, bodySize))
-		throw ResponseError(500, "can't add content length", dataError);
-	if (!addStartLine(&resp, this->_protocol, 201, "Created"))
-		throw(ResponseError(500, "Can't add start line", dataError));
-	if (!addBody(&resp, this->_body))
-		throw(ResponseError(500, "Can't add body", dataError));
-	newFile.close();
-	return (resp);
+
+	newFile << this->_body;
+	return resp.contentType(this->_contentType)
+				.location(path)
+				.append("\n")
+				.lastModified(path)
+				.contentLength(bodySize)
+				.body(this->_body)
+				.startLine(201, "Created")
+				.build();
+
 }
 

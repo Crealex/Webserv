@@ -1,4 +1,5 @@
 #include "../includes/Loop.hpp"
+#include <sys/epoll.h>
 
 // Constructor & Destructor
 
@@ -15,6 +16,84 @@ Loop::~Loop()
 
 // METHODS
 // PRIVATE
+
+void	Loop::_cleanExit()
+{
+	std::exit(0);
+}
+
+void	Loop::_displayHelp()
+{
+	std::cout << "Welcome to our beautiful webserver! You can tap these cmd:\n\
+	h - to display this message\n\
+	q - to quit the webserv\n\
+	l - to enable or disable the logs\n\
+	ap - to display the address/port open\n\
+	c - to dispaly a beautifl cat in ascii art" << std::endl;
+}
+
+void	Loop::_handleCmd()
+{
+	std::string in;
+	static bool isDisplayed = 0;
+	char buffer[256];
+	size_t bytesRead;
+	static std::string inputBuffer;
+
+	bytesRead = read(STDIN_FILENO, buffer, sizeof(buffer) - 1);
+    if (bytesRead <= 0)
+        return;
+
+    buffer[bytesRead] = '\0';
+    inputBuffer += buffer;
+    size_t pos = inputBuffer.find('\n');
+    if (pos == std::string::npos)
+        return;
+    in = inputBuffer.substr(0, pos);
+    inputBuffer.erase(0, pos + 1);
+
+
+	if (!isDisplayed)
+	{
+		this->_displayHelp();
+		isDisplayed = 1;
+	}
+	if (in == "h" || in == "help")
+		this->_displayHelp();
+	else if (in == "q")
+		this->_cleanExit();
+	else if (in == "l")
+		std::cout << "l pressed, not handle for the moment" << std::endl;
+	else if (in == "ap")
+		this->_printSocket();
+	else if (in == "c")
+		std::cout << LIGHT_MAGENTA << "\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣄⡀⠀⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡸⠋⠀⠘⣇⠀⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠇⠀⠀⠀⢸⠀⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡜⠀⠀⠀⠀⢸⠀⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠇⠀⠀⠀⠀⢸⠇⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡎⠀⠀⠀⠀⠀⢸⠀⠀⠀\n\
+⠀⠀⢀⣀⣀⣀⠀⠀⠀⠀⠀⢀⣀⣤⡤⠤⠤⠤⠤⢤⣤⣀⡤⢖⡿⠛⠉⢳⠀⠀⠀⠀⠀⢸⠀⠀⠀\n\
+⠀⢼⠁⠉⠉⠛⠻⢭⡓⠒⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠰⣏⠀⠀⠀⢸⠀⠀⠀⠀⠀⡤⠀⠀⠀\n\
+⠀⠸⡄⠀⠀⠀⠀⢸⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠂⠀⠀⡜⠀⠀⠀⠀⢀⡇⠀⠀⠀\n\
+⠀⠀⢷⠀⠀⠀⠠⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢣⢠⠏⠀⠀⠀⠀⢸⠃⠀⠀⠀\n\
+⠀⠀⠈⢧⠀⢀⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡞⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀\n\
+⠀⠀⠀⠈⢳⡈⠁⠀⠀⠀⠀⠀⣀⡀⠀⠀⠀⠀⠀⠀⠀⣶⣶⣦⠀⠀⢹⠀⠀⠀⠀⠀⡎⠀⠀⠀⠀\n\
+⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⢠⣾⣟⣹⡄⠀⠀⠀⠀⡀⠀⣿⣿⣿⡇⠀⢈⣧⠤⠤⠶⠶⢷⠒⠒⠂⠀\n\
+⠀⠀⢀⣀⣠⡧⠄⠀⠀⠀⣾⣿⣿⣿⠇⠀⠀⠀⠙⠁⠀⠙⠻⠿⠃⠀⠨⣼⣤⣀⡀⠀⠈⢧⠀⠀⠀\n\
+⠘⠉⠁⠀⢸⣤⡤⠀⠀⠀⠛⢿⡿⠋⠀⠀⠀⠀⠴⠦⠀⠀⠀⠀⠀⠐⣲⣯⡀⠀⠈⠙⠓⠺⣧⣄⡀\n\
+⠀⣀⡤⠚⠉⢳⡴⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡼⠃⠀⠈⠓⢦⡀⠀⠀⢸⠀⠈\n\
+⠀⠁⠀⢀⡔⠉⠙⡶⢄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠴⠚⠁⠀⠀⠀⠀⠀⠀⠈⠓⠆⠀⡇⠀\n\
+⠀⠀⠰⠋⠀⠀⢸⡇⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠁⠀\n\
+⠀⠀⠀⠀⠀⠀⠈⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡎⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠹⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠙⢆⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠄⠀⢰⠇⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⠶⠺⣇⠀⣀⡜⠀⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢱⡄⠀⠀⠀⠹⡟⠒⢢⡀⠀⠀⠀⠀⢀⡏⠀⠀⠀⠈⠉⠉⠁⠀⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣄⠀⠀⢀⡇⠀⠀⠻⣄⠀⠀⠀⡸⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢷⠶⠋⠀⠀⠀⠀⠈⣣⠶⠖⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀" << RESET << std::endl;
+}
 
 void	Loop::_sockOptNonBlocking(int &socketFd)
 {
@@ -94,6 +173,23 @@ bool	Loop::_isClientSocket(int fd, int &idClient)
 	for (int i = 0; i < sizeClients; i++)
 	{
 		if (fd == this->_clients[i]->getFdClient())
+		{
+			idClient = i;
+			return (true);
+		}
+	}
+	return (false);
+}
+
+bool	Loop::_isCGI(int fd, int &idClient)
+{
+	int	sizeClients;
+
+	std::cout << RED << BOLD << "fd = " << fd << RESET << std::endl;
+	sizeClients = this->_clients.size();
+	for (int i = 0; i < sizeClients; i++)
+	{
+		if (fd == this->_clients[i]->getFDCGI())
 		{
 			idClient = i;
 			return (true);
@@ -312,7 +408,8 @@ void	Loop::_printSend(int idClient)
 
 void	Loop::runLoop()
 {
-	this->_printSocket();
+	fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK); // INFO: Ajouter par alex pour gerer les cmds
+	this->_epoll.addEpollFd(STDIN_FILENO, EPOLLIN|EPOLLET);// Comme ci dessus ^^^
 	while (true)
 	{
 		int			idClient;
@@ -321,13 +418,18 @@ void	Loop::runLoop()
 
 		epollCounterWait = 0;
 		idClient = 0;
-	
+
 		epollCounterWait = ::epoll_wait(this->_epoll.getEpollFd(), events, this->_epoll.getNbSockets(), 2000);
 		this->_checkAllTimeout();
 		if (epollCounterWait < 1)
 			continue ;
 		for (int indexEvent = 0; indexEvent < epollCounterWait; indexEvent++)
 		{
+			if (events[indexEvent].events & EPOLLIN && events[indexEvent].data.fd == STDIN_FILENO) // INFO: Condition ajouter par alex pour gérer les cmds
+			{
+				this->_handleCmd();
+				continue;
+			}
 			if (events[indexEvent].events & EPOLLIN && this->_isServerSocket(events[indexEvent].data.fd))
 			{
 				this->_acceptClient(events[indexEvent].data.fd);
@@ -341,8 +443,28 @@ void	Loop::runLoop()
 				}
 				this->_clients[idClient]->setTimeout();
 				this->_clients[idClient]->setTimeoutRequest();
+				_clients[idClient]->isCGI(_servers[_clients[idClient]->getHostname()]);
+				if (_clients[idClient]->getIsCGI())
+				{
+					_clients[idClient]->startCGI(_servers[_clients[idClient]->getHostname()], _epoll);
+				}
 			}
-			if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient))
+			if (_clients[idClient]->getIsCGI())
+			{
+				if (!_clients[idClient]->checkCGI(_servers[_clients[idClient]->getHostname()]))
+					continue ;
+				if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
+				{
+					// this->_printCloseClient(idClient);
+					this->_closeClients(idClient);
+				}
+				else
+				{
+					this->_clients[idClient]->resetClient();
+					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN|EPOLLET);
+				}
+			}
+			else if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient) && !_clients[idClient]->getIsCGI())
 			{
 				this->_createResponse(idClient);
 				this->_sendResponse(idClient);
@@ -356,7 +478,6 @@ void	Loop::runLoop()
 					this->_clients[idClient]->resetClient();
 					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN|EPOLLET);
 				}
-				this->_printSocket();
 			}
 		}
 	}
