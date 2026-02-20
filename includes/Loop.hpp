@@ -5,6 +5,10 @@
 #include "includes.hpp"
 #include "epoll/Epoll.hpp"
 #include "requests/ResponseError.hpp"
+#include "Logger.hpp"
+
+#define SOCKET true
+#define SEND true
 
 class Logger;
 
@@ -16,6 +20,10 @@ class Loop
 		std::vector<Client *>			_clients;
 		Epoll							_epoll;
 		std::string						_hostnameOfSrvSock;
+
+		void	_cleanExit();
+		void	_displayHelp();
+		void	_handleCmd();
 
 		void	_sockOptNonBlocking(int &socketFd);
 
@@ -41,7 +49,6 @@ class Loop
 		void	_sendResponse(int idClient);
 		bool	_isCGI(int fd, int &idClient);
 		
-		void	_printTime();
 		void	_printSocket();
 		void	_printSend(int idClient);
 
