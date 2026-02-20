@@ -1,4 +1,5 @@
 #include "../includes/Loop.hpp"
+#include <sys/epoll.h>
 
 // Constructor & Destructor
 
@@ -325,7 +326,7 @@ void	Loop::runLoop()
 
 	printSocket = true;
 	fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK); // INFO: Ajouter par alex pour gerer les cmds
-	this->_epoll.addEpollFd(STDIN_FILENO, EPOLLIN);// Comme ci dessus ^^^
+	this->_epoll.addEpollFd(STDIN_FILENO, EPOLLIN|EPOLLET);// Comme ci dessus ^^^
 	while (true)
 	{
 		if (printSocket == true)
