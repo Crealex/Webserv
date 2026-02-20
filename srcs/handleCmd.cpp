@@ -24,7 +24,7 @@ static void displayHelp()
 void	handleCmd()
 {
 	std::string in;
-	static bool isDisplayed;
+	static bool isDisplayed = 0;
 	char buffer[256];
 	size_t bytesRead;
 	static std::string inputBuffer;
