@@ -15,10 +15,12 @@
 #include <sstream>
 
 #include <cstddef>
+#include <cstdlib>
 #include <ctime>
 #include <dirent.h>
 #include <fcntl.h>
 #include <netinet/in.h>
+#include <ostream>
 #include <sys/epoll.h>
 #include <sys/stat.h>
 #include <sys/types.h>

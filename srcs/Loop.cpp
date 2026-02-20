@@ -17,6 +17,84 @@ Loop::~Loop()
 // METHODS
 // PRIVATE
 
+void	Loop::_cleanExit()
+{
+	std::exit(0);
+}
+
+void	Loop::_displayHelp()
+{
+	std::cout << "Welcome to our beautiful webserver! You can tap these cmd:\n\
+	h - to display this message\n\
+	q - to quit the webserv\n\
+	l - to enable or disable the logs\n\
+	ap - to display the address/port open\n\
+	c - to dispaly a beautifl cat in ascii art" << std::endl;
+}
+
+void	Loop::_handleCmd()
+{
+	std::string in;
+	static bool isDisplayed = 0;
+	char buffer[256];
+	size_t bytesRead;
+	static std::string inputBuffer;
+
+	bytesRead = read(STDIN_FILENO, buffer, sizeof(buffer) - 1);
+    if (bytesRead <= 0)
+        return;
+
+    buffer[bytesRead] = '\0';
+    inputBuffer += buffer;
+    size_t pos = inputBuffer.find('\n');
+    if (pos == std::string::npos)
+        return;
+    in = inputBuffer.substr(0, pos);
+    inputBuffer.erase(0, pos + 1);
+
+
+	if (!isDisplayed)
+	{
+		this->_displayHelp();
+		isDisplayed = 1;
+	}
+	if (in == "h" || in == "help")
+		this->_displayHelp();
+	else if (in == "q")
+		this->_cleanExit();
+	else if (in == "l")
+		std::cout << "l pressed, not handle for the moment" << std::endl;
+	else if (in == "ap")
+		this->_printSocket();
+	else if (in == "c")
+		std::cout << LIGHT_MAGENTA << "\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣄⡀⠀⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡸⠋⠀⠘⣇⠀⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠇⠀⠀⠀⢸⠀⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡜⠀⠀⠀⠀⢸⠀⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠇⠀⠀⠀⠀⢸⠇⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡎⠀⠀⠀⠀⠀⢸⠀⠀⠀\n\
+⠀⠀⢀⣀⣀⣀⠀⠀⠀⠀⠀⢀⣀⣤⡤⠤⠤⠤⠤⢤⣤⣀⡤⢖⡿⠛⠉⢳⠀⠀⠀⠀⠀⢸⠀⠀⠀\n\
+⠀⢼⠁⠉⠉⠛⠻⢭⡓⠒⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠰⣏⠀⠀⠀⢸⠀⠀⠀⠀⠀⡤⠀⠀⠀\n\
+⠀⠸⡄⠀⠀⠀⠀⢸⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠂⠀⠀⡜⠀⠀⠀⠀⢀⡇⠀⠀⠀\n\
+⠀⠀⢷⠀⠀⠀⠠⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢣⢠⠏⠀⠀⠀⠀⢸⠃⠀⠀⠀\n\
+⠀⠀⠈⢧⠀⢀⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡞⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀\n\
+⠀⠀⠀⠈⢳⡈⠁⠀⠀⠀⠀⠀⣀⡀⠀⠀⠀⠀⠀⠀⠀⣶⣶⣦⠀⠀⢹⠀⠀⠀⠀⠀⡎⠀⠀⠀⠀\n\
+⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⢠⣾⣟⣹⡄⠀⠀⠀⠀⡀⠀⣿⣿⣿⡇⠀⢈⣧⠤⠤⠶⠶⢷⠒⠒⠂⠀\n\
+⠀⠀⢀⣀⣠⡧⠄⠀⠀⠀⣾⣿⣿⣿⠇⠀⠀⠀⠙⠁⠀⠙⠻⠿⠃⠀⠨⣼⣤⣀⡀⠀⠈⢧⠀⠀⠀\n\
+⠘⠉⠁⠀⢸⣤⡤⠀⠀⠀⠛⢿⡿⠋⠀⠀⠀⠀⠴⠦⠀⠀⠀⠀⠀⠐⣲⣯⡀⠀⠈⠙⠓⠺⣧⣄⡀\n\
+⠀⣀⡤⠚⠉⢳⡴⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡼⠃⠀⠈⠓⢦⡀⠀⠀⢸⠀⠈\n\
+⠀⠁⠀⢀⡔⠉⠙⡶⢄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠴⠚⠁⠀⠀⠀⠀⠀⠀⠈⠓⠆⠀⡇⠀\n\
+⠀⠀⠰⠋⠀⠀⢸⡇⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠁⠀\n\
+⠀⠀⠀⠀⠀⠀⠈⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡎⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠹⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠙⢆⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠄⠀⢰⠇⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⠶⠺⣇⠀⣀⡜⠀⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢱⡄⠀⠀⠀⠹⡟⠒⢢⡀⠀⠀⠀⠀⢀⡏⠀⠀⠀⠈⠉⠉⠁⠀⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣄⠀⠀⢀⡇⠀⠀⠻⣄⠀⠀⠀⡸⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢷⠶⠋⠀⠀⠀⠀⠈⣣⠶⠖⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀" << RESET << std::endl;
+}
+
 void	Loop::_sockOptNonBlocking(int &socketFd)
 {
 		int	opt;
@@ -284,20 +362,10 @@ inline void Loop::_sendResponse(int idClient)
 	}
 }
 
-void	Loop::_printTime()
-{
-	std::time_t timeNow;
-	struct tm	*timeDisplay;
-	char		display[100];
-
-	std::time(&timeNow);
-	timeDisplay = std::localtime(&timeNow);
-	std::strftime(display, sizeof(display), "Date: %a, %d.%m.%Y - %X", timeDisplay);
-	std::cout << display;
-}
-
 void	Loop::_printSocket()
 {
+	if (!SOCKET)
+		return ;
 	size_t	nbSock = this->_sockets.size();
 	size_t	sizeSocket;
 
@@ -316,11 +384,12 @@ void	Loop::_printSocket()
 
 void	Loop::_printSend(int idClient)
 {
+	if (!SEND)
+		return ;
 	std::cout << CYAN << std::endl;
 	std::cout << BOLD;
 	std::cout << "SEND" << std::endl;
-	std::cout << RESET << CYAN;
-	this->_printTime();
+	std::cout << RESET;
 	std::cout << std::endl;
 	std::cout << "On : " << this->_clients[idClient]->getRequest().getHost();
 	std::cout << std::endl << BOLD;
@@ -339,18 +408,10 @@ void	Loop::_printSend(int idClient)
 
 void	Loop::runLoop()
 {
-	bool	printSocket;
-
-	printSocket = true;
 	fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK); // INFO: Ajouter par alex pour gerer les cmds
 	this->_epoll.addEpollFd(STDIN_FILENO, EPOLLIN|EPOLLET);// Comme ci dessus ^^^
 	while (true)
 	{
-		if (printSocket == true)
-		{
-			this->_printSocket();
-			printSocket = false;
-		}
 		int			idClient;
 		int			epollCounterWait;
 		epoll_event	events[this->_epoll.getNbSockets()];
@@ -366,7 +427,7 @@ void	Loop::runLoop()
 		{
 			if (events[indexEvent].events & EPOLLIN && events[indexEvent].data.fd == STDIN_FILENO) // INFO: Condition ajouter par alex pour gérer les cmds
 			{
-				handleCmd();
+				this->_handleCmd();
 				continue;
 			}
 			if (events[indexEvent].events & EPOLLIN && this->_isServerSocket(events[indexEvent].data.fd))
@@ -417,7 +478,6 @@ void	Loop::runLoop()
 					this->_clients[idClient]->resetClient();
 					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN|EPOLLET);
 				}
-				printSocket = true;
 			}
 		}
 	}
