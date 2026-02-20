@@ -1,4 +1,5 @@
 #include "../includes/Client.hpp"
+#include "../includes/requests/Method.hpp"
 
 // CONSTRUCTOR & DESTRUCTOR
 Client::Client()
@@ -147,6 +148,7 @@ void	Client::resetClient()
 	this->_request.reset();
 	this->_timeRequest = this->getTimeNow();
 	this->_time = this->getTimeNow();
+	this->_isCGI = false;
 	if (!this->_response.empty())
 		this->_response.clear();
 }
@@ -179,7 +181,7 @@ void	Client::startCGI(Server &serv, Epoll &epoll)
 {
 	_CGI.setEnvp(serv, _request);
 	_CGI.constructFD(epoll);
-
+	std::cout << BLUE << BOLD << "CGI IS STARTING WITH REQUEST\n" << RESET << _buf<< std::endl;
 	std::string interpreter;
 	std::string path;
 
@@ -207,31 +209,28 @@ void	Client::startCGI(Server &serv, Epoll &epoll)
 			}
 		}
 	}
+	std::cout << "interpreter = " << interpreter << "\npath = " << path << std::endl;
 	_CGI.startSubprocess(path, interpreter);
 }
 
-std::string	Client::_getSizeBody()
+int	Client::_getSizeBody()
 {
 	int pos = _response.find("\r\n\r\n");
 	pos += 4;
 	int size = _response.size() - pos;
 
-	std::stringstream ss;
-	std::string ret;
-	ss << size;
-	ss >> ret;
-	return ret;
+	return size;
 }
 
 void	Client::_checkCGIResponse()
 {
-	int pos = _response.find("\r\n", 0);
-	pos += 2;
-	std::string ContentLength = "ContentLength: ";
-	ContentLength.append(_getSizeBody());
-	_response.insert(pos, ContentLength);
-	_response = "HTTP/1.1 200 OK\r\n" + _response;
-	// TODO parsing and error handling if needed
+	_response.append("\r\n\r\n");
+	int ContentLength = _getSizeBody();
+	std::string head;
+	addStartLine(&head, "HTTP/1.1", 200, "OK");
+	addDate(&head);
+	addContentLenght(&head, ContentLength);
+	_response = head + _response;
 }
 
 bool	Client::checkCGI(Server &serv)

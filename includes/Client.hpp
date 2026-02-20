@@ -27,7 +27,7 @@ class Client
 
 
 		std::string	_intToIp();
-		std::string	_getSizeBody();
+		int			_getSizeBody();
 		void		_checkCGIResponse();
 
 	public:

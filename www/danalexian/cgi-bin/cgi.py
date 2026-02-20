@@ -4,7 +4,13 @@ import sys
 import datetime
 
 print("Content-Type: text/html\r\n\r\n")
-print("<!DOCTYPE html><html><body>")
+print("<!DOCTYPE html><html><head>")
+print("<meta charset=\"UTF-8\" />")
+print("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />")
+print("<link href=\"/style.css\" rel=\"stylesheet\" />")
+print("<title>Danalexian</title></head>")
+print("<body>")
+print("<div class=\"intro\">")
 print("<h1>Test CGI : GET & POST</h1>")
 
 # 1. Affiche la méthode reçue (C'est la preuve pour l'évaluateur)
@@ -27,4 +33,4 @@ if method == "POST":
     except:
         print("<p>Erreur lecture stdin (Pas grave pour ce test)</p>")
 
-print("</body></html>")
+print("</div></body></html>")

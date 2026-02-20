@@ -152,6 +152,7 @@ bool	Loop::_parsingRequest(int idClient)
 	posCRLF = this->_clients[idClient]->getBuf().find("\r\n\r\n");
 	if (posCRLF == std::string::npos)
 		return (false);
+	std::cout << "buf =" << this->_clients[idClient]->getBuf() << std::endl;
 	header = this->_clients[idClient]->getBuf().substr(0, posCRLF + 4);
 	this->_clients[idClient]->setRequestHeader(header);
 	sizeBuf = this->_clients[idClient]->getBuf().size();
@@ -372,7 +373,7 @@ void	Loop::runLoop()
 					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN|EPOLLET);
 				}
 			}
-			if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient) && !_clients[idClient]->getIsCGI())
+			else if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient) && !_clients[idClient]->getIsCGI())
 			{
 				this->_createResponse(idClient);
 				this->_sendResponse(idClient);
