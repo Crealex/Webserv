@@ -1,4 +1,5 @@
 #include "../includes/Loop.hpp"
+#include <sys/epoll.h>
 
 // Constructor & Destructor
 
@@ -341,6 +342,8 @@ void	Loop::runLoop()
 	bool	printSocket;
 
 	printSocket = true;
+	fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK); // INFO: Ajouter par alex pour gerer les cmds
+	this->_epoll.addEpollFd(STDIN_FILENO, EPOLLIN|EPOLLET);// Comme ci dessus ^^^
 	while (true)
 	{
 		if (printSocket == true)
@@ -361,6 +364,11 @@ void	Loop::runLoop()
 			continue ;
 		for (int indexEvent = 0; indexEvent < epollCounterWait; indexEvent++)
 		{
+			if (events[indexEvent].events & EPOLLIN && events[indexEvent].data.fd == STDIN_FILENO) // INFO: Condition ajouter par alex pour gérer les cmds
+			{
+				handleCmd();
+				continue;
+			}
 			if (events[indexEvent].events & EPOLLIN && this->_isServerSocket(events[indexEvent].data.fd))
 			{
 				this->_acceptClient(events[indexEvent].data.fd);
