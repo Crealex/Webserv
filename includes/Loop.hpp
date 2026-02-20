@@ -7,6 +7,9 @@
 #include "requests/ResponseError.hpp"
 #include "Logger.hpp"
 
+#define SOCKET true
+#define SEND true
+
 class Logger;
 
 class Loop
@@ -41,7 +44,6 @@ class Loop
 		void	_createTimeoutResponse(int idClient);
 		void	_sendResponse(int idClient);
 		
-		void	_printTime();
 		void	_printSocket();
 		void	_printSend(int idClient);
 

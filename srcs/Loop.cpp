@@ -266,72 +266,55 @@ inline void Loop::_sendResponse(int idClient)
 	}
 }
 
-// void	Loop::_printTime()
-// {
-// 	std::time_t timeNow;
-// 	struct tm	*timeDisplay;
-// 	char		display[100];
+void	Loop::_printSocket()
+{
+	if (!SOCKET)
+		return ;
+	size_t	nbSock = this->_sockets.size();
+	size_t	sizeSocket;
 
-// 	std::time(&timeNow);
-// 	timeDisplay = std::localtime(&timeNow);
-// 	std::strftime(display, sizeof(display), "Date: %a, %d.%m.%Y - %X", timeDisplay);
-// 	std::cout << display;
-// }
+	for (size_t i = 0; i < nbSock; i++)
+	{
+		sizeSocket = this->_sockets[i]->getSockData().size();
+		for (size_t j = 0; j < sizeSocket; j++)
+		{
+			std::cout << GREEN;
+			std::cout << "Listen on : ";
+			this->_sockets[i]->getSockData()[j]->printAddrPort();
+			std::cout << std::endl << RESET;
+		}
+	}
+}
 
-// void	Loop::_printSocket()
-// {
-// 	size_t	nbSock = this->_sockets.size();
-// 	size_t	sizeSocket;
-
-// 	for (size_t i = 0; i < nbSock; i++)
-// 	{
-// 		sizeSocket = this->_sockets[i]->getSockData().size();
-// 		for (size_t j = 0; j < sizeSocket; j++)
-// 		{
-// 			std::cout << GREEN;
-// 			std::cout << "Listen on : ";
-// 			this->_sockets[i]->getSockData()[j]->printAddrPort();
-// 			std::cout << std::endl << RESET;
-// 		}
-// 	}
-// }
-
-// void	Loop::_printSend(int idClient)
-// {
-// 	std::cout << CYAN << std::endl;
-// 	std::cout << BOLD;
-// 	std::cout << "SEND" << std::endl;
-// 	std::cout << RESET << CYAN;
-// 	this->_printTime();
-// 	std::cout << std::endl;
-// 	std::cout << "On : " << this->_clients[idClient]->getRequest().getHost();
-// 	std::cout << std::endl << BOLD;
-// 	std::cout << std::endl << "Request : " << std::endl;
-// 	std::cout << RESET << CYAN;
-// 	this->_clients[idClient]->getRequest().printRequest();
-// 	std::cout << BOLD;
-// 	std::cout << std::endl << "Response : " << std::endl;
-// 	std::cout << RESET << CYAN;
-// 	std::cout << this->_clients[idClient]->getResponse();
-// 	std::cout << RESET;
-// 	std::cout << std::endl;
-// }
+void	Loop::_printSend(int idClient)
+{
+	if (!SEND)
+		return ;
+	std::cout << CYAN << std::endl;
+	std::cout << BOLD;
+	std::cout << "SEND" << std::endl;
+	std::cout << RESET;
+	std::cout << std::endl;
+	std::cout << "On : " << this->_clients[idClient]->getRequest().getHost();
+	std::cout << std::endl << BOLD;
+	std::cout << std::endl << "Request : " << std::endl;
+	std::cout << RESET << CYAN;
+	this->_clients[idClient]->getRequest().printRequest();
+	std::cout << BOLD;
+	std::cout << std::endl << "Response : " << std::endl;
+	std::cout << RESET << CYAN;
+	std::cout << this->_clients[idClient]->getResponse();
+	std::cout << RESET;
+	std::cout << std::endl;
+}
 
 // PUBLIC
 
 void	Loop::runLoop()
 {
-	bool	printSocket;
-
-	printSocket = true;
+	this->_printSocket();
 	while (true)
 	{
-		if (printSocket == true)
-		{
-			// this->_printSocket();
-			Logger::print(Logger::INFO, "Listen on : " );
-			printSocket = false;
-		}
 		int			idClient;
 		int			epollCounterWait;
 		epoll_event	events[this->_epoll.getNbSockets()];
@@ -373,7 +356,7 @@ void	Loop::runLoop()
 					this->_clients[idClient]->resetClient();
 					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN|EPOLLET);
 				}
-				printSocket = true;
+				this->_printSocket();
 			}
 		}
 	}

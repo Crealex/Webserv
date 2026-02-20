@@ -6,9 +6,9 @@
 
 void	Logger::_printTime()
 {
-	std::time_t timeNow;
-	struct tm	*timeDisplay;
-	char		display[100];
+	std::time_t		timeNow;
+	struct tm		*timeDisplay;
+	char			display[100];
 
 	std::time(&timeNow);
 	timeDisplay = std::localtime(&timeNow);
@@ -52,21 +52,21 @@ void	Logger::_printError(std::string message)
 
 // PUBLIC
 
-void	Logger::print(type_t type, std::string message, bool isWriting)
+void	Logger::log(enum type type, std::string message, bool isWriting)
 {
 	if (!isWriting)
 		return ;
 	switch (type)
 	{
-		case 0:
+		case Logger::DEBUG:
 			_printDebug(message);
 			break;
 		
-		case 1:
+		case Logger::INFO:
 			_printInfo(message);
 			break;
 		
-		case 2:
+		case Logger::ERROR:
 			_printError(message);
 			break;
 	}

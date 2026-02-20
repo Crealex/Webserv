@@ -14,14 +14,14 @@ class Logger
 		static void	_printError(std::string message);
 		
 	public:
-		typedef enum type_t
+		enum type
 		{
 			DEBUG,
 			INFO,
 			ERROR,
 		};
 
-		static void	print(type_t type, std::string message, bool isWriting);
+		static void	log(enum type type, std::string message, bool isWriting);
 };
 
 #endif
