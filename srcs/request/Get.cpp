@@ -105,8 +105,8 @@ const std::string Get::createResponse(const Server &srv)
 	Request			dataError;
 	std::string		target;
 	std::string		fileStr;
-	std::pair<unsigned int, std::string> codeMess;
-	bool isRedir = 0;
+	std::pair<unsigned int, std::string>	codeMess;
+	bool			isRedir = 0;
 	
 	dataError = this->_createDataError();
 	dataError.setAccept(this->_accept);
@@ -157,18 +157,13 @@ const std::string Get::createResponse(const Server &srv)
 	}
 	else
 	{
-		if (!addContentType(&resp, this->_accept, path))
-			throw ResponseError(406, "Not acceptable", dataError);
-		if (!addDate(&resp))
-			throw ResponseError(500, "Can't add date", dataError);
-		if (!addLastModif(&resp, path))
-			throw ResponseError(500, "can't add last modif", dataError);
-		if (!addContentLenght(&resp, path))
-			throw ResponseError(500, "can't add content length", dataError);
-		if (!addBody(&resp, fileStr))
-			throw ResponseError(500, "can't add body", dataError);
-		if (!addStartLine(&resp, this->_protocol, codeMess.first, codeMess.second))
-			throw ResponseError(500, "can't add start line", dataError);
+		resp.contentType(this->_accept, path)
+			.date()
+			.lastModified(path)
+			.contentLength(path)
+			.body(fileStr)
+			.startLine(codeMess.first, codeMess.second)
+			.append("\r\n\r\n");
 	}
 	return (resp.build());
 }

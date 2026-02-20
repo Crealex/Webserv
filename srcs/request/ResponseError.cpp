@@ -1,6 +1,7 @@
 #include "../../includes/requests/ResponseError.hpp"
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/colors.hpp"
+#include "../../includes/requests/ResponseBuilder.hpp"
 
 ResponseError::ResponseError(unsigned int code, const std::string &message, const Request &requ): std::exception(), Methods(requ), _code(code), _message(message)
 {
@@ -73,7 +74,7 @@ std::string createBodyHTML(unsigned int code, std::string mess)
 				<img src=\"https://http.cat/" << code << "\" alt=\"img http cat error " << code << "\" />\n \
 			</div>\n \
 			</body>\n \
-		</html>\n";
+		</html>\r\n\r\n";
 
 	return (ss.str());
 }
@@ -86,14 +87,15 @@ std::string createBodyHTML(unsigned int code, std::string mess)
  */
 const std::string ResponseError::createResponse(const Server &srv)
 {
-	std::string resp;
-	std::string path;
-	std::stringstream ss;
-	std::ifstream file;
-	Request dataError;
-	std::string fileStr;
+	std::string			path;
+	std::stringstream	ss;
+	std::ifstream		file;
+	Request				dataError;
+	std::string			fileStr;
 
 	dataError = this->_createDataError();
+
+	ResponseBuilder resp(dataError, this->_protocol);
 	ss << this->_code;
 	path = srv.getRoot() + "/error/" + ss.str() + ".html";
 	file.open(path.c_str());
@@ -104,19 +106,12 @@ const std::string ResponseError::createResponse(const Server &srv)
 	else {
 		fileStr = createFileStr(file);
 	}
-
-
-	if (!addContentType(&resp, "text/html", path))
-		throw ResponseError(406, "Not acceptable", dataError);
-	if (!addDate(&resp))
-		throw ResponseError(500, "Can't add date", dataError);
-	if (!addLastModif(&resp, path))
-		throw ResponseError(500, "can't add last modif", dataError);
-	if (!addContentLenght(&resp, path, fileStr)) 
-		throw ResponseError(500, "can't add content length", dataError);
-	addStartLine(&resp, this->_protocol, this->_code, this->_message);
-	resp.append("\r\n\r\n");
-	addBody(&resp, fileStr);
-	return (resp);
+	return resp.contentType("text/html", path)
+		.date()
+		.lastModified(path)
+		.contentLength(fileStr.size())
+		.startLine(this->_code, this->_message)
+		.body(fileStr)
+		.build();
 }
 
