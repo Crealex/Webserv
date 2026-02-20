@@ -1,4 +1,5 @@
 
+#include <cstddef>
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -24,22 +25,29 @@ void	handleCmd()
 {
 	std::string in;
 	static bool isDisplayed;
-	struct pollfd pfd;
-    pfd.fd = STDIN_FILENO;
-    pfd.events = POLLIN;
+	char buffer[256];
+	size_t bytesRead;
+	static std::string inputBuffer;
+
+	bytesRead = read(STDIN_FILENO, buffer, sizeof(buffer) - 1);
+    if (bytesRead <= 0)
+        return;
+
+    buffer[bytesRead] = '\0';
+    inputBuffer += buffer;
+    size_t pos = inputBuffer.find('\n');
+    if (pos == std::string::npos)
+        return;
+    in = inputBuffer.substr(0, pos);
+    inputBuffer.erase(0, pos + 1);
+
 
 	if (!isDisplayed)
 	{
 		displayHelp();
 		isDisplayed = 1;
 	}
-    if (poll(&pfd, 1, 0) <= 0)
-		return; // Rien à lire, on sort immédiatementlayed = 0;
-
-	std::getline(std::cin, in);
-	//if (std::cin.fail() || std::cin.eof())
-	//	return ;
-	if (in == "h")
+	if (in == "h" || in == "help")
 		displayHelp();
 	else if (in == "q")
 		cleanExit();
