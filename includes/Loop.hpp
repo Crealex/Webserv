@@ -39,6 +39,7 @@ class Loop
 		void	_createResponse(int idClient);
 		void	_createTimeoutResponse(int idClient);
 		void	_sendResponse(int idClient);
+		bool	_isCGI(int fd, int &idClient);
 		
 		void	_printTime();
 		void	_printSocket();
