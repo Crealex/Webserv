@@ -45,9 +45,7 @@ static std::vector<Server>	createServers(std::string path)
 
 int main (int argc, char **argv) 
 {
-	std::vector<Socket *>	sockets;
 	std::vector<Server>		servers;
-	std::vector<Client *>	clients;
 
 	if (argc > 2)
 	{

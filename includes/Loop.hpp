@@ -22,11 +22,11 @@ class Loop
 		Epoll							_epoll;
 		std::string						_hostnameOfSrvSock;
 		
-		void					_sockOptNonBlocking(int &socketFd);
-		void					_createMapServer(std::vector<Server> servers);
-		int						_listenSocket(std::vector<Socket *> &sockets, size_t &i, size_t &j, size_t &sizeSockData);
-		int						_bindSocket(std::vector<Socket *> &sockets);
-		std::vector<Socket *>	_createSocket(std::vector<Server> srvs, int &nbSockets);
+		void	_sockOptNonBlocking(int &socketFd);
+		void	_createMapServer(std::vector<Server> servers);
+		int		_listenSocket(size_t &i, size_t &j, size_t &sizeSockData);
+		int		_bindSocket();
+		void	_createSocket(std::vector<Server> srvs, int &nbSockets);
 		
 		void	_cleanExit();
 		void	_displayHelp();

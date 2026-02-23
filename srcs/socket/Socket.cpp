@@ -8,6 +8,18 @@ Socket::Socket(Server data)
 
 Socket::~Socket()
 {
+	int	sizeSockData;
+
+	sizeSockData = this->_sockData.size();
+	for (int i = 0; i < sizeSockData; i++)
+	{
+		if (!this->_sockData[i])
+		{
+			delete this->_sockData[i];
+			this->_sockData[i] = NULL;
+		}
+	}
+	this->_sockData.clear();
 }
 
 // GETTERS
@@ -49,5 +61,17 @@ std::vector<SocketData *>::iterator	Socket::getEnd()
 void	Socket::eraseSocket(int i)
 {
 	delete this->_sockData[i];
+	this->_sockData[i] = NULL;
 	this->_sockData.erase(this->getBegin() + i);
+}
+
+void	Socket::printSockData()
+{
+	int	sizeSockData;
+
+	sizeSockData = this->_sockData.size();
+	for (int i = 0; i < sizeSockData; i++)
+	{
+		this->_sockData[i]->printAddrPort();
+	}
 }

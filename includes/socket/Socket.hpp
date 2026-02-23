@@ -22,6 +22,7 @@ class Socket
 		std::vector<SocketData *>::iterator	getBegin();
 		std::vector<SocketData *>::iterator	getEnd();
 		void								eraseSocket(int i);
+		void								printSockData();
 };
 
 #endif
