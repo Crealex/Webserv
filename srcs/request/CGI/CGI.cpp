@@ -149,11 +149,6 @@ void CGI::startSubprocess(const std::string path, const std::string interpreter)
 		::dup2(_pipeFromCGI[1], STDOUT_FILENO);
 		::close(_pipeFromCGI[1]);
 
-		// ::write(1, "CGI start\n", 10);
-		// (void)path;
-		// (void)interpreter;	
-		// ::exit(0);
-
 		char **args = new char*[3];
 		args[0] = const_cast<char *>(interpreter.c_str());
 		args[1] = const_cast<char *>(path.c_str());
@@ -167,7 +162,7 @@ void CGI::startSubprocess(const std::string path, const std::string interpreter)
 			::exit(1);
 		}
 	}
-	else 
+	else
 	{
 		_started = true;
 		_childPid = pid;
