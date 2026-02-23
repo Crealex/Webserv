@@ -48,7 +48,6 @@ int main (int argc, char **argv)
 	std::vector<Socket *>	sockets;
 	std::vector<Server>		servers;
 	std::vector<Client *>	clients;
-	int						nbSockets;
 
 	if (argc > 2)
 	{
@@ -58,13 +57,7 @@ int main (int argc, char **argv)
 	try 
 	{
 		servers = createServers(argv[1]);
-		sockets = createSocket(servers, nbSockets);
-		if (sockets.size() == 0)
-		{
-			std::cerr << RED << "Error : no socket for the webserv" << std::endl << RESET;
-			return (-2);
-		}
-		Loop	loop(servers, sockets, nbSockets);
+		Loop	loop(servers);
 		loop.runLoop();
 	}
 	catch (std::exception &e) 

@@ -3,24 +3,117 @@
 
 // Constructor & Destructor
 
-Loop::Loop(std::vector<Server> servers, std::vector<Socket *> sockets, int nbSockets)
-: _sockets(sockets)
+Loop::Loop(std::vector<Server> servers)
 {
-	_createMapServer(servers);
-	this->_epoll = Epoll(sockets, nbSockets);
-}
+	int	nbSockets;
+	this->_createMapServer(servers);
+	this->_sockets = this->_createSocket(servers, nbSockets);
+	if (this->_sockets.size() == 0)
+		throw std::runtime_error(RED "Error : no sockets to start the webserver" RESET);
+	this->_epoll = Epoll(this->_sockets, nbSockets);
+}	
 
 Loop::~Loop()
 {
-}
+}	
 
 // METHODS
 // PRIVATE
 
+void	Loop::_sockOptNonBlocking(int &socketFd)
+{
+		int	opt;
+
+		opt = 1;
+		::fcntl(socketFd, F_SETFL, O_NONBLOCK);
+		::setsockopt(socketFd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(int));
+}
+
+void	Loop::_createMapServer(std::vector<Server> servers)
+{
+	int	nbServers;
+
+	nbServers = servers.size();
+	for (int i = 0; i < nbServers; i++)
+	{
+		this->_servers[servers[i].getHostname()] = servers[i];
+	}
+}
+
+int	Loop::_listenSocket(std::vector<Socket *> &sockets, size_t &i, size_t &j, size_t &sizeSockData)
+{
+	int									checkFail;
+	std::vector<SocketData *>::iterator	eltToErase;
+
+	checkFail = 0;
+	checkFail = ::listen(sockets[i]->getSockData()[j]->getFdServer(), 2);
+	if (checkFail < 0)
+	{
+		sockets[i]->eraseSocket(j);
+		j--;
+		sizeSockData--;
+		return (0);
+	}
+	return (1);
+}
+
+int	Loop::_bindSocket(std::vector<Socket *> &sockets)
+{
+	int		checkFail;
+	int		nbSockets;
+	size_t	sizeSockets;
+	size_t	sizeSockData;
+
+	checkFail = 0;
+	nbSockets = 0;
+	sizeSockets = sockets.size();
+	for (size_t i = 0; i < sizeSockets; i++)
+	{
+		sizeSockData = sockets[i]->getSockData().size();
+		for (size_t j = 0; j != sizeSockData; j++)
+		{
+			checkFail = ::bind(sockets[i]->getSockData()[j]->getFdServer(), (struct sockaddr *)&(sockets[i]->getSockData()[j]->getSockadd()), sizeof(sockaddr_in));
+			if (checkFail < 0)
+			{
+				sockets[i]->eraseSocket(j);
+				j--;
+				sizeSockData--;
+			}
+			else
+			{
+				nbSockets += this->_listenSocket(sockets, i, j, sizeSockData);
+			}
+		}
+		if (sockets[i]->getSockData().size() == 0)
+		{
+			delete sockets[i];
+			sockets.erase(sockets.begin() + i);
+			i--;
+			sizeSockets--;
+		}
+	}
+	return (nbSockets);
+}
+
+std::vector<Socket *>	Loop::_createSocket(std::vector<Server> srvs, int &nbSockets)
+{
+	std::vector<Socket *>	sockets;
+	size_t					sizeSrvs;
+
+	sizeSrvs = srvs.size();
+	sockets.reserve(sizeSrvs);
+	for (size_t i = 0; i < sizeSrvs; i++)
+	{
+		Socket	*temp = new Socket(srvs[i]);
+		sockets.push_back(temp);
+	}
+	nbSockets = this->_bindSocket(sockets);
+	return (sockets);
+}
 void	Loop::_cleanExit()
 {
 	std::exit(0);
-}
+}	
 
 void	Loop::_displayHelp()
 {
@@ -30,7 +123,7 @@ void	Loop::_displayHelp()
 	l - to enable or disable the logs\n\
 	ap - to display the address/port open\n\
 	c - to dispaly a beautifl cat in ascii art" << std::endl;
-}
+}	
 
 void	Loop::_handleCmd()
 {
@@ -44,12 +137,12 @@ void	Loop::_handleCmd()
     if (bytesRead <= 0)
         return;
 
-    buffer[bytesRead] = '\0';
+    buffer[bytesRead] = '\0';	
     inputBuffer += buffer;
     size_t pos = inputBuffer.find('\n');
     if (pos == std::string::npos)
         return;
-    in = inputBuffer.substr(0, pos);
+    in = inputBuffer.substr(0, pos);	
     inputBuffer.erase(0, pos + 1);
 
 
@@ -57,16 +150,16 @@ void	Loop::_handleCmd()
 	{
 		this->_displayHelp();
 		isDisplayed = 1;
-	}
+	}	
 	if (in == "h" || in == "help")
 		this->_displayHelp();
-	else if (in == "q")
+	else if (in == "q")	
 		this->_cleanExit();
-	else if (in == "l")
+	else if (in == "l")	
 		std::cout << "l pressed, not handle for the moment" << std::endl;
-	else if (in == "ap")
+	else if (in == "ap")	
 		this->_printSocket();
-	else if (in == "c")
+	else if (in == "c")	
 		std::cout << LIGHT_MAGENTA << "\
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣄⡀⠀⠀⠀\n\
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡸⠋⠀⠘⣇⠀⠀⠀\n\
@@ -93,26 +186,6 @@ void	Loop::_handleCmd()
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢱⡄⠀⠀⠀⠹⡟⠒⢢⡀⠀⠀⠀⠀⢀⡏⠀⠀⠀⠈⠉⠉⠁⠀⠀⠀\n\
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣄⠀⠀⢀⡇⠀⠀⠻⣄⠀⠀⠀⡸⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n\
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢷⠶⠋⠀⠀⠀⠀⠈⣣⠶⠖⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀" << RESET << std::endl;
-}
-
-void	Loop::_sockOptNonBlocking(int &socketFd)
-{
-		int	opt;
-
-		opt = 1;
-		::fcntl(socketFd, F_SETFL, O_NONBLOCK);
-		::setsockopt(socketFd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(int));
-}
-
-void	Loop::_createMapServer(std::vector<Server> servers)
-{
-	int	nbServers;
-
-	nbServers = servers.size();
-	for (int i = 0; i < nbServers; i++)
-	{
-		this->_servers[servers[i].getHostname()] = servers[i];
-	}
 }
 
 void	Loop::_closeClients(int idClient)
