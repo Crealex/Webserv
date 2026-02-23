@@ -164,6 +164,11 @@ std::map<std::string, bool> retMethods(std::string str)
 	return ret;
 }
 
+Location::Location()
+{
+	
+}
+
 Location::Location(location src, std::string root)
 {
 	_autoIndex = retAutoIndex(src.autoIndex);

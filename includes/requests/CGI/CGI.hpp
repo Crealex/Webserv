@@ -23,7 +23,7 @@ class CGI {
 
 		bool		_cmpExt(std::string ext, std::map<std::string, std::string> map);
 		void		_sockOptNonBlocking(int &socketFd);		
-		Location*	_retRightLoc(std::string path, Server serv);
+		Location	_retRightLoc(std::string path, Server serv);
 		std::string	_retExtension(std::string str);
 
 	public:
