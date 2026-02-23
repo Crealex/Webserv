@@ -187,6 +187,7 @@ server createStruct(std::ifstream *configFile, bool *eof)
 	dispatchTable = createDispatchTable();
 	cLine = 1;
 	brackets.inServer = true;
+	brackets.inLocation = false;
 	while (std::getline(*configFile, line))
 	{
 		addLine(line, &configStruct, &brackets, cLine, dispatchTable);
