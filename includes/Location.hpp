@@ -21,6 +21,7 @@ class Location {
 
 	public:
 
+		Location();
 		Location(location src, std::string root);
 		Location(const Location& cpy);
 		Location& operator=(const Location& src);

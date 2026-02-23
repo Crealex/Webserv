@@ -100,6 +100,24 @@ void Request::reset()
 	_keepAlive = false;
 }
 
+void Request::_parseAccept()
+{
+	std::istringstream ss(_accept);
+	std::string	newAccept;
+	std::string	line;
+	while (std::getline(ss, line, ','))
+	{
+		size_t pos = line.find(';');
+		if (pos != std::string::npos)
+			newAccept += line.substr(0, pos);
+		else
+			newAccept += line;
+		newAccept += ',';
+	}
+	newAccept.erase(newAccept.end() - 1);
+	_accept = newAccept;
+}
+
 void Request::_checkGet()
 {
 	if (_userAgent.empty() || 
@@ -192,6 +210,7 @@ void Request::checkRequest(const unsigned int maxSize)
 		throw ResponseError(400, "Error, bad request", *this);
 	}
 
+	_parseAccept();
 	if (_method == "POST")
 		_checkPost();
 	else if (_method == "GET")

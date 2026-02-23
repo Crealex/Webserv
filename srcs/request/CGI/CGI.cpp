@@ -149,11 +149,6 @@ void CGI::startSubprocess(const std::string path, const std::string interpreter)
 		::dup2(_pipeFromCGI[1], STDOUT_FILENO);
 		::close(_pipeFromCGI[1]);
 
-		// ::write(1, "CGI start\n", 10);
-		// (void)path;
-		// (void)interpreter;	
-		// ::exit(0);
-
 		char **args = new char*[3];
 		args[0] = const_cast<char *>(interpreter.c_str());
 		args[1] = const_cast<char *>(path.c_str());
@@ -167,7 +162,7 @@ void CGI::startSubprocess(const std::string path, const std::string interpreter)
 			::exit(1);
 		}
 	}
-	else 
+	else
 	{
 		_started = true;
 		_childPid = pid;
@@ -246,7 +241,7 @@ inline std::string CGI::_retExtension(std::string str)
 	return str.substr(pos, str.size() - (pos));
 }
 
-Location* CGI::_retRightLoc(std::string path, Server serv)
+Location CGI::_retRightLoc(std::string path, Server serv)
 {
 	std::string locStr = path.substr(0, path.find('.'));
 	std::vector<Location> v = serv.getLocations();
@@ -254,10 +249,10 @@ Location* CGI::_retRightLoc(std::string path, Server serv)
 		it != v.end(); it++)
 	{
 		if (locStr == (*it).getPath())
-			return &(*it);	// return the adress of the object 'it' point to :D
+			return (*it);	// return the adress of the object 'it' point to :D
 	}
 
-	return NULL;
+	return Location();
 }
 
 bool CGI::_cmpExt(std::string ext, std::map<std::string, std::string> map)
@@ -276,11 +271,11 @@ bool CGI::isCGI(std::string path, Server server)
 	std::string ext = _retExtension(path);
 	if (ext == path)
 	{
-		Location *loc = _retRightLoc(path, server);
-		if (loc != NULL)
+		Location loc = _retRightLoc(path, server);
+		if (!loc.getIndex().empty())
 		{
-			std::string indexExt = _retExtension(loc->getIndex());
-			return _cmpExt(indexExt, loc->getCgiHandler());
+			std::string indexExt = _retExtension(loc.getIndex());
+			return _cmpExt(indexExt, loc.getCgiHandler());
 		}
 		else
 			return false; // TODO maybe throw ?
@@ -288,10 +283,10 @@ bool CGI::isCGI(std::string path, Server server)
 	else
 	{
 		std::string substring = path.substr(0, path.find_last_of('/'));
-		Location *loc = _retRightLoc(substring, server);
-		if (loc != NULL)
+		Location loc = _retRightLoc(substring, server);
+		if (!loc.getIndex().empty())
 		{
-			if (_cmpExt(ext, loc->getCgiHandler()))
+			if (_cmpExt(ext, loc.getCgiHandler()))
 			{
 				std::ifstream is(std::string(server.getRoot() + path).c_str());
 				

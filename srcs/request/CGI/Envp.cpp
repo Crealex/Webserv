@@ -52,12 +52,12 @@ std::vector<std::string> Envp::getVec() const
 
 char **Envp::getEnv() const
 {
-	char **ret = new char*[_env.size() + 1];
+	char **ret = new char*[_env.size()];
 
 	size_t i = 0;
-	for (; i <= _env.size(); i++)
+	for (; i <= _env.size() - 1; i++)
 	{
-		ret[i] = (char *)_env[i].c_str();
+		ret[i] = const_cast<char *>(_env[i].c_str());
 	}
 	ret[i] = NULL;
 
