@@ -15,19 +15,22 @@ class Logger;
 class Loop
 {
 	private:
+
 		std::map<std::string, Server>	_servers;
 		std::vector<Socket *>			_sockets;
 		std::vector<Client *>			_clients;
 		Epoll							_epoll;
 		std::string						_hostnameOfSrvSock;
-
+		
+		void					_sockOptNonBlocking(int &socketFd);
+		void					_createMapServer(std::vector<Server> servers);
+		int						_listenSocket(std::vector<Socket *> &sockets, size_t &i, size_t &j, size_t &sizeSockData);
+		int						_bindSocket(std::vector<Socket *> &sockets);
+		std::vector<Socket *>	_createSocket(std::vector<Server> srvs, int &nbSockets);
+		
 		void	_cleanExit();
 		void	_displayHelp();
 		void	_handleCmd();
-
-		void	_sockOptNonBlocking(int &socketFd);
-
-		void	_createMapServer(std::vector<Server> servers);
 
 		void	_closeClients(int idClient);
 
@@ -53,7 +56,7 @@ class Loop
 		void	_printSend(int idClient);
 
 	public:
-		Loop(std::vector<Server> servers, std::vector<Socket *> sockets, int nbSockets);
+		Loop(std::vector<Server> servers);
 		~Loop();
 
 		void	runLoop();
