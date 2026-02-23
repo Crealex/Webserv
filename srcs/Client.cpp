@@ -17,6 +17,7 @@ Client::~Client()
 	std::time(&timeNow);
 	timeDisplay = std::localtime(&timeNow);
 	std::strftime(display, sizeof(display), "Date: %a, %d.%m.%Y - %X", timeDisplay);
+	_CGI.reset();
 
 	std::cout << RED;
 	std::cout << "Close of client with fd : " << this->_fdSocket;
@@ -160,6 +161,7 @@ void	Client::resetClient()
 	this->_timeRequest = this->getTimeNow();
 	this->_time = this->getTimeNow();
 	this->_isCGI = false;
+	this->_CGI.reset();
 	if (!this->_response.empty())
 		this->_response.clear();
 }
@@ -253,6 +255,7 @@ bool	Client::checkCGI(Server &serv)
 	{
 		_response = e.createResponse(serv);
 		::send(_fdSocket, _response.c_str(), _response.size(), 0);
+		_CGI.reset();
 		return true;
 	}
 	if (_CGI.subprocessExited())

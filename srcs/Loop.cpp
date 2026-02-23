@@ -365,7 +365,7 @@ void	Loop::runLoop()
 			{
 				this->_acceptClient(events[indexEvent].data.fd);
 			}
-			if (events[indexEvent].events & EPOLLIN && this->_isClientSocket(events[indexEvent].data.fd, idClient))
+			else if (events[indexEvent].events & EPOLLIN && this->_isClientSocket(events[indexEvent].data.fd, idClient))
 			{
 				if (!this->_getRequest(idClient))
 				{
@@ -380,7 +380,7 @@ void	Loop::runLoop()
 					_clients[idClient]->startCGI(_servers[_clients[idClient]->getHostname()], _epoll);
 				}
 			}
-			if (_clients[idClient]->getIsCGI())
+			else if (_clients[idClient]->getIsCGI())
 			{
 				if (!_clients[idClient]->checkCGI(_servers[_clients[idClient]->getHostname()]))
 					continue ;
