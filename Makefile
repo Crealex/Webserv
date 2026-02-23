@@ -15,6 +15,9 @@ OBJDIR	= objets
 CFLAGS	= -Werror -Wextra -Wall -std=c++98 -g3
 CC = c++
 
+# variable for arguement of executable
+CONF	?= danalexian.conf
+
 # Colors and style
 END      := $(shell printf "\033[0m")
 WHITE    := $(shell printf "\033[1;37m")
@@ -64,6 +67,9 @@ fclean: clean
 	@echo "${BOLD}${GREEN}✨ All clean ✨${END}"
 
 re: fclean all
+
+leaks: ${NAME}
+	valgrind --show-leak-kinds=all --leak-check=full --log-file=valgrind.log ./webServ $(CONF)
 
 .PHONY: all clean fclean re display_ascii
 
