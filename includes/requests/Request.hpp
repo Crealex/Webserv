@@ -30,6 +30,7 @@ class Request {
 		bool			_keepAlive;
 		bool			_error;
 
+		void	_parseAccept();
 		void	_checkPost();
 		void	_checkGet();
 
