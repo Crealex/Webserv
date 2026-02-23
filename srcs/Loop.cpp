@@ -137,18 +137,19 @@ void	Loop::_cleanExit()
 
 void	Loop::_displayHelp()
 {
-	std::cout << "Welcome to our beautiful webserver! You can tap these cmd:\n\
+	std::cout << "----------------------------------------------------\n\
+	\rWelcome to our beautiful webserver! You can tap these cmd:\n\n\
 	h - to display this message\n\
 	q - to quit the webserv\n\
 	l - to enable or disable the logs\n\
 	ap - to display the address/port open\n\
-	c - to dispaly a beautifl cat in ascii art" << std::endl;
-}	
+	c - to dispaly a beautifl cat in ascii art\n\
+	\r----------------------------------------------------" << std::endl;
+}
 
 void	Loop::_handleCmd()
 {
 	std::string in;
-	static bool isDisplayed = 0;
 	char buffer[256];
 	size_t bytesRead;
 	static std::string inputBuffer;
@@ -166,11 +167,6 @@ void	Loop::_handleCmd()
     inputBuffer.erase(0, pos + 1);
 
 
-	if (!isDisplayed)
-	{
-		this->_displayHelp();
-		isDisplayed = 1;
-	}	
 	if (in == "h" || in == "help")
 		this->_displayHelp();
 	else if (in == "q")	
@@ -498,6 +494,7 @@ void	Loop::runLoop()
 {
 	fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK); // INFO: Ajouter par alex pour gerer les cmds
 	this->_epoll.addEpollFd(STDIN_FILENO, EPOLLIN|EPOLLET);// Comme ci dessus ^^^
+	this->_displayHelp();
 	while (true)
 	{
 		int			idClient;
