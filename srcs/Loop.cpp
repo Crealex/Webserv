@@ -37,7 +37,8 @@ Loop::~Loop()
 			this->_clients[i] = NULL;
 		}
 	}
-}	
+	this->_epoll.closeFd();
+}
 
 // METHODS
 // PRIVATE
@@ -564,4 +565,5 @@ void	Loop::runLoop()
 			}
 		}
 	}
+
 }

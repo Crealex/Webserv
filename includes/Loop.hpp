@@ -57,6 +57,7 @@ class Loop
 		void	_printSend(int idClient);
 
 	public:
+		Loop();
 		Loop(std::vector<Server> servers);
 		~Loop();
 
