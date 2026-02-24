@@ -1,5 +1,6 @@
 #include "../includes/Loop.hpp"
 #include <sys/epoll.h>
+#include "../includes/Logger.hpp"
 
 // Constructor & Destructor
 
@@ -462,7 +463,8 @@ void	Loop::_printSend(int idClient)
 	std::cout << std::endl;
 	std::cout << "On : " << this->_clients[idClient]->getRequest().getHost();
 	std::cout << std::endl << BOLD;
-	std::cout << std::endl << "Request : " << std::endl;
+	Logger::_printTime();
+	std::cout << "\nRequest : " << std::endl;
 	std::cout << RESET << CYAN;
 	this->_clients[idClient]->getRequest().printRequest();
 	std::cout << BOLD;

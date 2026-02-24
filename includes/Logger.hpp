@@ -7,7 +7,6 @@
 class Logger
 {
 	private:
-		static void	_printTime();
 		
 		static void	_printDebug(std::string message);
 		static void	_printInfo(std::string message);
@@ -22,6 +21,7 @@ class Logger
 		};
 
 		static void	log(enum type type, std::string message, bool isWriting);
+		static void	_printTime();
 };
 
 #endif
