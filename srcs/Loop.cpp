@@ -1,6 +1,14 @@
 #include "../includes/Loop.hpp"
 #include <sys/epoll.h>
 
+volatile bool g_exit = false;
+
+void	signalHandler(int signal)
+{
+	(void)signal;
+	g_exit = true;
+}
+
 // Constructor & Destructor
 
 Loop::Loop(std::vector<Server> servers)
@@ -491,7 +499,7 @@ void	Loop::runLoop()
 	fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK); // INFO: Ajouter par alex pour gerer les cmds
 	this->_epoll.addEpollFd(STDIN_FILENO, EPOLLIN|EPOLLET);// Comme ci dessus ^^^
 	this->_displayHelp();
-	while (!this->_isExit)
+	while (!this->_isExit && !g_exit)
 	{
 		int			idClient;
 		int			epollCounterWait;

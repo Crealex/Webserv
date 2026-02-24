@@ -1,6 +1,7 @@
 #include "../includes/printDebug.hpp"
 #include "../includes/includes.hpp"
 #include "../includes/Loop.hpp"
+#include <signal.h>
 
 static void	isDuplicateServer(Server temp, std::vector<Server> res)
 {
@@ -54,6 +55,7 @@ int main (int argc, char **argv)
 	}
 	try 
 	{
+		signal(SIGINT, signalHandler);
 		servers = createServers(argv[1]);
 		Loop	loop(servers);
 		loop.runLoop();
