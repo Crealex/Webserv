@@ -23,6 +23,7 @@ Client::~Client()
 	std::cout << "Close of client with fd : " << this->_fdSocket;
 	std::cout << "\t" << display;
 	std::cout << std::endl << RESET;
+	close (this->_fdSocket);
 }
 
 // GETTERS

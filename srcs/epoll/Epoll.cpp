@@ -11,7 +11,7 @@ Epoll::Epoll(std::vector<Socket *> sockets, int nbSockets)
 {
 	this->_epollFd = createEpoll();
 	this->_nbSockets = nbSockets;
-	addEpollServer(sockets, nbSockets, this->_epollFd);
+	addEpollServer(sockets, this->_epollFd);
 }
 
 Epoll::~Epoll()
@@ -59,12 +59,14 @@ int	Epoll::createEpoll()
 	return (res);
 }
 
-void	Epoll::addEpollServer(std::vector<Socket *> &sockets, int sizeRes, int epollFd)
+void	Epoll::addEpollServer(std::vector<Socket *> &sockets, int epollFd)
 {
 	epoll_event	res;
 	int			sizeSocket;
 	int			sizeSockData;
 	int			count;
+	int			counter;
+	int			epollStatus;
 
 	sizeSocket = sockets.size();
 	count = 0;
@@ -73,13 +75,17 @@ void	Epoll::addEpollServer(std::vector<Socket *> &sockets, int sizeRes, int epol
 		sizeSockData = sockets[i]->getSockData().size();
 		for (int j = 0; j < sizeSockData; j++)
 		{
-			res.data.fd = sockets[i]->getSockData()[j]->getFdServer();
-			res.events = EPOLLIN;
-			if (::epoll_ctl(epollFd, EPOLL_CTL_ADD, res.data.fd, &res) < 0)
+			counter = 0;
+			do
 			{
-				this->addEpollServer(sockets, sizeRes, epollFd);
-			}
-			count++;
+				res.data.fd = sockets[i]->getSockData()[j]->getFdServer();
+				res.events = EPOLLIN;
+				epollStatus = ::epoll_ctl(epollFd, EPOLL_CTL_ADD, res.data.fd, &res);
+				counter++;
+			} while (epollStatus < 0 && counter < 3);
+			if (epollStatus > 0)
+				count++;
+			// else : log error
 		}
 	}
 }
@@ -89,12 +95,18 @@ void	Epoll::addEpollServer(std::vector<Socket *> &sockets, int sizeRes, int epol
 void	Epoll::addEpollFd(int fd, uint32_t event)
 {
 	epoll_event	temp;
+	int			counter;
+	int			epollStatus;
 
-	temp.data.fd = fd;
-	temp.events = event;
-	if (::epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, temp.data.fd, &temp) < 0)
+	counter = 0;
+	do
 	{
-		this->addEpollFd(fd, event);
-	}
-	this->_nbSockets++;
+		temp.data.fd = fd;
+		temp.events = event;
+		epollStatus = ::epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, temp.data.fd, &temp);
+		counter++;
+	} while (epollStatus < 0 && counter < 3);
+	if (epollStatus > 0)
+		this->_nbSockets++;
+	// else : error log
 }
