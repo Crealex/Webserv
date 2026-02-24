@@ -11,13 +11,14 @@ Loop::Loop(std::vector<Server> servers)
 	if (this->_sockets.size() == 0)
 		throw std::runtime_error(RED "Error : no sockets to start the webserver" RESET);
 	this->_epoll = Epoll(this->_sockets, nbSockets);
-}	
+	this->_isExit = false;
+}
 
 Loop::~Loop()
 {
 	int	sizeSock;
 	int	nbClients;
-
+	
 	sizeSock = this->_sockets.size();
 	nbClients = this->_clients.size();
 	for (int i = 0; i < sizeSock; i++)
@@ -107,8 +108,8 @@ int	Loop::_bindSocket()
 		}
 		if (this->_sockets[i]->getSockData().size() == 0)
 		{
-			// delete this->_sockets[i];
-			// this->_sockets[i] = NULL;
+			delete this->_sockets[i];
+			this->_sockets[i] = NULL;
 			this->_sockets.erase(this->_sockets.begin() + i);
 			i--;
 			sizeSockets--;
@@ -122,7 +123,6 @@ void	Loop::_createSocket(std::vector<Server> srvs, int &nbSockets)
 	size_t	sizeSrvs;
 
 	sizeSrvs = srvs.size();
-	this->_sockets.reserve(sizeSrvs);
 	for (size_t i = 0; i < sizeSrvs; i++)
 	{
 		Socket	*temp = new Socket(srvs[i]);
@@ -130,10 +130,6 @@ void	Loop::_createSocket(std::vector<Server> srvs, int &nbSockets)
 	}
 	nbSockets = this->_bindSocket();
 }
-void	Loop::_cleanExit()
-{
-	std::exit(0);
-}	
 
 void	Loop::_displayHelp()
 {
@@ -170,7 +166,7 @@ void	Loop::_handleCmd()
 	if (in == "h" || in == "help")
 		this->_displayHelp();
 	else if (in == "q")	
-		this->_cleanExit();
+		this->_isExit = true;
 	else if (in == "l")	
 		std::cout << "l pressed, not handle for the moment" << std::endl;
 	else if (in == "ap")	
@@ -495,7 +491,7 @@ void	Loop::runLoop()
 	fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK); // INFO: Ajouter par alex pour gerer les cmds
 	this->_epoll.addEpollFd(STDIN_FILENO, EPOLLIN|EPOLLET);// Comme ci dessus ^^^
 	this->_displayHelp();
-	while (true)
+	while (!this->_isExit)
 	{
 		int			idClient;
 		int			epollCounterWait;
@@ -513,6 +509,8 @@ void	Loop::runLoop()
 			if (events[indexEvent].events & EPOLLIN && events[indexEvent].data.fd == STDIN_FILENO) // INFO: Condition ajouter par alex pour gérer les cmds
 			{
 				this->_handleCmd();
+				if (this->_isExit)
+					break ;
 				continue;
 			}
 			if (events[indexEvent].events & EPOLLIN && this->_isServerSocket(events[indexEvent].data.fd))

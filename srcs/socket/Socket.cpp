@@ -13,13 +13,12 @@ Socket::~Socket()
 	sizeSockData = this->_sockData.size();
 	for (int i = 0; i < sizeSockData; i++)
 	{
-		if (!this->_sockData[i])
+		if (this->_sockData[i])
 		{
 			delete this->_sockData[i];
 			this->_sockData[i] = NULL;
 		}
 	}
-	this->_sockData.clear();
 }
 
 // GETTERS
@@ -73,5 +72,6 @@ void	Socket::printSockData()
 	for (int i = 0; i < sizeSockData; i++)
 	{
 		this->_sockData[i]->printAddrPort();
+		std::cout << std::endl;
 	}
 }

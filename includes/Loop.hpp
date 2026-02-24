@@ -21,6 +21,7 @@ class Loop
 		std::vector<Client *>			_clients;
 		Epoll							_epoll;
 		std::string						_hostnameOfSrvSock;
+		bool							_isExit;
 		
 		void	_sockOptNonBlocking(int &socketFd);
 		void	_createMapServer(std::vector<Server> servers);
