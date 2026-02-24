@@ -356,6 +356,7 @@ int	Loop::_receiveRequest(int idClient)
 	char	buffer[10000];
 	
 	sizeRecv = ::recv(this->_clients[idClient]->getFdClient(), buffer, sizeof(buffer) - 1, 0);
+	std::cout << "size recv : " << sizeRecv << ", buf : " << buffer << std::endl;
 	if (sizeRecv == -1)
 		return (this->_receiveRequest(idClient));
 	buffer[sizeRecv] = '\0';
