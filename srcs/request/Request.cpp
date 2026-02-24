@@ -41,7 +41,6 @@ Request &Request::operator=(const Request& src)
 
 Request::~Request()
 {
-	
 }
 
 /**

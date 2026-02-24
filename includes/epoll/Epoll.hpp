@@ -14,7 +14,7 @@ class Epoll
 		int			_nbSockets;
 
 		int		createEpoll();
-		void	addEpollServer(std::vector<Socket *> &sockets, int sizeRes, int epollFd);
+		void	addEpollServer(std::vector<Socket *> &sockets, int epollFd);
 
 	public:
 		Epoll();
