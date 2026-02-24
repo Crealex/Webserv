@@ -29,8 +29,8 @@ class Server
 	std::string _parseRoot(std::string data);
 
 	std::string				_keywordAddress(std::string word);
-	bool					_isPrivate(std::vector<std::string> infos);
-	bool					_isValidAddress(std::vector<std::string> infos);
+	// bool					_isPrivate(std::vector<std::string> infos);
+	// bool					_isValidAddress(std::vector<std::string> infos);
 	std::string				_checkAddress(std::string addressPort, size_t colon);
 	bool					_isDuplicate(std::string add, unsigned int port, std::vector<addPort_t> res);
 	std::vector<addPort_t>	_parseAddressPort(std::vector<std::string> data);
@@ -48,6 +48,8 @@ class Server
 	Server();
 	Server(struct server data);
 	~Server();
+
+	Server	&operator=(const Server &other);
 
 	// GETTER
 	std::string const							&getHostname() const;

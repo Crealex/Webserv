@@ -7,14 +7,36 @@ Loop::Loop(std::vector<Server> servers)
 {
 	int	nbSockets;
 	this->_createMapServer(servers);
-	this->_sockets = this->_createSocket(servers, nbSockets);
+	this->_createSocket(servers, nbSockets);
 	if (this->_sockets.size() == 0)
 		throw std::runtime_error(RED "Error : no sockets to start the webserver" RESET);
 	this->_epoll = Epoll(this->_sockets, nbSockets);
-}	
+	this->_isExit = false;
+}
 
 Loop::~Loop()
 {
+	int	sizeSock;
+	int	nbClients;
+	
+	sizeSock = this->_sockets.size();
+	nbClients = this->_clients.size();
+	for (int i = 0; i < sizeSock; i++)
+	{
+		if (this->_sockets[i])
+		{
+			delete this->_sockets[i];
+			this->_sockets[i] = NULL;
+		}
+	}
+	for (int i = 0; i < nbClients; i++)
+	{
+		if (this->_clients[i])
+		{
+			delete this->_clients[i];
+			this->_clients[i] = NULL;
+		}
+	}
 }	
 
 // METHODS
@@ -40,16 +62,16 @@ void	Loop::_createMapServer(std::vector<Server> servers)
 	}
 }
 
-int	Loop::_listenSocket(std::vector<Socket *> &sockets, size_t &i, size_t &j, size_t &sizeSockData)
+int	Loop::_listenSocket(size_t &i, size_t &j, size_t &sizeSockData)
 {
 	int									checkFail;
 	std::vector<SocketData *>::iterator	eltToErase;
 
 	checkFail = 0;
-	checkFail = ::listen(sockets[i]->getSockData()[j]->getFdServer(), 2);
+	checkFail = ::listen(this->_sockets[i]->getSockData()[j]->getFdServer(), 2);
 	if (checkFail < 0)
 	{
-		sockets[i]->eraseSocket(j);
+		this->_sockets[i]->eraseSocket(j);
 		j--;
 		sizeSockData--;
 		return (0);
@@ -57,7 +79,7 @@ int	Loop::_listenSocket(std::vector<Socket *> &sockets, size_t &i, size_t &j, si
 	return (1);
 }
 
-int	Loop::_bindSocket(std::vector<Socket *> &sockets)
+int	Loop::_bindSocket()
 {
 	int		checkFail;
 	int		nbSockets;
@@ -66,28 +88,29 @@ int	Loop::_bindSocket(std::vector<Socket *> &sockets)
 
 	checkFail = 0;
 	nbSockets = 0;
-	sizeSockets = sockets.size();
+	sizeSockets = this->_sockets.size();
 	for (size_t i = 0; i < sizeSockets; i++)
 	{
-		sizeSockData = sockets[i]->getSockData().size();
+		sizeSockData = this->_sockets[i]->getSockData().size();
 		for (size_t j = 0; j != sizeSockData; j++)
 		{
-			checkFail = ::bind(sockets[i]->getSockData()[j]->getFdServer(), (struct sockaddr *)&(sockets[i]->getSockData()[j]->getSockadd()), sizeof(sockaddr_in));
+			checkFail = ::bind(this->_sockets[i]->getSockData()[j]->getFdServer(), (struct sockaddr *)&(this->_sockets[i]->getSockData()[j]->getSockadd()), sizeof(sockaddr_in));
 			if (checkFail < 0)
 			{
-				sockets[i]->eraseSocket(j);
+				this->_sockets[i]->eraseSocket(j);
 				j--;
 				sizeSockData--;
 			}
 			else
 			{
-				nbSockets += this->_listenSocket(sockets, i, j, sizeSockData);
+				nbSockets += this->_listenSocket(i, j, sizeSockData);
 			}
 		}
-		if (sockets[i]->getSockData().size() == 0)
+		if (this->_sockets[i]->getSockData().size() == 0)
 		{
-			delete sockets[i];
-			sockets.erase(sockets.begin() + i);
+			delete this->_sockets[i];
+			this->_sockets[i] = NULL;
+			this->_sockets.erase(this->_sockets.begin() + i);
 			i--;
 			sizeSockets--;
 		}
@@ -95,25 +118,18 @@ int	Loop::_bindSocket(std::vector<Socket *> &sockets)
 	return (nbSockets);
 }
 
-std::vector<Socket *>	Loop::_createSocket(std::vector<Server> srvs, int &nbSockets)
+void	Loop::_createSocket(std::vector<Server> srvs, int &nbSockets)
 {
-	std::vector<Socket *>	sockets;
-	size_t					sizeSrvs;
+	size_t	sizeSrvs;
 
 	sizeSrvs = srvs.size();
-	sockets.reserve(sizeSrvs);
 	for (size_t i = 0; i < sizeSrvs; i++)
 	{
 		Socket	*temp = new Socket(srvs[i]);
-		sockets.push_back(temp);
+		this->_sockets.push_back(temp);
 	}
-	nbSockets = this->_bindSocket(sockets);
-	return (sockets);
+	nbSockets = this->_bindSocket();
 }
-void	Loop::_cleanExit()
-{
-	std::exit(0);
-}	
 
 void	Loop::_displayHelp()
 {
@@ -150,7 +166,7 @@ void	Loop::_handleCmd()
 	if (in == "h" || in == "help")
 		this->_displayHelp();
 	else if (in == "q")	
-		this->_cleanExit();
+		this->_isExit = true;
 	else if (in == "l")	
 		std::cout << "l pressed, not handle for the moment" << std::endl;
 	else if (in == "ap")	
@@ -404,6 +420,8 @@ void	Loop::_createResponse(int idClient)
 	catch(ResponseError& e)
 	{
 		this->_clients[idClient]->setResponse(e.createResponse(this->_servers.at(this->_clients[idClient]->getHostname())));
+		if (met)
+			delete met;
 	}
 }
 
@@ -412,7 +430,7 @@ void	Loop::_createTimeoutResponse(int idClient)
 	try
 	{
 		if (this->_clients[idClient]->checkTimeoutRequest())
-			throw ResponseError(504, "Error: Gateway Timeout", this->_clients[idClient]->getRequest());
+			throw ResponseError(408, "Error: Request Timeout", this->_clients[idClient]->getRequest());
 	}
 	catch (ResponseError& e)
 	{
@@ -436,18 +454,13 @@ void	Loop::_printSocket()
 	if (!SOCKET)
 		return ;
 	size_t	nbSock = this->_sockets.size();
-	size_t	sizeSocket;
 
 	for (size_t i = 0; i < nbSock; i++)
 	{
-		sizeSocket = this->_sockets[i]->getSockData().size();
-		for (size_t j = 0; j < sizeSocket; j++)
-		{
-			std::cout << GREEN;
-			std::cout << "Listen on : ";
-			this->_sockets[i]->getSockData()[j]->printAddrPort();
-			std::cout << std::endl << RESET;
-		}
+		std::cout << GREEN;
+		std::cout << "Listen on : " << std::endl;
+		this->_sockets[i]->printSockData();
+		std::cout << RESET << std::endl;
 	}
 }
 
@@ -458,8 +471,6 @@ void	Loop::_printSend(int idClient)
 	std::cout << CYAN << std::endl;
 	std::cout << BOLD;
 	std::cout << "SEND" << std::endl;
-	std::cout << RESET;
-	std::cout << std::endl;
 	std::cout << "On : " << this->_clients[idClient]->getRequest().getHost();
 	std::cout << std::endl << BOLD;
 	std::cout << std::endl << "Request : " << std::endl;
@@ -480,7 +491,7 @@ void	Loop::runLoop()
 	fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK); // INFO: Ajouter par alex pour gerer les cmds
 	this->_epoll.addEpollFd(STDIN_FILENO, EPOLLIN|EPOLLET);// Comme ci dessus ^^^
 	this->_displayHelp();
-	while (true)
+	while (!this->_isExit)
 	{
 		int			idClient;
 		int			epollCounterWait;
@@ -498,6 +509,8 @@ void	Loop::runLoop()
 			if (events[indexEvent].events & EPOLLIN && events[indexEvent].data.fd == STDIN_FILENO) // INFO: Condition ajouter par alex pour gérer les cmds
 			{
 				this->_handleCmd();
+				if (this->_isExit)
+					break ;
 				continue;
 			}
 			if (events[indexEvent].events & EPOLLIN && this->_isServerSocket(events[indexEvent].data.fd))

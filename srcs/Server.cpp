@@ -21,6 +21,21 @@ Server::~Server()
 	//std::cout << RED << "Destructor called" << RESET << std::endl;
 }
 
+Server	&Server::operator=(const Server &other)
+{
+	if (this != &other)
+	{
+		this->_hostname = other._hostname;
+		this->_addressPort = other._addressPort;
+		this->_root = other._root;
+		this->_maxSize = other._maxSize;
+		this->_errorPage = other._errorPage;
+		this->_locations = other._locations;
+		this->_cgiHandler = other._cgiHandler;
+	}
+	return (*this);
+}
+
 
 // GETTER
 
@@ -203,8 +218,6 @@ std::string	Server::_checkAddress(std::string addressPort, size_t colon)
 				result = this->_keywordAddress(infos[0]);
 				break;
 			case 4:	
-				// if (this->_isPrivate(infos) || !this->_isValidAddress(infos))
-				// 	throw std::invalid_argument(RED "Error : invalid IP address, IP address is either private or doesn't exist" RESET);
 				result = address;	
 				break;
 			default:	

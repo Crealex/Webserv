@@ -210,7 +210,6 @@ Location &Location::operator=(const Location& src)
 
 Location::~Location()
 {
-	
 }
 
 bool Location::getAutoIndex() const

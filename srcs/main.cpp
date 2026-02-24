@@ -45,9 +45,7 @@ static std::vector<Server>	createServers(std::string path)
 
 int main (int argc, char **argv) 
 {
-	std::vector<Socket *>	sockets;
 	std::vector<Server>		servers;
-	std::vector<Client *>	clients;
 
 	if (argc > 2)
 	{
@@ -64,6 +62,6 @@ int main (int argc, char **argv)
 	{
 		std::cout << RED << e.what() << RESET << std::endl;
 	}
-	std::cout << RED << "help end" << std::endl << RESET;
+	std::cout << RED << "help end" << RESET << std::endl ;
 	return 0;
 }

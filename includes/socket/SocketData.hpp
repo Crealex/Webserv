@@ -25,7 +25,7 @@ class SocketData
 		sockaddr_in	const	&getSockadd() const;
 		int	const			&getFdServer() const;
 
-		void	printAddrPort();
+		void printAddrPort();
 };
 
 #endif
