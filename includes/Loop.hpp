@@ -10,7 +10,8 @@
 #define SOCKET true
 #define SEND true
 
-class Logger;
+class	Logger;
+void	signalHandler(int signal);
 
 class Loop
 {
