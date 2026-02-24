@@ -446,7 +446,7 @@ void	Loop::_printSocket()
 			std::cout << GREEN;
 			std::cout << "Listen on : ";
 			this->_sockets[i]->getSockData()[j]->printAddrPort();
-			std::cout << std::endl << RESET;
+			std::cout << RESET << std::endl;
 		}
 	}
 }
