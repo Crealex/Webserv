@@ -25,14 +25,20 @@ Loop::Loop(std::vector<Server> servers)
 Loop::~Loop()
 {
 	int	sizeSock;
+	int	sizeSockData;
 	int	nbClients;
 	
 	sizeSock = this->_sockets.size();
 	nbClients = this->_clients.size();
 	for (int i = 0; i < sizeSock; i++)
 	{
+		sizeSockData = this->_sockets[i]->getSockData().size();
 		if (this->_sockets[i])
 		{
+			for (int j = 0; j < sizeSockData; j++)
+			{
+				::epoll_ctl(this->_epoll.getEpollFd(), EPOLL_CTL_DEL, this->_sockets[i]->getSockData()[j]->getFdServer(), 0);
+			}
 			delete this->_sockets[i];
 			this->_sockets[i] = NULL;
 		}
@@ -41,6 +47,7 @@ Loop::~Loop()
 	{
 		if (this->_clients[i])
 		{
+			::epoll_ctl(this->_epoll.getEpollFd(), EPOLL_CTL_DEL, this->_clients[i]->getFdClient(), 0);
 			delete this->_clients[i];
 			this->_clients[i] = NULL;
 		}
@@ -547,7 +554,6 @@ void	Loop::runLoop()
 					continue ;
 				if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
 				{
-					// this->_printCloseClient(idClient);
 					this->_closeClients(idClient);
 				}
 				else
@@ -560,7 +566,6 @@ void	Loop::runLoop()
 			{
 				this->_createResponse(idClient);
 				this->_sendResponse(idClient);
-				this->_printSend(idClient);
 				if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
 				{
 					this->_closeClients(idClient);
@@ -573,5 +578,4 @@ void	Loop::runLoop()
 			}
 		}
 	}
-
 }
