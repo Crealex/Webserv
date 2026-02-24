@@ -11,6 +11,7 @@ class Logger
 		static void	_printDebug(std::string message);
 		static void	_printInfo(std::string message);
 		static void	_printError(std::string message);
+		static bool	_isEnabled;
 		
 	public:
 		enum type
@@ -20,8 +21,10 @@ class Logger
 			ERROR,
 		};
 
-		static void	log(enum type type, std::string message, bool isWriting);
+		static void	log(enum type type, std::string message);
 		static void	_printTime();
+		static bool	getIsEnabled();
+		static void	setIsEnabled(bool status);
 };
 
 #endif

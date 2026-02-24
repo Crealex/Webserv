@@ -4,6 +4,8 @@
 
 // PRIVATE
 
+bool Logger::_isEnabled = false;
+
 void	Logger::_printTime()
 {
 	std::time_t		timeNow;
@@ -52,9 +54,9 @@ void	Logger::_printError(std::string message)
 
 // PUBLIC
 
-void	Logger::log(enum type type, std::string message, bool isWriting)
+void	Logger::log(enum type type, std::string message)
 {
-	if (!isWriting)
+	if (!Logger::_isEnabled)
 		return ;
 	switch (type)
 	{
@@ -70,4 +72,13 @@ void	Logger::log(enum type type, std::string message, bool isWriting)
 			_printError(message);
 			break;
 	}
+}
+
+void	Logger::setIsEnabled(bool status)
+{
+	Logger::_isEnabled = status;
+}
+bool	Logger::getIsEnabled()
+{
+	return (Logger::_isEnabled);
 }

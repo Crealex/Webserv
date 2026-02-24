@@ -1,4 +1,5 @@
 #include "../includes/Loop.hpp"
+#include <sstream>
 #include <sys/epoll.h>
 #include "../includes/Logger.hpp"
 
@@ -169,7 +170,18 @@ void	Loop::_handleCmd()
 	else if (in == "q")	
 		this->_isExit = true;
 	else if (in == "l")	
-		std::cout << "l pressed, not handle for the moment" << std::endl;
+	{
+		if (Logger::getIsEnabled())
+		{
+			Logger::setIsEnabled(0);
+			std::cout << "logs disabled" << std::endl;
+		}
+		else
+		{
+			Logger::setIsEnabled(1);
+			std::cout << "logs enabled" << std::endl;
+		}
+	}
 	else if (in == "ap")	
 		this->_printSocket();
 	else if (in == "c")	
@@ -467,23 +479,27 @@ void	Loop::_printSocket()
 
 void	Loop::_printSend(int idClient)
 {
+	std::stringstream respSS;
+	std::stringstream requSS;
 	if (!SEND)
 		return ;
-	std::cout << CYAN << std::endl;
-	std::cout << BOLD;
-	std::cout << "SEND" << std::endl;
-	std::cout << "On : " << this->_clients[idClient]->getRequest().getHost();
-	std::cout << std::endl << BOLD;
-	Logger::_printTime();
-	std::cout << "\nRequest : " << std::endl;
-	std::cout << RESET << CYAN;
-	this->_clients[idClient]->getRequest().printRequest();
-	std::cout << BOLD;
-	std::cout << std::endl << "Response : " << std::endl;
-	std::cout << RESET << CYAN;
-	std::cout << this->_clients[idClient]->getResponse();
-	std::cout << RESET;
-	std::cout << std::endl;
+	respSS << BOLD << "RESPONSE:\n" << RESET << this->_clients[idClient]->getResponse();
+	Logger::log(Logger::INFO, respSS.str());
+	//std::cout << CYAN << std::endl;
+	//std::cout << BOLD;
+	//std::cout << "SEND" << std::endl;
+	//std::cout << "On : " << this->_clients[idClient]->getRequest().getHost();
+	//std::cout << std::endl << BOLD;
+	//Logger::_printTime();
+	//std::cout << "\nRequest : " << std::endl;
+	//std::cout << RESET << CYAN;
+	//this->_clients[idClient]->getRequest().printRequest();
+	//std::cout << BOLD;
+	//std::cout << std::endl << "Response : " << std::endl;
+	//std::cout << RESET << CYAN;
+	//std::cout << this->_clients[idClient]->getResponse();
+	//std::cout << RESET;
+	//std::cout << std::endl;
 }
 
 // PUBLIC
