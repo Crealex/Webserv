@@ -22,7 +22,7 @@ Client::~Client()
 	std::cout << RED;
 	std::cout << "Close of client with fd : " << this->_fdSocket;
 	std::cout << "\t" << display;
-	std::cout << std::endl << RESET;
+	std::cout << RESET << std::endl;
 	close (this->_fdSocket);
 }
 

@@ -111,7 +111,7 @@ const std::string Get::createResponse(const Server &srv)
 	dataError = this->_createDataError();
 	dataError.setAccept(this->_accept);
 	dataError.setUserAgent(this->_userAgent);
-
+	
 	ResponseBuilder	resp(dataError, this->_protocol);
 	target = findTarget(this->_location, srv.getLocations(), dataError, "GET");
 	if (target.find("http") == std::string::npos)

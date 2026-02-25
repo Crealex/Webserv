@@ -19,7 +19,7 @@ std::vector<fileInfo> fillFileInfos(const std::string &path)
 
 	dir = opendir(path.c_str());
 	if (!dir)
-		throw std::runtime_error("Error wuth opendir");
+		throw std::runtime_error("Error with opendir");
 	structDir = readdir(dir);
 	while (structDir)
 	{
