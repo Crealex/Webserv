@@ -6,3 +6,4 @@ protectedFile.txt
 uploads/
 .vscode/
 refacto.md
+valgrind.log

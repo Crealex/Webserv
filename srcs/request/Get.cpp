@@ -117,10 +117,13 @@ const std::string Get::createResponse(const Server &srv)
 	if (target.find("http") == std::string::npos)
 	{
 		path = srv.getRoot() + "/" + target;
-		file.open(path.c_str());
-		if (!file.is_open())
-			throw ResponseError(404, "Not found", dataError);
-		fileStr = createFileStr(file);
+		if (!isDir(path))
+		{
+			file.open(path.c_str());
+			if (!file.is_open())
+				throw ResponseError(404, "Not found", dataError);
+			fileStr = createFileStr(file);
+		}
 	}
 	else
 	{

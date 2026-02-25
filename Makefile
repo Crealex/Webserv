@@ -69,7 +69,7 @@ fclean: clean
 re: fclean all
 
 leaks: ${NAME}
-	valgrind --show-leak-kinds=all --leak-check=full --log-file=valgrind.log ./webServ $(CONF)
+	valgrind --show-leak-kinds=all --leak-check=full --track-fds=yes --log-file=valgrind.log ./webServ $(CONF)
 
 .PHONY: all clean fclean re display_ascii
 
