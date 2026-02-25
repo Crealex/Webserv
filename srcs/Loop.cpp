@@ -60,25 +60,6 @@ Loop::~Loop()
 // METHODS
 // PRIVATE
 
-bool	Loop::_servIsTimedOut()
-{
-	std::time_t	timestamp;
-
-	std::time(&timestamp);
-	if (std::difftime(timestamp, this->_time) > 5)
-	{
-		std::cout << RED << "time out of the server" << RESET << std::endl;
-		return (true);
-	}
-	return (false);
-}
-
-
-void	Loop::_setTime()
-{
-	std::time(&this->_time);
-}
-
 void	Loop::_sockOptNonBlocking(int &socketFd)
 {
 		int	opt;
