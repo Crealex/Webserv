@@ -43,9 +43,9 @@ class Loop
 
 		bool	_parsingRequest(int idClient);
 		int		_receiveRequest(int idClient);
-		void	_addBodyLen(int idClient);
-		void	_addBodyChunked(int idClient);
-		void	_checkBody(int idClient);
+		int		_addBodyLen(int idClient);
+		int		_addBodyChunked(int idClient);
+		int		_checkBody(int idClient);
 		bool	_getRequest(int idClient);
 
 		void	_createResponse(int idClient);
