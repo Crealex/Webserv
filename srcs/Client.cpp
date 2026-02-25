@@ -223,6 +223,7 @@ void	Client::startCGI(Server &serv, Epoll &epoll)
 		}
 	}
 	_CGI.startSubprocess(path, interpreter);
+	_CGI.sendBody(_request.getBody());
 }
 
 int	Client::_getSizeBody()
