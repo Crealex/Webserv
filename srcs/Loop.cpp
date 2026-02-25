@@ -466,6 +466,7 @@ void	Loop::_createResponse(int idClient)
 		if (met)
 			delete met;
 	}
+	this->_clients[idClient]->setTimeout();
 }
 
 void	Loop::_createTimeoutResponse(int idClient)
@@ -479,6 +480,7 @@ void	Loop::_createTimeoutResponse(int idClient)
 	{
 		this->_clients[idClient]->setResponse(e.createResponse(this->_servers.at(this->_clients[idClient]->getHostname())));
 	}
+	this->_clients[idClient]->setTimeout();
 }
 
 inline void Loop::_sendResponse(int idClient)
