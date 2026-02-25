@@ -83,7 +83,7 @@ void	Epoll::addEpollServer(std::vector<Socket *> &sockets, int epollFd)
 				epollStatus = ::epoll_ctl(epollFd, EPOLL_CTL_ADD, res.data.fd, &res);
 				counter++;
 			} while (epollStatus < 0 && counter < 3);
-			if (epollStatus > 0)
+			if (epollStatus > -1)
 				count++;
 			// else : log error
 		}
@@ -106,7 +106,7 @@ void	Epoll::addEpollFd(int fd, uint32_t event)
 		epollStatus = ::epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, temp.data.fd, &temp);
 		counter++;
 	} while (epollStatus < 0 && counter < 3);
-	if (epollStatus > 0)
+	if (epollStatus > -1)
 		this->_nbSockets++;
 	// else : error log
 }
