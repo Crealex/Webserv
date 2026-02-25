@@ -20,21 +20,14 @@ Get::Get(const Request &requ): Methods(requ), _userAgent(requ.getUserAgent()), _
 static std::string createFileStr(std::ifstream &file)
 {
 	std::string fileStr;
-	try
-	{
-		ICI
-		file.seekg(0, std::ios::end);
-		size_t size = file.tellg();
-		file.seekg(0, std::ios::beg);
-		std::cout << "before resize : " << size << std::endl;
-		fileStr.resize(size);
-		std::cout << "afetr resize" << std::endl;
-		file.read(&fileStr[0], size);
+	file.seekg(0, std::ios::end);
+	size_t size = file.tellg();
+	file.seekg(0, std::ios::beg);
+	std::cout << "before resize : " << size << std::endl;
+	fileStr.resize(size);
+	std::cout << "afetr resize" << std::endl;
+	file.read(&fileStr[0], size);
 
-	}
-	catch (std::exception &e)
-	{
-	}
 	return fileStr;
 }
 
