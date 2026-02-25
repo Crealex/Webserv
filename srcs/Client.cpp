@@ -209,8 +209,20 @@ void	Client::startCGI(Server &serv, Epoll &epoll)
 		}
 	}
 
-	path = _request.getLocation();
+	if (interpreter.empty())
+	{
+		std::string substring = _request.getLocation().substr(0, _request.getLocation().find_last_of('/'));
+		std::string ext = _request.getLocation().substr(_request.getLocation().find('.'), _request.getLocation().size() - _request.getLocation().find('.'));
+		for (size_t i = 0; i < serv.getLocations().size(); i++)
+		{
+			if (substring == serv.getLocations()[i].getPath())
+			{
+				interpreter = serv.getLocations()[i].getCgiHandler().at(ext);
+			}
+		}
+	}
 
+	path = _request.getLocation();
 	if (path.find('.') == std::string::npos)
 	{
 		for (size_t i = 0; i < serv.getLocations().size(); i++)
@@ -222,6 +234,8 @@ void	Client::startCGI(Server &serv, Epoll &epoll)
 			}
 		}
 	}
+	else
+		path = serv.getRoot() + path;
 	_CGI.startSubprocess(path, interpreter);
 	_CGI.sendBody(_request.getBody());
 }
