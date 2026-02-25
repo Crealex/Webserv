@@ -1,73 +1,25 @@
-==86737== Memcheck, a memory error detector
-==86737== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
-==86737== Using Valgrind-3.25.1 and LibVEX; rerun with -h for copyright info
-==86737== Command: ./webServ danalexian.conf
-==86737== Parent PID: 86726
-==86737== 
-==86751== Invalid write of size 8
-==86751==    at 0x40431C4: Envp::getEnv() const (Envp.cpp:62)
-==86751==    by 0x4041514: CGI::startSubprocess(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (CGI.cpp:157)
-==86751==    by 0x4018C85: Client::startCGI(Server&, Epoll&) (Client.cpp:226)
-==86751==    by 0x401D46A: Loop::runLoop() (Loop.cpp:593)
-==86751==    by 0x40132D7: main (main.cpp:62)
-==86751==  Address 0x4f384f8 is 0 bytes after a block of size 104 alloc'd
-==86751==    at 0x48A9613: operator new[](unsigned long) (vg_replace_malloc.c:729)
-==86751==    by 0x4043150: Envp::getEnv() const (Envp.cpp:55)
-==86751==    by 0x4041514: CGI::startSubprocess(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (CGI.cpp:157)
-==86751==    by 0x4018C85: Client::startCGI(Server&, Epoll&) (Client.cpp:226)
-==86751==    by 0x401D46A: Loop::runLoop() (Loop.cpp:593)
-==86751==    by 0x40132D7: main (main.cpp:62)
-==86751== 
-==86751== Syscall param execve(envp) points to unaddressable byte(s)
-==86751==    at 0x4DA868B: execve (syscall-template.S:120)
-==86751==    by 0x4041532: CGI::startSubprocess(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (CGI.cpp:158)
-==86751==    by 0x4018C85: Client::startCGI(Server&, Epoll&) (Client.cpp:226)
-==86751==    by 0x401D46A: Loop::runLoop() (Loop.cpp:593)
-==86751==    by 0x40132D7: main (main.cpp:62)
-==86751==  Address 0x4f384f8 is 0 bytes after a block of size 104 alloc'd
-==86751==    at 0x48A9613: operator new[](unsigned long) (vg_replace_malloc.c:729)
-==86751==    by 0x4043150: Envp::getEnv() const (Envp.cpp:55)
-==86751==    by 0x4041514: CGI::startSubprocess(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (CGI.cpp:157)
-==86751==    by 0x4018C85: Client::startCGI(Server&, Epoll&) (Client.cpp:226)
-==86751==    by 0x401D46A: Loop::runLoop() (Loop.cpp:593)
-==86751==    by 0x40132D7: main (main.cpp:62)
-==86751== 
-==86757== Invalid write of size 8
-==86757==    at 0x40431C4: Envp::getEnv() const (Envp.cpp:62)
-==86757==    by 0x4041514: CGI::startSubprocess(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (CGI.cpp:157)
-==86757==    by 0x4018C85: Client::startCGI(Server&, Epoll&) (Client.cpp:226)
-==86757==    by 0x401D46A: Loop::runLoop() (Loop.cpp:593)
-==86757==    by 0x40132D7: main (main.cpp:62)
-==86757==  Address 0x4f41418 is 0 bytes after a block of size 104 alloc'd
-==86757==    at 0x48A9613: operator new[](unsigned long) (vg_replace_malloc.c:729)
-==86757==    by 0x4043150: Envp::getEnv() const (Envp.cpp:55)
-==86757==    by 0x4041514: CGI::startSubprocess(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (CGI.cpp:157)
-==86757==    by 0x4018C85: Client::startCGI(Server&, Epoll&) (Client.cpp:226)
-==86757==    by 0x401D46A: Loop::runLoop() (Loop.cpp:593)
-==86757==    by 0x40132D7: main (main.cpp:62)
-==86757== 
-==86757== Syscall param execve(envp) points to unaddressable byte(s)
-==86757==    at 0x4DA868B: execve (syscall-template.S:120)
-==86757==    by 0x4041532: CGI::startSubprocess(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (CGI.cpp:158)
-==86757==    by 0x4018C85: Client::startCGI(Server&, Epoll&) (Client.cpp:226)
-==86757==    by 0x401D46A: Loop::runLoop() (Loop.cpp:593)
-==86757==    by 0x40132D7: main (main.cpp:62)
-==86757==  Address 0x4f41418 is 0 bytes after a block of size 104 alloc'd
-==86757==    at 0x48A9613: operator new[](unsigned long) (vg_replace_malloc.c:729)
-==86757==    by 0x4043150: Envp::getEnv() const (Envp.cpp:55)
-==86757==    by 0x4041514: CGI::startSubprocess(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (CGI.cpp:157)
-==86757==    by 0x4018C85: Client::startCGI(Server&, Epoll&) (Client.cpp:226)
-==86757==    by 0x401D46A: Loop::runLoop() (Loop.cpp:593)
-==86757==    by 0x40132D7: main (main.cpp:62)
-==86757== 
-==86737== 
-==86737== FILE DESCRIPTORS: 3 open (3 inherited) at exit.
-==86737== 
-==86737== HEAP SUMMARY:
-==86737==     in use at exit: 0 bytes in 0 blocks
-==86737==   total heap usage: 3,043 allocs, 3,043 frees, 459,664 bytes allocated
-==86737== 
-==86737== All heap blocks were freed -- no leaks are possible
-==86737== 
-==86737== For lists of detected and suppressed errors, rerun with: -s
-==86737== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==24779== Memcheck, a memory error detector
+==24779== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==24779== Using Valgrind-3.25.1 and LibVEX; rerun with -h for copyright info
+==24779== Command: ./webServ danalexian.conf
+==24779== Parent PID: 24768
+==24779== 
+==24779== Conditional jump or move depends on uninitialised value(s)
+==24779==    at 0x4035C99: isDir(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Get.cpp:90)
+==24779==    by 0x403603B: Get::createResponse[abi:cxx11](Server const&) (Get.cpp:120)
+==24779==    by 0x401DEA1: Loop::_createResponse(int) (Loop.cpp:460)
+==24779==    by 0x401EDDF: Loop::runLoop() (Loop.cpp:612)
+==24779==    by 0x4014393: main (main.cpp:61)
+==24779== 
+==24779== 
+==24779== FILE DESCRIPTORS: 3 open (3 inherited) at exit.
+==24779== 
+==24779== HEAP SUMMARY:
+==24779==     in use at exit: 0 bytes in 0 blocks
+==24779==   total heap usage: 1,953 allocs, 1,953 frees, 268,163 bytes allocated
+==24779== 
+==24779== All heap blocks were freed -- no leaks are possible
+==24779== 
+==24779== Use --track-origins=yes to see where uninitialised values come from
+==24779== For lists of detected and suppressed errors, rerun with: -s
+==24779== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
