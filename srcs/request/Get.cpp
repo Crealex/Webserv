@@ -86,6 +86,10 @@ bool Get::_isAllowedAutoIndex(const Server &srv)
 bool isDir(const std::string &path)
 {
 	struct stat structStat;
+
+	if (path.empty())
+		return (false);
+	structStat.st_mode = 0;
 	stat(path.c_str(), &structStat);
 	if (S_ISDIR(structStat.st_mode))
 		return (true);
