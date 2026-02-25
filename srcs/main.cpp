@@ -57,6 +57,7 @@ int main (int argc, char **argv)
 	{
 		signal(SIGINT, signalHandler);
 		servers = createServers(argv[1]);
+		// return (3);
 		Loop	loop(servers);
 		loop.runLoop();
 	}

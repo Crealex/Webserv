@@ -5,6 +5,8 @@ function uploadFile() {
     document.querySelector(".errDisplay").innerHTML =
       `<p><strong>Missing file!</strong></p>`;
     return;
+  } else {
+    document.querySelector(".errDisplay").innerHTML = "";
   }
   form.append("file", input.files[0]);
   return fetch("uploads/" + input.files[0].name, {
@@ -34,6 +36,7 @@ document.querySelectorAll(".card button").forEach((btn) =>
     const startTime = performance.now();
 
     console.log("debut de la fonction");
+    if (!method) return;
     let response;
     if (method === "GET") {
       if (endpoint) response = await fetch(endpoint);
@@ -50,6 +53,7 @@ document.querySelectorAll(".card button").forEach((btn) =>
       if (endpoint) response = await fetch(endpoint, { method: "DELETE" });
     } else if (method === "POSTFILE") {
       response = await uploadFile();
+      if (!response) return;
     } else if (method === "POSTBIGFILE") {
       const size = Number(btn.dataset.size);
       const file = generateBigFile(size);
