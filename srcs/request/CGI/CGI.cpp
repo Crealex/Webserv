@@ -175,7 +175,7 @@ void CGI::startSubprocess(const std::string path, const std::string interpreter)
 
 void CGI::sendBody(std::string body)
 {
-	if (_started)
+	if (_started && !body.empty())
 	{	// send pack by pack the body to not overload the fd
 		std::string::iterator first = body.begin();
 		std::string::iterator sec = first + 1024;
