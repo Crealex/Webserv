@@ -234,8 +234,6 @@ void	Loop::_closeClients(int idClient)
 	::epoll_ctl(this->_epoll.getEpollFd(), EPOLL_CTL_DEL, this->_clients[idClient]->getFdClient(), 0);
 	this->_epoll.setNbSockets(this->_epoll.getNbSockets() - 1);
 
-	if (this->_clients[idClient]->getFdClient() > -1)
-		::close(this->_clients[idClient]->getFdClient());
 	delete this->_clients[idClient];
 	this->_clients.erase(this->_clients.begin() + idClient);
 }
