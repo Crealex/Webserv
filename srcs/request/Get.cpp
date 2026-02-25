@@ -23,9 +23,7 @@ static std::string createFileStr(std::ifstream &file)
 	file.seekg(0, std::ios::end);
 	size_t size = file.tellg();
 	file.seekg(0, std::ios::beg);
-	std::cout << "before resize : " << size << std::endl;
 	fileStr.resize(size);
-	std::cout << "afetr resize" << std::endl;
 	file.read(&fileStr[0], size);
 
 	return fileStr;
@@ -87,7 +85,6 @@ bool Get::_isAllowedAutoIndex(const Server &srv)
 
 bool isDir(const std::string &path)
 {
-	std::cout << "helpppppp" << std::endl;
 	struct stat structStat;
 	stat(path.c_str(), &structStat);
 	if (S_ISDIR(structStat.st_mode))
@@ -117,16 +114,16 @@ const std::string Get::createResponse(const Server &srv)
 	
 	ResponseBuilder	resp(dataError, this->_protocol);
 	target = findTarget(this->_location, srv.getLocations(), dataError, "GET");
-	std::cout << "target : " << target << std::endl;
 	if (target.find("http") == std::string::npos)
 	{
-		std::cout << "meh" << std::endl;
 		path = srv.getRoot() + "/" + target;
-		file.open(path.c_str());
-		std::cout << "is open : " << file.is_open() << std::endl;
-		if (!file.is_open())
-			throw ResponseError(404, "Not found", dataError);
-		fileStr = createFileStr(file);
+		if (!isDir(path))
+		{
+			file.open(path.c_str());
+			if (!file.is_open())
+				throw ResponseError(404, "Not found", dataError);
+			fileStr = createFileStr(file);
+		}
 	}
 	else
 	{

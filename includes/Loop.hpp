@@ -30,7 +30,6 @@ class Loop
 		int		_bindSocket();
 		void	_createSocket(std::vector<Server> srvs, int &nbSockets);
 		
-		void	_cleanExit();
 		void	_displayHelp();
 		void	_handleCmd();
 
@@ -58,7 +57,6 @@ class Loop
 		void	_printSend(int idClient);
 
 	public:
-		Loop();
 		Loop(std::vector<Server> servers);
 		~Loop();
 
