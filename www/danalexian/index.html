@@ -176,6 +176,34 @@
             </button>
           </div>
         </div>
+        <div class="card">
+          <h2>CGI</h2>
+          <p>
+            Permet de tester le fonctionnement du CGI (Common gateway interface)
+          </p>
+          <div class="btn-container">
+            <button data-method="GET" data-endpoint="/cgi-bin">
+              CGI get (.py)
+            </button>
+            <button data-method="POST" data-endpoint="/cgi-bin">
+              CGI post (.py)
+            </button>
+            <button data-method="GET" data-endpoint="/cgi-bin/test.sh">
+              CGI get (.sh)
+            </button>
+            <button data-method="GET" data-endpoint="/cgi-bin/failure.py">
+              CGI get (.sh)
+            </button>
+          </div>
+          <div class="result">
+            <div class="method"></div>
+            <div class="endpoint"></div>
+            <div class="status"></div>
+            <div class="header"></div>
+            <div class="body"></div>
+            <div class="time"></div>
+          </div>
+        </div>
       </div>
       <script src="./script.js"></script>
     </main>

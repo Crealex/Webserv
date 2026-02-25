@@ -27,14 +27,20 @@ Loop::Loop(std::vector<Server> servers)
 Loop::~Loop()
 {
 	int	sizeSock;
+	int	sizeSockData;
 	int	nbClients;
 	
 	sizeSock = this->_sockets.size();
 	nbClients = this->_clients.size();
 	for (int i = 0; i < sizeSock; i++)
 	{
+		sizeSockData = this->_sockets[i]->getSockData().size();
 		if (this->_sockets[i])
 		{
+			for (int j = 0; j < sizeSockData; j++)
+			{
+				::epoll_ctl(this->_epoll.getEpollFd(), EPOLL_CTL_DEL, this->_sockets[i]->getSockData()[j]->getFdServer(), 0);
+			}
 			delete this->_sockets[i];
 			this->_sockets[i] = NULL;
 		}
@@ -43,14 +49,35 @@ Loop::~Loop()
 	{
 		if (this->_clients[i])
 		{
+			::epoll_ctl(this->_epoll.getEpollFd(), EPOLL_CTL_DEL, this->_clients[i]->getFdClient(), 0);
 			delete this->_clients[i];
 			this->_clients[i] = NULL;
 		}
 	}
-}	
+	this->_epoll.closeFd();
+}
 
 // METHODS
 // PRIVATE
+
+bool	Loop::_servIsTimedOut()
+{
+	std::time_t	timestamp;
+
+	std::time(&timestamp);
+	if (std::difftime(timestamp, this->_time) > 5)
+	{
+		std::cout << RED << "time out of the server" << RESET << std::endl;
+		return (true);
+	}
+	return (false);
+}
+
+
+void	Loop::_setTime()
+{
+	std::time(&this->_time);
+}
 
 void	Loop::_sockOptNonBlocking(int &socketFd)
 {
@@ -246,6 +273,7 @@ void	Loop::_checkAllTimeout()
 			this->_closeClients(i);
 			nbClients = this->_clients.size();
 			i--;
+			std::cout << "time out" << std::endl;
 		}
 	}
 }
@@ -362,7 +390,10 @@ int	Loop::_receiveRequest(int idClient)
 	
 	sizeRecv = ::recv(this->_clients[idClient]->getFdClient(), buffer, sizeof(buffer) - 1, 0);
 	if (sizeRecv == -1)
+	{
+		buffer[0] = '\0';
 		return (this->_receiveRequest(idClient));
+	}
 	buffer[sizeRecv] = '\0';
 	if (sizeRecv == 0)	
 		return (sizeRecv);
@@ -493,6 +524,8 @@ void	Loop::_printSend(int idClient)
 		return ;
 	respSS << BOLD << "RESPONSE:\n" << RESET << this->_clients[idClient]->getResponse();
 	Logger::log(Logger::INFO, respSS.str());
+	requSS << BOLD << "REQUESR:\n" << RESET << this->_clients[idClient]->getRequest().getRawRequest();
+	Logger::log(Logger::INFO, requSS.str());
 	//std::cout << CYAN << std::endl;
 	//std::cout << BOLD;
 	//std::cout << "SEND" << std::endl;
@@ -514,6 +547,9 @@ void	Loop::_printSend(int idClient)
 
 void	Loop::runLoop()
 {
+	int	counter;
+
+	counter = 0;
 	fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK); // INFO: Ajouter par alex pour gerer les cmds
 	this->_epoll.addEpollFd(STDIN_FILENO, EPOLLIN|EPOLLET);// Comme ci dessus ^^^
 	this->_displayHelp();
@@ -529,7 +565,15 @@ void	Loop::runLoop()
 		epollCounterWait = ::epoll_wait(this->_epoll.getEpollFd(), events, this->_epoll.getNbSockets(), 2000);
 		this->_checkAllTimeout();
 		if (epollCounterWait < 1)
+		{
+			if (epollCounterWait < 0)
+			{
+				if (counter > 3)
+					this->_isExit = true;
+				counter++;
+			}
 			continue ;
+		}
 		for (int indexEvent = 0; indexEvent < epollCounterWait; indexEvent++)
 		{
 			if (events[indexEvent].events & EPOLLIN && events[indexEvent].data.fd == STDIN_FILENO) // INFO: Condition ajouter par alex pour gérer les cmds
@@ -564,7 +608,6 @@ void	Loop::runLoop()
 					continue ;
 				if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
 				{
-					// this->_printCloseClient(idClient);
 					this->_closeClients(idClient);
 				}
 				else
@@ -577,7 +620,6 @@ void	Loop::runLoop()
 			{
 				this->_createResponse(idClient);
 				this->_sendResponse(idClient);
-				this->_printSend(idClient);
 				if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
 				{
 					this->_closeClients(idClient);

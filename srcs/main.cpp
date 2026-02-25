@@ -48,9 +48,9 @@ int main (int argc, char **argv)
 {
 	std::vector<Server>		servers;
 
-	if (argc > 2)
+	if (argc != 2)
 	{
-		std::cerr << RED << "Invalid number of arguments, you need the executable and maybe a config file" << RESET << std::endl;
+		std::cerr << RED << "Invalid number of arguments, you need the executable and a config file" << RESET << std::endl;
 		return (-1);
 	}
 	try 

@@ -28,6 +28,8 @@ class Epoll
 		void	setEvents(Client *client, uint32_t event);
 
 		void	addEpollFd(int fd, uint32_t event);
+		void	delEpollFd(int fd);
+		void	closeFd();
 };
 
 #endif

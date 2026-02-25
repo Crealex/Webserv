@@ -1,5 +1,6 @@
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseError.hpp"
+#include <sstream>
 
 std::vector<std::string> Request::_v = Request::_acceptedType();
 
@@ -341,9 +342,10 @@ void Request::parseBody(std::string &buffer)
 	// std::cout << "body = " << ret._body;
 }
 
-void	Request::printRequest() const
+std::string	Request::getRawRequest() const
 {
-	std::cout 
+	std::stringstream rawSS;
+	rawSS 
 		<< "method = " << _method
 		<< "\nlocation = " << _location
 		<< "\nprotocol = " << _protocol
@@ -353,6 +355,7 @@ void	Request::printRequest() const
 		<< "\ncontent type = " << _ContentType
 		<< "\ncontent length = " << _ContentLength
 		<< "\nbody = " << _body << std::endl;
+	return (rawSS.str());
 }
 
 std::string Request::getMethod() const

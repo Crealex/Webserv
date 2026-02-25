@@ -110,3 +110,9 @@ void	Epoll::addEpollFd(int fd, uint32_t event)
 		this->_nbSockets++;
 	// else : error log
 }
+
+void	Epoll::closeFd()
+{
+	if (this->_epollFd > -1)
+		close (this->_epollFd);
+}
