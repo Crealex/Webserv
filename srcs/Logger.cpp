@@ -77,9 +77,11 @@ static std::string truncateToLines(const std::string& str, int maxLines)
 
 void	Logger::log(enum type type, std::string message)
 {
+	std::string truncMessage;
+
 	if (!Logger::_isEnabled)
 		return ;
-	truncMessage = truncateToLines(message, 5);
+	truncMessage = truncateToLines(message, 12);
 	switch (type)
 	{
 		case Logger::DEBUG:
