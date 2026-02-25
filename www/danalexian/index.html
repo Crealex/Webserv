@@ -178,7 +178,9 @@
         </div>
         <div class="card">
           <h2>CGI</h2>
-          <p>Permet de tester le fonctionnement du CGI (Common gateway interface)</p>
+          <p>
+            Permet de tester le fonctionnement du CGI (Common gateway interface)
+          </p>
           <div class="btn-container">
             <button data-method="GET" data-endpoint="/cgi-bin">
               CGI get (.py)
@@ -186,7 +188,10 @@
             <button data-method="POST" data-endpoint="/cgi-bin">
               CGI post (.py)
             </button>
-            <button data-method="POST" data-endpoint="/cgi-bin">
+            <button data-method="GET" data-endpoint="/cgi-bin/test.sh">
+              CGI get (.sh)
+            </button>
+            <button data-method="GET" data-endpoint="/cgi-bin/failure.py">
               CGI get (.sh)
             </button>
           </div>
