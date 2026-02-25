@@ -45,11 +45,11 @@ class Request {
 		Request& operator=(const Request& src);
 		~Request();
 
-		void	printRequest() const;
-		void	parseHeader(std::string &buffer);
-		void	parseBody(std::string &buffer);
-		void	checkRequest(const unsigned int maxSize);
-		void	reset();
+		std::string	getRawRequest() const;
+		void		parseHeader(std::string &buffer);
+		void		parseBody(std::string &buffer);
+		void		checkRequest(const unsigned int maxSize);
+		void		reset();
 
 		bool			getkeepAlive() const;
 		std::string		getMethod() const;

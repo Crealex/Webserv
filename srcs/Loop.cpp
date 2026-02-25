@@ -493,6 +493,8 @@ void	Loop::_printSend(int idClient)
 		return ;
 	respSS << BOLD << "RESPONSE:\n" << RESET << this->_clients[idClient]->getResponse();
 	Logger::log(Logger::INFO, respSS.str());
+	requSS << BOLD << "REQUESR:\n" << RESET << this->_clients[idClient]->getRequest().getRawRequest();
+	Logger::log(Logger::INFO, requSS.str());
 	//std::cout << CYAN << std::endl;
 	//std::cout << BOLD;
 	//std::cout << "SEND" << std::endl;
