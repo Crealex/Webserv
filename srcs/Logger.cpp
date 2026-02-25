@@ -49,25 +49,48 @@ void	Logger::_printError(std::string message)
 	std::cout << message;
 	std::cout << std::endl;
 }
-
 // PUBLIC
+static std::string truncateToLines(const std::string& str, int maxLines)
+{
+	std::string result;
+	int lineCount = 0;
+	size_t pos = 0;
+
+	while (pos < str.size() && lineCount < maxLines)
+	{
+		size_t nextNewline = str.find('\n', pos);
+		if (nextNewline == std::string::npos)
+		{
+			result += str.substr(pos);
+			break;
+		}
+		result += str.substr(pos, nextNewline - pos + 1);
+		pos = nextNewline + 1;
+		lineCount++;
+	}
+	if (lineCount >= maxLines && pos < str.size())
+		result += "[... truncated ...]\n";
+	return result;
+}
 
 void	Logger::log(enum type type, std::string message, bool isWriting)
 {
+	std::string truncMessage;
 	if (!isWriting)
 		return ;
+	truncMessage = truncateToLines(message, 5);
 	switch (type)
 	{
 		case Logger::DEBUG:
-			_printDebug(message);
+			_printDebug(truncMessage);
 			break;
 		
 		case Logger::INFO:
-			_printInfo(message);
+			_printInfo(truncMessage);
 			break;
 		
 		case Logger::ERROR:
-			_printError(message);
+			_printError(truncMessage);
 			break;
 	}
 }
