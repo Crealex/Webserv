@@ -152,7 +152,7 @@ void	Loop::_createSocket(std::vector<Server> srvs, int &nbSockets)
 void	Loop::_displayHelp()
 {
 	std::cout << "----------------------------------------------------\n\
-	\rWelcome to our beautiful webserver! You can tap these cmd:\n\n\
+	\rWelcome to our beautiful webserver! You can enter these cmd:\n\n\
 	h - to display this message\n\
 	q - to quit the webserv\n\
 	l - to enable or disable the logs\n\
@@ -234,8 +234,6 @@ void	Loop::_closeClients(int idClient)
 	::epoll_ctl(this->_epoll.getEpollFd(), EPOLL_CTL_DEL, this->_clients[idClient]->getFdClient(), 0);
 	this->_epoll.setNbSockets(this->_epoll.getNbSockets() - 1);
 
-	if (this->_clients[idClient]->getFdClient() > -1)
-		::close(this->_clients[idClient]->getFdClient());
 	delete this->_clients[idClient];
 	this->_clients.erase(this->_clients.begin() + idClient);
 }
@@ -254,7 +252,6 @@ void	Loop::_checkAllTimeout()
 			this->_closeClients(i);
 			nbClients = this->_clients.size();
 			i--;
-			std::cout << "time out" << std::endl;
 		}
 	}
 }
@@ -373,7 +370,7 @@ int	Loop::_receiveRequest(int idClient)
 	if (sizeRecv == -1)
 	{
 		buffer[0] = '\0';
-		return (this->_receiveRequest(idClient));
+		return (sizeRecv);
 	}
 	buffer[sizeRecv] = '\0';
 	if (sizeRecv == 0)	
@@ -382,38 +379,50 @@ int	Loop::_receiveRequest(int idClient)
 	return (sizeRecv);
 }	
 
-void	Loop::_addBodyLen(int idClient)
+int	Loop::_addBodyLen(int idClient)
 {
 	int	counter;
+	int	sizeRecv;
 	int	contentLen;
 	
 	counter = this->_clients[idClient]->getBuf().size();
 	contentLen = this->_clients[idClient]->getRequest().getContentLength();
 	while (counter < contentLen)
 	{
-		counter += this->_receiveRequest(idClient);
+		sizeRecv = this->_receiveRequest(idClient);
+		if (sizeRecv == -1)
+			return (sizeRecv);
+		counter += sizeRecv;
 	}
+	return (0);
 }	
 
-void	Loop::_addBodyChunked(int idClient)
+int	Loop::_addBodyChunked(int idClient)
 {
 	size_t	posCRLF;
+	int		sizeRecv;
 
 	posCRLF = this->_clients[idClient]->getBuf().find("\r\n\r\n");
 	while (posCRLF != std::string::npos)
 	{
-		this->_receiveRequest(idClient);
+		sizeRecv = this->_receiveRequest(idClient);
+		if (sizeRecv == -1)
+			return (sizeRecv);
 		posCRLF = this->_clients[idClient]->getBuf().find("\r\n\r\n");
 	}
+	return (0);
 }	
 
-void	Loop::_checkBody(int idClient)
+int	Loop::_checkBody(int idClient)
 {
 	if (this->_clients[idClient]->getRequest().getContentLength() > 0)
-		this->_addBodyLen(idClient);
+		if (this->_addBodyLen(idClient) == -1)
+			return (-1);
 	if (this->_clients[idClient]->getRequest().getTranferEncoding().find("chunked") != std::string::npos)	
-		this->_addBodyChunked(idClient);
+		if (this->_addBodyChunked(idClient) == -1)
+			return (-1);
 	this->_clients[idClient]->setRequestBody();
+	return (0);
 }		
 
 bool	Loop::_getRequest(int idClient)
@@ -421,11 +430,12 @@ bool	Loop::_getRequest(int idClient)
 	int		recvStatus;
 	
 	recvStatus = this->_receiveRequest(idClient);
-	if (recvStatus == 0)
+	if (recvStatus <= 0)
 		return (false);
 	if (!this->_parsingRequest(idClient))
 		this->_getRequest(idClient);	
-	this->_checkBody(idClient);
+	if (this->_checkBody(idClient) == -1)
+		return (false);
 	this->_epoll.setEvents(this->_clients[idClient], EPOLLOUT);
 	return (true);
 }
@@ -454,6 +464,7 @@ void	Loop::_createResponse(int idClient)
 		if (met)
 			delete met;
 	}
+	this->_clients[idClient]->setTimeout();
 }
 
 void	Loop::_createTimeoutResponse(int idClient)
@@ -467,6 +478,7 @@ void	Loop::_createTimeoutResponse(int idClient)
 	{
 		this->_clients[idClient]->setResponse(e.createResponse(this->_servers.at(this->_clients[idClient]->getHostname())));
 	}
+	this->_clients[idClient]->setTimeout();
 }
 
 inline void Loop::_sendResponse(int idClient)
@@ -503,7 +515,7 @@ void	Loop::_printSend(int idClient)
 		return ;
 	respSS << BOLD << "RESPONSE:\n" << RESET << this->_clients[idClient]->getResponse();
 	Logger::log(Logger::INFO, respSS.str());
-	requSS << BOLD << "REQUESR:\n" << RESET << this->_clients[idClient]->getRequest().getRawRequest();
+	requSS << BOLD << "REQUEST:\n" << RESET << this->_clients[idClient]->getRequest().getRawRequest();
 	Logger::log(Logger::INFO, requSS.str());
 	//std::cout << CYAN << std::endl;
 	//std::cout << BOLD;

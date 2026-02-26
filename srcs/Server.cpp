@@ -12,13 +12,10 @@ Server::Server(struct server data)
 {
 	printStructV2(data);
 	this->_parseElt(data);
-
-	//std::cout << GREEN << "Default Server constructor called" << RESET << std::endl;
 }
 
 Server::~Server()
 {
-	//std::cout << RED << "Destructor called" << RESET << std::endl;
 }
 
 Server	&Server::operator=(const Server &other)
@@ -162,37 +159,6 @@ std::string	Server::_keywordAddress(std::string word)
 	else
 		throw std::invalid_argument(RED "Error : invalid IP address, not a valid keyword" RESET);
 }
-
-// bool	Server::_isPrivate(std::vector<std::string> infos)
-// {
-	// (void)infos;
-	// if (infos[0].size() == 2 && infos[0].compare("10") == 0)
-	// 	return (true);
-	// else if (infos[0].size() == 3 && infos[0].compare("172") == 0)
-	// {
-	// 	if (infos[1].size() == 2 && (infos[0].compare("31") <= 0 && infos[0].compare("16") > 0))
-	// 		return (true);
-	// }
-	// else if (infos[0].size() == 3 && infos[0].compare("192") == 0 && infos[1].size() == 3 && infos[1].compare("168") == 0)
-	// 	return (true);
-// 	return (false);
-// }
-
-// bool	Server::_isValidAddress(std::vector<std::string> infos)
-// {
-// 	(void)infos;
-	// size_t	nbInfos;
-	// size_t	sizeElt;
-
-	// nbInfos = infos.size();
-	// for (size_t i = 0; i < nbInfos; i++)
-	// {
-	// 	sizeElt = infos[i].size();
-	// 	if (sizeElt > 3 || (sizeElt == 3 && infos[i].compare("255") > 0))
-	// 		return (false);
-	// }
-// 	return (true);
-// }
 
 std::string	Server::_checkAddress(std::string addressPort, size_t colon)
 {
