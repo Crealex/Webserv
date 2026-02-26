@@ -77,6 +77,7 @@ void CGI::setEnvp(Server &serv, Request &req)
 
 void CGI::constructFD()
 {
+	(void) epoll;
 	if (::pipe(_pipeFromCGI) != 0)
 		throw std::runtime_error("Error, could not create pipe from CGI");
 	_sockOptNonBlocking(_pipeFromCGI[0]);

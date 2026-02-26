@@ -15,12 +15,11 @@ void signalHandler(int signal)
 
 Loop::Loop(std::vector<Server> servers)
 {
-	int nbSockets;
 	this->_createMapServer(servers);
-	this->_createSocket(servers, nbSockets);
+	this->_createSocket(servers);
 	if (this->_sockets.size() == 0)
 		throw std::runtime_error(RED "Error : no sockets to start the webserver" RESET);
-	this->_epoll = Epoll(this->_sockets, nbSockets);
+	this->_epoll = Epoll(this->_sockets);
 	this->_isExit = false;
 }
 
@@ -80,7 +79,7 @@ void Loop::_createMapServer(std::vector<Server> servers)
 	}
 }
 
-int Loop::_listenSocket(size_t &i, size_t &j, size_t &sizeSockData)
+void	Loop::_listenSocket(size_t &i, size_t &j, size_t &sizeSockData)
 {
 	int checkFail;
 	std::vector<SocketData *>::iterator eltToErase;
@@ -92,20 +91,16 @@ int Loop::_listenSocket(size_t &i, size_t &j, size_t &sizeSockData)
 		this->_sockets[i]->eraseSocket(j);
 		j--;
 		sizeSockData--;
-		return (0);
 	}
-	return (1);
 }
 
-int Loop::_bindSocket()
+void	Loop::_bindSocket()
 {
-	int checkFail;
-	int nbSockets;
-	size_t sizeSockets;
-	size_t sizeSockData;
+	int		checkFail;
+	size_t	sizeSockets;
+	size_t	sizeSockData;
 
 	checkFail = 0;
-	nbSockets = 0;
 	sizeSockets = this->_sockets.size();
 	for (size_t i = 0; i < sizeSockets; i++)
 	{
@@ -120,7 +115,7 @@ int Loop::_bindSocket()
 				sizeSockData--;
 			} else
 			{
-				nbSockets += this->_listenSocket(i, j, sizeSockData);
+				this->_listenSocket(i, j, sizeSockData);
 			}
 		}
 		if (this->_sockets[i]->getSockData().size() == 0)
@@ -132,10 +127,9 @@ int Loop::_bindSocket()
 			sizeSockets--;
 		}
 	}
-	return (nbSockets);
 }
 
-void Loop::_createSocket(std::vector<Server> srvs, int &nbSockets)
+void	Loop::_createSocket(std::vector<Server> srvs)
 {
 	size_t sizeSrvs;
 
@@ -145,7 +139,7 @@ void Loop::_createSocket(std::vector<Server> srvs, int &nbSockets)
 		Socket *temp = new Socket(srvs[i]);
 		this->_sockets.push_back(temp);
 	}
-	nbSockets = this->_bindSocket();
+	this->_bindSocket();
 }
 
 void Loop::_displayHelp()
@@ -535,6 +529,9 @@ void Loop::runLoop()
 		epoll_event events[this->_epoll.getNbSockets()];
 
 
+		int bnos = this->_epoll.getNbSockets();
+		bnos++;
+		std::cout << " bnos : " << bnos << std::endl;
 		epollCounterWait = 0;
 		idClient = 0;
 
@@ -576,7 +573,8 @@ void Loop::runLoop()
 				{
 					_clients[idClient]->startCGI(_servers[_clients[idClient]->getHostname()]);
 				}
-			} else if (_clients[idClient]->getIsCGI())
+			}
+			else if (this->_isClientSocket(events[indexEvent].data.fd, idClient) && this->_clients[idClient]->getIsCGI())
 			{
 				if (!_clients[idClient]->checkCGI(_servers[_clients[idClient]->getHostname()]))
 					continue;

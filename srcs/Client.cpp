@@ -266,7 +266,6 @@ void	Client::_checkCGIResponse()
 
 bool	Client::checkCGI(Server &serv)
 {
-	// std::cout << MAGENTA << BOLD << "checking CGI" << RESET << std::endl;
 	try
 	{
 		_CGI.checkSubprocess(this->_request);

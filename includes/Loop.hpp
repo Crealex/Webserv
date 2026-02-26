@@ -26,9 +26,9 @@ class Loop
 		
 		void	_sockOptNonBlocking(int &socketFd);
 		void	_createMapServer(std::vector<Server> servers);
-		int		_listenSocket(size_t &i, size_t &j, size_t &sizeSockData);
-		int		_bindSocket();
-		void	_createSocket(std::vector<Server> srvs, int &nbSockets);
+		void	_listenSocket(size_t &i, size_t &j, size_t &sizeSockData);
+		void	_bindSocket();
+		void	_createSocket(std::vector<Server> srvs);
 		
 		void	_displayHelp();
 		void	_handleCmd();
