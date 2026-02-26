@@ -339,7 +339,7 @@ void Request::parseBody(std::string &buffer)
 {
 	// std::cout << RED << "buffer = " << buffer << "pos = " << pos << RESET << std::endl;
 	_body = retBody(buffer);
-	// std::cout << "body = " << ret._body;
+	std::cout << "body = " << _body << std::endl;
 }
 
 std::string	Request::getRawRequest() const

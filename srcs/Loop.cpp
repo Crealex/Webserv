@@ -409,11 +409,17 @@ int Loop::_addBodyChunked(int idClient)
 int Loop::_checkBody(int idClient)
 {
 	if (this->_clients[idClient]->getRequest().getContentLength() > 0)
+	{
+		std::cout << "in content length : " << this->_clients[idClient]->getRequest().getContentLength() << std::endl;
 		if (this->_addBodyLen(idClient) == -1)
 			return (-1);
+	}
 	if (this->_clients[idClient]->getRequest().getTranferEncoding().find("chunked") != std::string::npos)
+	{
+		std::cout << "chunked" << std::endl;
 		if (this->_addBodyChunked(idClient) == -1)
 			return (-1);
+	}
 	this->_clients[idClient]->setRequestBody();
 	return (0);
 }
