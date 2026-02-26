@@ -4,7 +4,6 @@
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseError.hpp"
 
-
 // INFO: All prototypes are in methodClass.hpp
 
 // UTILS
@@ -35,7 +34,6 @@ std::string findTarget(std::string locPath, std::vector<Location> loc, Request d
 	return (locPath);
 }
 
-
 // *** ADDING LINE TO RESPONSE
 
 //	HTTP/1.1 200 OK
@@ -44,9 +42,11 @@ bool addStartLine(std::string *resp, std::string protocol, unsigned int code, st
 	std::stringstream ss;
 
 	ss << code;
-	try {
+	try
+	{
 		resp->insert(0, protocol + " " + ss.str() + " " + mess + "\n");
-	} catch (std::exception &e) {
+	} catch (std::exception &e)
+	{
 		return (false);
 	}
 
@@ -57,7 +57,7 @@ std::string findMimeType(std::string file)
 {
 	std::string extension;
 
-	//std::cout << "file in " << file << std::endl;
+	// std::cout << "file in " << file << std::endl;
 	extension = file.substr(file.find_last_of(".") + 1, file.length());
 	return MimeTypes::getType(extension);
 }
@@ -74,9 +74,9 @@ bool addContentType(std::string *resp, std::string accept, std::string file)
 		return (true);
 	}
 	contentType = findMimeType(file);
-	while (std::getline(acceptSs, type,  ','))
+	while (std::getline(acceptSs, type, ','))
 	{
-		//std::cout << "type: " << type << ", Content-Type: " << contentType << std::endl;
+		// std::cout << "type: " << type << ", Content-Type: " << contentType << std::endl;
 		if (contentType == type || contentType.compare(0, 3, "*/*"))
 		{
 			resp->append("Content-Type: " + contentType + "\n");
@@ -89,9 +89,11 @@ bool addContentType(std::string *resp, std::string accept, std::string file)
 // For post.cpp
 bool addContentType(std::string *resp, std::string type)
 {
-	try {
-		resp->append("Content-Type: " + type + "\n");	
-	} catch (std::exception &e) {
+	try
+	{
+		resp->append("Content-Type: " + type + "\n");
+	} catch (std::exception &e)
+	{
 		return (false);
 	}
 	return (true);
@@ -134,15 +136,16 @@ bool addLastModif(std::string *resp, std::string pathTarget)
 	}
 	stat(pathTarget.c_str(), &buff);
 	tt = buff.st_mtim.tv_sec;
-	try {
+	try
+	{
 		time = std::localtime(&tt);
 		std::strftime(date, 100, "%a, %d %b %Y %X GMT\n", time);
 		dateString = date;
 		resp->append("Last-Modified: " + dateString);
-	}
-	catch (std::exception &e){
+	} catch (std::exception &e)
+	{
 		return (false);
-}
+	}
 	return (true);
 }
 
@@ -160,9 +163,11 @@ bool addContentLenght(std::string *resp, std::string path)
 	stat(path.c_str(), &buff);
 	size = buff.st_size;
 	ss << size;
-	try {
+	try
+	{
 		resp->append("Content-Length: " + ss.str() + "\n");
-	} catch (std::exception &e) {
+	} catch (std::exception &e)
+	{
 		return (false);
 	}
 	return (true);
@@ -186,9 +191,11 @@ bool addContentLenght(std::string *resp, std::string path, std::string fileStr)
 	stat(path.c_str(), &buff);
 	size = buff.st_size;
 	ss << size;
-	try {
+	try
+	{
 		resp->append("Content-Length: " + ss.str() + "\n");
-	} catch (std::exception &e) {
+	} catch (std::exception &e)
+	{
 		return (false);
 	}
 	return (true);
@@ -199,9 +206,11 @@ bool addContentLenght(std::string *resp, ssize_t bodySize)
 	std::stringstream ss;
 
 	ss << bodySize;
-	try {
+	try
+	{
 		resp->append("Content-Length: " + ss.str() + "\n");
-	} catch (std::exception &e) {
+	} catch (std::exception &e)
+	{
 		return (false);
 	}
 	return (true);
@@ -215,7 +224,7 @@ bool addBody(std::string *resp, std::string file)
 	return (true);
 }
 
-//bool addLocation(std::string *resp, std::string host, std::string location)
+// bool addLocation(std::string *resp, std::string host, std::string location)
 //{
 //	try
 //	{
@@ -225,13 +234,13 @@ bool addBody(std::string *resp, std::string file)
 //		return (false);
 //	}
 //	return (true);
-//}
+// }
 
 bool addLocation(std::string *resp, std::string location)
 {
 	try
 	{
-		resp->append("Location: " + location);
+		resp->append("Location: " + location + "\n");
 	} catch (std::exception &e)
 	{
 		return (false);

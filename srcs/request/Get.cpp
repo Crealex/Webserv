@@ -1,21 +1,20 @@
 #include "../../includes/requests/Get.hpp"
+#include "../../includes/Server.hpp"
 #include "../../includes/colors.hpp"
 #include "../../includes/requests/Request.hpp"
-#include "../../includes/Server.hpp"
-#include "../../includes/requests/ResponseError.hpp"
 #include "../../includes/requests/ResponseBuilder.hpp"
+#include "../../includes/requests/ResponseError.hpp"
 
-Get::Get(const Request &requ): Methods(requ), _userAgent(requ.getUserAgent()), _accept(requ.getAccept()) 
+Get::Get(const Request &requ) : Methods(requ), _userAgent(requ.getUserAgent()), _accept(requ.getAccept())
 {
-    // std::cout << GREEN << "Default Get constructor called" << RESET << std::endl;
+	// std::cout << GREEN << "Default Get constructor called" << RESET << std::endl;
 }
-
 
 /**
  * @brief Create un string with de content of the file
  *
- * @param file 
- * @return 
+ * @param file
+ * @return
  */
 static std::string createFileStr(std::ifstream &file)
 {
@@ -45,7 +44,7 @@ std::pair<unsigned int, std::string> Get::_findCodeMess(const Server &srv)
 		if (this->_location == srv.getLocations().at(i).getPath())
 		{
 			finded = i;
-			break ;
+			break;
 		}
 	}
 	if (finded == -1)
@@ -53,16 +52,20 @@ std::pair<unsigned int, std::string> Get::_findCodeMess(const Server &srv)
 	if (srv.getLocations().at(finded).getReturn().first.empty())
 		return (std::pair<unsigned int, std::string>(200, "OK"));
 	ret.first = srv.getLocations().at(finded).getReturn().second;
-	switch (ret.first) 
+	switch (ret.first)
 	{
-		case 301:	ret.second = "Moved Permanently";
-					break;
-		case 307:	ret.second = "Temporary Redirect";
-					break;
-		case 308:	ret.second = "Permanent Redirect";
-					break;
-		default:	ret.second = "undefinded";
-					break;
+	case 301:
+		ret.second = "Moved Permanently";
+		break;
+	case 307:
+		ret.second = "Temporary Redirect";
+		break;
+	case 308:
+		ret.second = "Permanent Redirect";
+		break;
+	default:
+		ret.second = "undefinded";
+		break;
 	}
 	return (ret);
 }
@@ -75,13 +78,11 @@ bool Get::_isAllowedAutoIndex(const Server &srv)
 		{
 			if (srv.getLocations().at(i).getAutoIndex())
 				return (true);
-			break ;
+			break;
 		}
 	}
 	return (false);
 }
-
-
 
 bool isDir(const std::string &path)
 {
@@ -104,19 +105,19 @@ bool isDir(const std::string &path)
  */
 const std::string Get::createResponse(const Server &srv)
 {
-	std::ifstream	file;
-	std::string		path;
-	Request			dataError;
-	std::string		target;
-	std::string		fileStr;
-	std::pair<unsigned int, std::string>	codeMess;
-	bool			isRedir = 0;
-	
+	std::ifstream file;
+	std::string path;
+	Request dataError;
+	std::string target;
+	std::string fileStr;
+	std::pair<unsigned int, std::string> codeMess;
+	bool isRedir = 0;
+
 	dataError = this->_createDataError();
 	dataError.setAccept(this->_accept);
 	dataError.setUserAgent(this->_userAgent);
-	
-	ResponseBuilder	resp(dataError, this->_protocol);
+
+	ResponseBuilder resp(dataError, this->_protocol);
 	target = findTarget(this->_location, srv.getLocations(), dataError, "GET");
 	if (target.find("http") == std::string::npos)
 	{
@@ -128,8 +129,7 @@ const std::string Get::createResponse(const Server &srv)
 				throw ResponseError(404, "Not found", dataError);
 			fileStr = createFileStr(file);
 		}
-	}
-	else
+	} else
 	{
 		isRedir = 1;
 		path = target;
@@ -138,20 +138,22 @@ const std::string Get::createResponse(const Server &srv)
 	codeMess = _findCodeMess(srv);
 	if (isRedir)
 	{
+		std::cout << "path in redir: " << path << std::endl;
 		resp.location(path)
 			.contentType(this->_accept, path)
-			.date().contentLength(0)
+			.date()
+			.contentLength(0)
 			.startLine(codeMess.first, codeMess.second)
 			.append("\r\n\r\n");
-	}
-	else if (isDir(path))
+	} else if (isDir(path))
 	{
 		if (!this->_isAllowedAutoIndex(srv))
 			throw ResponseError(401, "Unauthorized", dataError);
-		try {
+		try
+		{
 			fileStr = createHTMLAutoIndex(path, this->_location);
-		}
-		catch (...) {
+		} catch (...)
+		{
 			throw ResponseError(500, "Error with building HTML autoIndex", dataError);
 		}
 		resp.contentType("text/html")
@@ -161,8 +163,7 @@ const std::string Get::createResponse(const Server &srv)
 			.body(fileStr)
 			.startLine(codeMess.first, codeMess.second)
 			.append("\r\n\r\n");
-	}
-	else
+	} else
 	{
 		resp.contentType(this->_accept, path)
 			.date()
@@ -174,4 +175,3 @@ const std::string Get::createResponse(const Server &srv)
 	}
 	return (resp.build());
 }
-
