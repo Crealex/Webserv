@@ -165,7 +165,7 @@ const std::string Get::createResponse(const Server &srv)
 			fileStr = createHTMLAutoIndex(path, this->_location);
 		} catch (...)
 		{
-			throw ResponseError(500, "Error with building HTML autoIndex", dataError);
+			throw ResponseError(500, "Building HTML autoIndex failed", dataError);
 		}
 		resp.contentType("text/html")
 			.date()

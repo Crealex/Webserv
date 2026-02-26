@@ -19,7 +19,7 @@ Client::~Client()
 	std::strftime(display, sizeof(display), "Date: %a, %d.%m.%Y - %X", timeDisplay);
 	_CGI.reset();
 
-	std::cout << RED;
+	std::cout << MAGENTA;
 	std::cout << "Close of client with fd : " << this->_fdSocket;
 	std::cout << "\t" << display;
 	std::cout << RESET << std::endl;
@@ -271,7 +271,7 @@ bool	Client::checkCGI(Server &serv)
 		_CGI.checkSubprocess(this->_request);
 		if (std::difftime(std::time(NULL), _timeRequest) > MAXTIMEREQUEST)
 		{
-			throw ResponseError(408, "Error, request timeout", _request);
+			throw ResponseError(408, "Request timeout", _request);
 		}
 	}
 	catch (ResponseError &e)

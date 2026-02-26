@@ -124,7 +124,7 @@ void Request::_checkGet()
 	if (_userAgent.empty() || 
 		_accept.empty())
 	{
-		throw ResponseError(411, "Error: Missing value", *this);
+		throw ResponseError(411, "Missing value", *this);
 	}
 
 	int leave = 0;
@@ -146,7 +146,7 @@ void Request::_checkGet()
 			break ;
 
 		if (it + 1 == _v.end())
-			throw ResponseError(415, "Error: Unsupported Media Type", *this);
+			throw ResponseError(415, "Unsupported Media Type", *this);
 	}
 }
 
@@ -156,7 +156,7 @@ void Request::_checkPost()
 	if (_ContentType.empty() || 
 		_body.empty())
 	{
-		throw ResponseError(411, "Error: Missing value", *this);
+		throw ResponseError(411, "Missing value", *this);
 	}
 
 	for (std::vector<std::string>::iterator it = _v.begin(); // INFO: Toutes la boucle for complémentent modif (par alex avec l'aval de kiki)
@@ -177,7 +177,7 @@ void Request::_checkPost()
 			break ;
 
 		if (it + 1 == _v.end())
-			throw ResponseError(415, "Error: Unsupported Media Type", *this);
+			throw ResponseError(415, "Unsupported Media Type", *this);
 	}
 }
 
@@ -185,30 +185,30 @@ void Request::checkRequest(const unsigned int maxSize)
 {
 	if (_error)
 	{
-		throw ResponseError(400, "Error, bad request", *this);
+		throw ResponseError(400, "Bad request", *this);
 	}	
 
 	if (_method != "GET" &&
 		_method != "POST" &&
 		_method != "DELETE")
 	{
-		throw ResponseError(501, "Error: Not implemented method", *this);
+		throw ResponseError(501, "Not implemented method", *this);
 	}
 
 	if (_protocol != "HTTP/1.1" &&
 		_protocol != "HTTP/1.0")
 	{
-		throw ResponseError(505, "Error: HTTP version not supported", *this);
+		throw ResponseError(505, "HTTP version not supported", *this);
 	}
 
 	if (_bodySize > maxSize)
 	{
-		throw ResponseError(413, "Error, content too large", *this);
+		throw ResponseError(413, "Content too large", *this);
 	}
 
 	if (_ContentLength && !_transferEncoding.empty())
 	{
-		throw ResponseError(400, "Error, bad request", *this);
+		throw ResponseError(400, "Bad request", *this);
 	}
 
 	_parseAccept();

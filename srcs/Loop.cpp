@@ -436,6 +436,7 @@ bool Loop::_getRequest(int idClient)
 void Loop::_createResponse(int idClient)
 {
 	Methods *met;
+	met = NULL;
 	std::string method = this->_clients[idClient]->getRequest().getMethod();
 
 	try
@@ -465,7 +466,7 @@ void Loop::_createTimeoutResponse(int idClient)
 	try
 	{
 		if (this->_clients[idClient]->checkTimeoutRequest())
-			throw ResponseError(408, "Error: Request Timeout", this->_clients[idClient]->getRequest());
+			throw ResponseError(408, "Request Timeout", this->_clients[idClient]->getRequest());
 	} catch (ResponseError &e)
 	{
 		this->_clients[idClient]->setResponse(e.createResponse(this->_servers.at(this->_clients[idClient]->getHostname())));

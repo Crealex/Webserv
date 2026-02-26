@@ -20,7 +20,7 @@ static std::string noContent(std::string protocol, Request dataError)
 
 	resp.append(protocol + " 204 " + "No content" + "\n");
 	if (!addDate(&resp))
-		throw (ResponseError(500, "can't add start line\n", dataError));
+		throw (ResponseError(500, "Can't add start line\n", dataError));
 	resp.append("Server: webserv\n\n");
 	return (resp);
 }
@@ -65,7 +65,7 @@ const std::string Delete::createResponse(const Server &srv)
 
 
 	if (std::remove(path.c_str()))
-		throw (ResponseError(500, "can't remove content", dataError));
+		throw (ResponseError(500, "Can't remove content", dataError));
 
 	return resp.date()
 		.contentType("*/*", this->_location)

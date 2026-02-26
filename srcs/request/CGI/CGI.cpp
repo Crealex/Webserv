@@ -207,11 +207,11 @@ void CGI::checkSubprocess(Request &req)
 		int status;
 		int ret = ::waitpid(_childPid, &status, WNOHANG);
 		if (ret == -1)
-			throw ResponseError(500, "Error: couldn't wait the CGI process", req);
+			throw ResponseError(500, "Couldn't wait the CGI process", req);
 		if (ret == 0)
 			return;
 		if (!WIFEXITED(status) || WEXITSTATUS(status))
-			throw ResponseError(500, "Error: CGI subprocess didn't normally exited", req);
+			throw ResponseError(500, "CGI subprocess didn't normally exited", req);
 		_exited = true;
 	}
 }
