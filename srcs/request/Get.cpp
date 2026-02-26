@@ -4,6 +4,7 @@
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseBuilder.hpp"
 #include "../../includes/requests/ResponseError.hpp"
+#include <exception>
 
 Get::Get(const Request &requ) : Methods(requ), _userAgent(requ.getUserAgent()), _accept(requ.getAccept())
 {
@@ -41,10 +42,15 @@ std::pair<unsigned int, std::string> Get::_findCodeMess(const Server &srv)
 
 	for (size_t i = 0; i < srv.getLocations().size(); i++)
 	{
-		if (this->_location == srv.getLocations().at(i).getPath())
+		try
 		{
-			finded = i;
-			break;
+			if (this->_location == srv.getLocations().at(i).getPath())
+			{
+				finded = i;
+				break;
+			}
+		} catch (const std::exception &)
+		{
 		}
 	}
 	if (finded == -1)
@@ -74,11 +80,17 @@ bool Get::_isAllowedAutoIndex(const Server &srv)
 {
 	for (size_t i = 0; i < srv.getLocations().size(); i++)
 	{
-		if (this->_location == srv.getLocations().at(i).getPath() || this->_location == srv.getLocations().at(i).getPath() + "/")
+		try
 		{
-			if (srv.getLocations().at(i).getAutoIndex())
-				return (true);
-			break;
+			if (this->_location == srv.getLocations().at(i).getPath() || this->_location == srv.getLocations().at(i).getPath() + "/")
+			{
+				if (srv.getLocations().at(i).getAutoIndex())
+					return (true);
+				break;
+			}
+		} catch (...)
+		{
+			return (false);
 		}
 	}
 	return (false);
