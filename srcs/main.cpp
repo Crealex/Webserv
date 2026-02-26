@@ -46,7 +46,7 @@ static std::vector<Server>	createServers(std::string path)
 
 int main (int argc, char **argv) 
 {
-	std::vector<Server>		servers;
+	std::vector<Server>	servers;
 
 	if (argc != 2)
 	{
@@ -57,7 +57,6 @@ int main (int argc, char **argv)
 	{
 		signal(SIGINT, signalHandler);
 		servers = createServers(argv[1]);
-		// return (3);
 		Loop	loop(servers);
 		loop.runLoop();
 	}
@@ -65,6 +64,5 @@ int main (int argc, char **argv)
 	{
 		std::cout << RED << e.what() << RESET << std::endl;
 	}
-	std::cout << RED << "help end" << RESET << std::endl ;
 	return 0;
 }
