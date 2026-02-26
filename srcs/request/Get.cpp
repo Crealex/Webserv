@@ -138,7 +138,6 @@ const std::string Get::createResponse(const Server &srv)
 	codeMess = _findCodeMess(srv);
 	if (isRedir)
 	{
-		std::cout << "path in redir: " << path << std::endl;
 		resp.location(path)
 			.contentType(this->_accept, path)
 			.date()
