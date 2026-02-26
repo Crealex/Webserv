@@ -539,7 +539,7 @@ void	Loop::_printSend(int idClient)
 void	Loop::runLoop()
 {
 	int	counter;
-	// int nbrCGI = 0;
+	
 	counter = 0;
 	fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK); // INFO: Ajouter par alex pour gerer les cmds
 	this->_epoll.addEpollFd(STDIN_FILENO, EPOLLIN|EPOLLET);// Comme ci dessus ^^^

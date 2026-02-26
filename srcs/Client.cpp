@@ -178,7 +178,6 @@ bool	Client::checkTimeoutRequest()
 	std::time_t timeout;
 
 	timeout = std::difftime(this->getTimeNow(), this->_timeRequest);
-	std::cout << RED << "timeout : " << timeout << ", " << this->getTimeNow() << ", " << this->_timeRequest << RESET << std::endl;
 	if (timeout > MAXTIMEREQUEST)
 		return (true);
 	return (false);
