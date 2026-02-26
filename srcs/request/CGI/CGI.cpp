@@ -209,7 +209,9 @@ void CGI::checkSubprocess(Request &req)
 	if (_started)
 	{
 		int status;
+		std::cout << "before wait" << std::endl;
 		int ret = ::waitpid(_childPid, &status, WNOHANG);
+		std::cout << "after wait" << std::endl;
 		// std::cout << std::boolalpha << "ret = " << ret << " - exit status = " << WEXITSTATUS(status) << " - ifexited = " << WIFEXITED(status) << std::endl;
 		if (ret == -1)
 			throw ResponseError(500, "Error: couldn't wait the CGI process", req);

@@ -109,6 +109,7 @@ void	Client::setRequestBody()
 
 void	Client::setTimeoutRequest()
 {
+	std::cout << "here ?" << std::endl;
 	this->_timeRequest = this->getTimeNow();
 }
 
@@ -146,7 +147,9 @@ std::time_t	Client::getTimeNow()
 {
 	std::time_t	timestamp;
 	
-	std::time(&timestamp);
+	std::cout << "before time" << std::endl;
+	timestamp = std::time(NULL);
+	std::cout << "timestap : " << timestamp << std::endl;
 	return (timestamp);
 }
 
@@ -175,7 +178,11 @@ void	Client::checkRequest(Server server)
 
 bool	Client::checkTimeoutRequest()
 {
-	if (std::difftime(this->getTimeNow(), this->_timeRequest) > MAXTIMEREQUEST)
+	std::time_t timeout;
+
+	timeout = std::difftime(this->getTimeNow(), this->_timeRequest);
+	std::cout << RED << "timeout : " << timeout << ", " << this->getTimeNow() << ", " << this->_timeRequest << RESET << std::endl;
+	if (timeout > MAXTIMEREQUEST)
 		return (true);
 	return (false);
 }
@@ -266,7 +273,12 @@ bool	Client::checkCGI(Server &serv)
 	// std::cout << MAGENTA << BOLD << "checking CGI" << RESET << std::endl;
 	try
 	{
+		std::cout << "coucou" << std::endl;
 		_CGI.checkSubprocess(this->_request);
+		if (std::difftime(std::time(NULL), _timeRequest) > MAXTIMEREQUEST)
+		{
+			throw ResponseError(408, "Error, request timeout", _request);
+		}
 	}
 	catch (ResponseError &e)
 	{
