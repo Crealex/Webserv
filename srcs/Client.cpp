@@ -108,7 +108,6 @@ void	Client::setRequestBody()
 
 void	Client::setTimeoutRequest()
 {
-	std::cout << "here ?" << std::endl;
 	this->_timeRequest = this->getTimeNow();
 }
 
@@ -146,9 +145,7 @@ std::time_t	Client::getTimeNow()
 {
 	std::time_t	timestamp;
 	
-	std::cout << "before time" << std::endl;
 	timestamp = std::time(NULL);
-	std::cout << "timestap : " << timestamp << std::endl;
 	return (timestamp);
 }
 
@@ -198,10 +195,10 @@ void Client::isCGI(Server &serv)
 	_isCGI = _CGI.isCGI(_request.getLocation(), serv);
 }
 
-void	Client::startCGI(Server &serv, Epoll &epoll)
+void	Client::startCGI(Server &serv)
 {
 	_CGI.setEnvp(serv, _request);
-	_CGI.constructFD(epoll);
+	_CGI.constructFD();
 	std::string interpreter;
 	std::string path;
 
@@ -272,7 +269,6 @@ bool	Client::checkCGI(Server &serv)
 	// std::cout << MAGENTA << BOLD << "checking CGI" << RESET << std::endl;
 	try
 	{
-		std::cout << "coucou" << std::endl;
 		_CGI.checkSubprocess(this->_request);
 		if (std::difftime(std::time(NULL), _timeRequest) > MAXTIMEREQUEST)
 		{

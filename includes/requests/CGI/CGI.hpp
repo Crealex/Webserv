@@ -46,7 +46,7 @@ class CGI {
 		void	reset();
 		void	setEnvp(Server &serv, Request &req);
 		void	startSubprocess(const std::string path, const std::string interpreter);
-		void	constructFD(Epoll &epoll);
+		void	constructFD();
 
 		bool	isCGI(std::string path, Server server);
 };

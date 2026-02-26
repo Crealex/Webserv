@@ -543,7 +543,6 @@ void	Loop::runLoop()
 		idClient = 0;
 
 		epollCounterWait = ::epoll_wait(this->_epoll.getEpollFd(), events, this->_epoll.getNbSockets(), 2000);
-		std::cout << "nbr socket = " << this->_epoll.getNbSockets() << std::endl;
 		this->_checkAllTimeout();
 		if (epollCounterWait < 1)
 		{
@@ -557,8 +556,6 @@ void	Loop::runLoop()
 		}
 		for (int indexEvent = 0; indexEvent < epollCounterWait; indexEvent++)
 		{
-			std::cout << "index event = " << indexEvent << " - epollCounter = " << epollCounterWait << " - fd = " << events[indexEvent].data.fd << " - idClient = " << idClient << std::endl;
-			
 			if (events[indexEvent].events & EPOLLIN && events[indexEvent].data.fd == STDIN_FILENO) // INFO: Condition ajouter par alex pour gérer les cmds
 			{
 				this->_handleCmd();
@@ -569,9 +566,6 @@ void	Loop::runLoop()
 			if (events[indexEvent].events & EPOLLIN && this->_isServerSocket(events[indexEvent].data.fd))
 			{
 				this->_acceptClient(events[indexEvent].data.fd);
-				std::cout << RED << "size client : " << this->_clients.size() << RESET << std::endl;
-				for (size_t i = 0; i < this->_clients.size(); i++)
-					std::cout << RED << this->_clients[i]->getFdClient() << RESET << std::endl;
 			}
 			else if (events[indexEvent].events & EPOLLIN && this->_isClientSocket(events[indexEvent].data.fd, idClient))
 			{
@@ -585,15 +579,11 @@ void	Loop::runLoop()
 				_clients[idClient]->isCGI(_servers[_clients[idClient]->getHostname()]);
 				if (_clients[idClient]->getIsCGI())
 				{
-					_clients[idClient]->startCGI(_servers[_clients[idClient]->getHostname()], _epoll);
+					_clients[idClient]->startCGI(_servers[_clients[idClient]->getHostname()]);
 				}
 			}
 			else if (_clients[idClient]->getIsCGI())
 			{
-				// if (_clients[idClient]->getIsCGI())
-				// 	std::cout << _clients[idClient]->getRequest().getLocation() << std::endl;
-				// nbrCGI++;
-				// std::cout << "CGIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII = " << nbrCGI << std::endl;
 				if (!_clients[idClient]->checkCGI(_servers[_clients[idClient]->getHostname()]))
 					continue ;
 				if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
@@ -608,7 +598,6 @@ void	Loop::runLoop()
 			}
 			else if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient) && !_clients[idClient]->getIsCGI())
 			{
-				std::cout << "create response" << std::endl;
 				this->_createResponse(idClient);
 				this->_sendResponse(idClient);
 				if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
