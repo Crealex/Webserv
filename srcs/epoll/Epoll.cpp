@@ -19,12 +19,12 @@ Epoll::~Epoll()
 }
 
 // GETTERS
-int const			&Epoll::getEpollFd() const
+int const	&Epoll::getEpollFd() const
 {
 	return (this->_epollFd);
 }
 
-int const			&Epoll::getNbSockets() const
+int const	&Epoll::getNbSockets() const
 {
 	return (this->_nbSockets);
 }

@@ -441,6 +441,7 @@ void Loop::_createResponse(int idClient)
 	try
 	{
 		this->_clients[idClient]->checkRequest(this->_servers.at(this->_clients[idClient]->getHostname()));
+		// std::cout << GREEN << "after at" << RESET << std::endl;
 		if (method == "GET")
 			met = new Get(this->_clients[idClient]->getRequest());
 		else if (method == "POST")
@@ -528,10 +529,6 @@ void Loop::runLoop()
 		int epollCounterWait;
 		epoll_event events[this->_epoll.getNbSockets()];
 
-
-		int bnos = this->_epoll.getNbSockets();
-		bnos++;
-		std::cout << " bnos : " << bnos << std::endl;
 		epollCounterWait = 0;
 		idClient = 0;
 
@@ -556,10 +553,11 @@ void Loop::runLoop()
 					break;
 				continue;
 			}
-			if (events[indexEvent].events & EPOLLIN && this->_isServerSocket(events[indexEvent].data.fd))
+			else if (events[indexEvent].events & EPOLLIN && this->_isServerSocket(events[indexEvent].data.fd))
 			{
 				this->_acceptClient(events[indexEvent].data.fd);
-			} else if (events[indexEvent].events & EPOLLIN && this->_isClientSocket(events[indexEvent].data.fd, idClient))
+			}
+			else if (events[indexEvent].events & EPOLLIN && this->_isClientSocket(events[indexEvent].data.fd, idClient))
 			{
 				if (!this->_getRequest(idClient))
 				{
@@ -586,7 +584,8 @@ void Loop::runLoop()
 					this->_clients[idClient]->resetClient();
 					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN | EPOLLET);
 				}
-			} else if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient) && !_clients[idClient]->getIsCGI())
+			}
+			else if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient) && !_clients[idClient]->getIsCGI())
 			{
 				this->_createResponse(idClient);
 				this->_sendResponse(idClient);
