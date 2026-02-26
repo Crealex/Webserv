@@ -16,7 +16,7 @@ CFLAGS	= -Werror -Wextra -Wall -std=c++98 -g3
 CC = c++
 
 # variable for arguement of executable
-CONF	?= danalexian.conf
+CONF	?= conf/danalexian.conf
 
 # Colors and style
 END      := $(shell printf "\033[0m")
