@@ -175,7 +175,10 @@ void	Client::checkRequest(Server server)
 
 bool	Client::checkTimeoutRequest()
 {
-	if (std::difftime(this->getTimeNow(), this->_timeRequest) > MAXTIMEREQUEST)
+	std::time_t timeout;
+
+	timeout = std::difftime(this->getTimeNow(), this->_timeRequest);
+	if (timeout > MAXTIMEREQUEST)
 		return (true);
 	return (false);
 }
@@ -192,10 +195,10 @@ void Client::isCGI(Server &serv)
 	_isCGI = _CGI.isCGI(_request.getLocation(), serv);
 }
 
-void	Client::startCGI(Server &serv, Epoll &epoll)
+void	Client::startCGI(Server &serv)
 {
 	_CGI.setEnvp(serv, _request);
-	_CGI.constructFD(epoll);
+	_CGI.constructFD();
 	std::string interpreter;
 	std::string path;
 

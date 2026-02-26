@@ -75,15 +75,13 @@ void CGI::setEnvp(Server &serv, Request &req)
 	_env.setEnv(filename, name, req);
 }
 
-void CGI::constructFD(Epoll &epoll)
+void CGI::constructFD()
 {
 	(void) epoll;
 	if (::pipe(_pipeFromCGI) != 0)
 		throw std::runtime_error("Error, could not create pipe from CGI");
 	_sockOptNonBlocking(_pipeFromCGI[0]);
 	_sockOptNonBlocking(_pipeFromCGI[1]);
-	// epoll.addEpollFd(_pipeFromCGI[0], EPOLLOUT|EPOLLET);
-	// epoll.addEpollFd(_pipeFromCGI[1], EPOLLIN);
 	if (::pipe(_pipeToCGI) != 0)
 	{
 		::close(_pipeFromCGI[0]);
@@ -94,8 +92,6 @@ void CGI::constructFD(Epoll &epoll)
 	}
 	_sockOptNonBlocking(_pipeToCGI[0]);
 	_sockOptNonBlocking(_pipeToCGI[1]);
-	// epoll.addEpollFd(_pipeToCGI[0], EPOLLOUT);
-	// epoll.addEpollFd(_pipeToCGI[1], EPOLLIN);
 }
 
 void CGI::reset()
@@ -211,7 +207,6 @@ void CGI::checkSubprocess(Request &req)
 	{
 		int status;
 		int ret = ::waitpid(_childPid, &status, WNOHANG);
-		// std::cout << std::boolalpha << "ret = " << ret << " - exit status = " << WEXITSTATUS(status) << " - ifexited = " << WIFEXITED(status) << std::endl;
 		if (ret == -1)
 			throw ResponseError(500, "Error: couldn't wait the CGI process", req);
 		if (ret == 0)
@@ -273,18 +268,13 @@ bool CGI::isCGI(std::string path, Server server)
 	{
 		std::string substring = path.substr(0, path.find_last_of('/'));
 		Location loc = _retRightLoc(substring, server);
-		if (!loc.getIndex().empty())
+		if (_cmpExt(ext, loc.getCgiHandler()))
 		{
-			if (_cmpExt(ext, loc.getCgiHandler()))
-			{
-				std::ifstream is(std::string(server.getRoot() + path).c_str());
-				
-				if (is.is_open())
-					return true;
-				return false;
-			}
-			else
-				return false;
+			std::ifstream is(std::string(server.getRoot() + path).c_str());
+			
+			if (is.is_open())
+				return true;
+			return false;
 		}
 		else
 			return false;

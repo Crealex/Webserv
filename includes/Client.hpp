@@ -57,7 +57,7 @@ class Client
 
 		bool	checkCGI(Server &serv);
 		void	isCGI(Server &serv);
-		void	startCGI(Server &serv, Epoll &epoll);
+		void	startCGI(Server &serv);
 		void	resetBuf();
 		void	resetClient();
 		void	checkRequest(Server server);

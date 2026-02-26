@@ -89,6 +89,7 @@ const std::string ResponseError::createResponse(const Server &srv)
 {
 	std::string			path;
 	std::stringstream	ss;
+	std::string			target;
 	std::ifstream		file;
 	Request				dataError;
 	std::string			fileStr;
@@ -97,14 +98,22 @@ const std::string ResponseError::createResponse(const Server &srv)
 
 	ResponseBuilder resp(dataError, this->_protocol);
 	ss << this->_code;
-	path = srv.getRoot() + "/error/" + ss.str() + ".html";
-	file.open(path.c_str());
-	if (!file.is_open())
+	target = srv.getErrorPage().at(this->_code);
+	if (target.empty())
 	{
 		fileStr = createBodyHTML(this->_code, this->_message);
 	}
-	else {
-		fileStr = createFileStr(file);
+	else
+	{
+		path = target;
+		file.open(path.c_str());
+		if (!file.is_open())
+		{
+			fileStr = createBodyHTML(this->_code, this->_message);
+		}
+		else {
+			fileStr = createFileStr(file);
+		}
 	}
 	return resp.contentType("text/html", path)
 		.date()
