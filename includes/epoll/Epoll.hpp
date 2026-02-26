@@ -14,21 +14,20 @@ class Epoll
 		int			_nbSockets;
 
 		int		createEpoll();
-		void	addEpollServer(std::vector<Socket *> &sockets, int epollFd);
+		void	addEpollServer(std::vector<Socket *> &sockets);
 
 	public:
 		Epoll();
-		Epoll(std::vector<Socket *> sockets, int nbSockets);
+		Epoll(std::vector<Socket *> sockets);
 		~Epoll();
 
-		int const			&getEpollFd() const;
-		int const			&getNbSockets() const;
+		int const	&getEpollFd() const;
+		int const	&getNbSockets() const;
 		
 		void	setNbSockets(int newNb);
 		void	setEvents(Client *client, uint32_t event);
 
 		void	addEpollFd(int fd, uint32_t event);
-		void	delEpollFd(int fd);
 		void	closeFd();
 };
 

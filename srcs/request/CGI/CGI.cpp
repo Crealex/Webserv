@@ -77,11 +77,12 @@ void CGI::setEnvp(Server &serv, Request &req)
 
 void CGI::constructFD(Epoll &epoll)
 {
+	(void) epoll;
 	if (::pipe(_pipeFromCGI) != 0)
 		throw std::runtime_error("Error, could not create pipe from CGI");
 	_sockOptNonBlocking(_pipeFromCGI[0]);
 	_sockOptNonBlocking(_pipeFromCGI[1]);
-	epoll.addEpollFd(_pipeFromCGI[0], EPOLLOUT|EPOLLET);
+	// epoll.addEpollFd(_pipeFromCGI[0], EPOLLOUT|EPOLLET);
 	// epoll.addEpollFd(_pipeFromCGI[1], EPOLLIN);
 	if (::pipe(_pipeToCGI) != 0)
 	{
@@ -209,9 +210,7 @@ void CGI::checkSubprocess(Request &req)
 	if (_started)
 	{
 		int status;
-		std::cout << "before wait" << std::endl;
 		int ret = ::waitpid(_childPid, &status, WNOHANG);
-		std::cout << "after wait" << std::endl;
 		// std::cout << std::boolalpha << "ret = " << ret << " - exit status = " << WEXITSTATUS(status) << " - ifexited = " << WIFEXITED(status) << std::endl;
 		if (ret == -1)
 			throw ResponseError(500, "Error: couldn't wait the CGI process", req);

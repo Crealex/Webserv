@@ -7,11 +7,10 @@ Epoll::Epoll()
 	this->_nbSockets = -1;
 }
 
-Epoll::Epoll(std::vector<Socket *> sockets, int nbSockets)
+Epoll::Epoll(std::vector<Socket *> sockets)
 {
 	this->_epollFd = createEpoll();
-	this->_nbSockets = nbSockets;
-	addEpollServer(sockets, this->_epollFd);
+	addEpollServer(sockets);
 }
 
 Epoll::~Epoll()
@@ -59,17 +58,15 @@ int	Epoll::createEpoll()
 	return (res);
 }
 
-void	Epoll::addEpollServer(std::vector<Socket *> &sockets, int epollFd)
+void	Epoll::addEpollServer(std::vector<Socket *> &sockets)
 {
 	epoll_event	res;
 	int			sizeSocket;
 	int			sizeSockData;
-	int			count;
 	int			counter;
 	int			epollStatus;
 
 	sizeSocket = sockets.size();
-	count = 0;
 	for (int i = 0; i < sizeSocket; i++)
 	{
 		sizeSockData = sockets[i]->getSockData().size();
@@ -80,11 +77,11 @@ void	Epoll::addEpollServer(std::vector<Socket *> &sockets, int epollFd)
 			{
 				res.data.fd = sockets[i]->getSockData()[j]->getFdServer();
 				res.events = EPOLLIN;
-				epollStatus = ::epoll_ctl(epollFd, EPOLL_CTL_ADD, res.data.fd, &res);
+				epollStatus = ::epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, res.data.fd, &res);
 				counter++;
 			} while (epollStatus < 0 && counter < 3);
 			if (epollStatus > -1)
-				count++;
+				this->_nbSockets++;
 			// else : log error
 		}
 	}
