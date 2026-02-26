@@ -533,6 +533,7 @@ void	Loop::_printSend(int idClient)
 void	Loop::runLoop()
 {
 	int	counter;
+
 	counter = 0;
 	fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK); // INFO: Ajouter par alex pour gerer les cmds
 	this->_epoll.addEpollFd(STDIN_FILENO, EPOLLIN|EPOLLET);// Comme ci dessus ^^^
@@ -543,7 +544,9 @@ void	Loop::runLoop()
 		int			epollCounterWait;
 		epoll_event	events[this->_epoll.getNbSockets()];
 
-
+		int bnos = this->_epoll.getNbSockets();
+		bnos++;
+		std::cout << " bnos : " << bnos << std::endl;
 		epollCounterWait = 0;
 		idClient = 0;
 
@@ -571,8 +574,6 @@ void	Loop::runLoop()
 			if (events[indexEvent].events & EPOLLIN && this->_isServerSocket(events[indexEvent].data.fd))
 			{
 				this->_acceptClient(events[indexEvent].data.fd);
-				for (size_t i = 0; i < this->_clients.size(); i++)
-					std::cout << RED << this->_clients[i]->getFdClient() << RESET << std::endl;
 			}
 			else if (events[indexEvent].events & EPOLLIN && this->_isClientSocket(events[indexEvent].data.fd, idClient))
 			{

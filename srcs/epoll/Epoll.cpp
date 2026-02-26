@@ -4,12 +4,13 @@
 Epoll::Epoll()
 {
 	this->_epollFd = -1;
-	this->_nbSockets = -1;
+	this->_nbSockets = 0;
 }
 
 Epoll::Epoll(std::vector<Socket *> sockets)
 {
 	this->_epollFd = createEpoll();
+	this->_nbSockets = 0;
 	addEpollServer(sockets);
 }
 
