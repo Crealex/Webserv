@@ -3,6 +3,7 @@
 #include "../../includes/requests/MimeTypes.hpp"
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseError.hpp"
+#include <exception>
 
 // INFO: All prototypes are in methodClass.hpp
 
@@ -14,22 +15,28 @@ std::string findTarget(std::string locPath, std::vector<Location> loc, Request d
 
 	while (loc.size() > i)
 	{
-		if (loc.at(i).getPath() == locPath)
+		try
 		{
-			if (!loc.at(i).getMethodValue(method))
+			if (loc.at(i).getPath() == locPath)
 			{
-				if (loc.at(i).getReturn().first.empty())
-					throw ResponseError(405, "Method not allowed", dataError);
-				return (loc.at(i).getReturn().first);
+				if (!loc.at(i).getMethodValue(method))
+				{
+					if (loc.at(i).getReturn().first.empty())
+						throw ResponseError(405, "Method not allowed", dataError);
+					return (loc.at(i).getReturn().first);
+				}
+				if (loc.at(i).getAutoIndex())
+					return loc.at(i).getPath();
+				else if (!loc.at(i).getIndex().empty())
+					return (locPath + "/" + loc.at(i).getIndex());
+				else if (!loc.at(i).getReturn().first.empty())
+					return (loc.at(i).getReturn().first);
 			}
-			if (loc.at(i).getAutoIndex())
-				return loc.at(i).getPath();
-			else if (!loc.at(i).getIndex().empty())
-				return (loc.at(i).getIndex());
-			else if (!loc.at(i).getReturn().first.empty())
-				return (loc.at(i).getReturn().first);
+			i++;
+		} catch (std::exception &e)
+		{
+			throw ResponseError(401, "Unauthorized", dataError);
 		}
-		i++;
 	}
 	return (locPath);
 }
@@ -223,18 +230,6 @@ bool addBody(std::string *resp, std::string file)
 	resp->append("\n" + file + "\r\n\r\n");
 	return (true);
 }
-
-// bool addLocation(std::string *resp, std::string host, std::string location)
-//{
-//	try
-//	{
-//		resp->append("Location: " + host + location);
-//	} catch (std::exception &e)
-//	{
-//		return (false);
-//	}
-//	return (true);
-// }
 
 bool addLocation(std::string *resp, std::string location)
 {

@@ -1,11 +1,11 @@
 #include "../../includes/requests/ResponseError.hpp"
-#include "../../includes/requests/Request.hpp"
 #include "../../includes/colors.hpp"
+#include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseBuilder.hpp"
 
-ResponseError::ResponseError(unsigned int code, const std::string &message, const Request &requ): std::exception(), Methods(requ), _code(code), _message(message)
+ResponseError::ResponseError(unsigned int code, const std::string &message, const Request &requ) : std::exception(), Methods(requ), _code(code), _message(message)
 {
-	//std::cout << LIGHT_RED << "DEBUG: Created exception error response" << RESET << std::endl;
+	// std::cout << LIGHT_RED << "DEBUG: Created exception error response" << RESET << std::endl;
 }
 
 ResponseError::~ResponseError() _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW
@@ -35,11 +35,11 @@ std::string createBodyHTML(unsigned int code, std::string mess)
 {
 	std::stringstream ss;
 
-
 	ss << "<!doctype html>\n <html lang=\"en\">\n<head>\n \
 			<meta charset=\"UTF-8\" />\n \
 			<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n \
-			<title>Error " << code << "</title> \n \
+			<title>Error "
+	   << code << "</title> \n \
 			<style> \
 				body,html {\n \
 			font-family: \"Consolas\", monospace, Cursive;\n \
@@ -69,9 +69,12 @@ std::string createBodyHTML(unsigned int code, std::string mess)
 		</head>\n \
 		<body>\n \
 			<div class=\"errorDisplay\">\n \
-				<h1>Erreur " << code << "</h1>\n \
-				<p>" << mess << "</p>\n \
-				<img src=\"https://http.cat/" << code << "\" alt=\"img http cat error " << code << "\" />\n \
+				<h1>Erreur "
+	   << code << "</h1>\n \
+				<p>"
+	   << mess << "</p>\n \
+				<img src=\"https://http.cat/"
+	   << code << "\" alt=\"img http cat error " << code << "\" />\n \
 			</div>\n \
 			</body>\n \
 		</html>\r\n\r\n";
@@ -87,18 +90,23 @@ std::string createBodyHTML(unsigned int code, std::string mess)
  */
 const std::string ResponseError::createResponse(const Server &srv)
 {
-	std::string			path;
-	std::stringstream	ss;
-	std::string			target;
-	std::ifstream		file;
-	Request				dataError;
-	std::string			fileStr;
+	std::string path;
+	std::stringstream ss;
+	std::string target;
+	std::ifstream file;
+	Request dataError;
+	std::string fileStr;
 
 	dataError = this->_createDataError();
 
 	ResponseBuilder resp(dataError, this->_protocol);
 	ss << this->_code;
-	target = srv.getErrorPage().at(this->_code);
+	try
+	{
+		target = srv.getErrorPage().at(this->_code);
+	} catch (const std::exception &)
+	{
+	}
 	if (target.empty())
 	{
 		fileStr = createBodyHTML(this->_code, this->_message);
@@ -111,11 +119,12 @@ const std::string ResponseError::createResponse(const Server &srv)
 		{
 			fileStr = createBodyHTML(this->_code, this->_message);
 		}
-		else {
+		else
+		{
 			fileStr = createFileStr(file);
 		}
 	}
-	return resp.contentType("text/html", path)
+	return resp.contentType("text/html")
 		.date()
 		.lastModified(path)
 		.contentLength(fileStr.size())
@@ -123,4 +132,3 @@ const std::string ResponseError::createResponse(const Server &srv)
 		.body(fileStr)
 		.build();
 }
-
