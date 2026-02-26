@@ -4,7 +4,7 @@
 #include "../includes.hpp"
 #include "../Server.hpp"
 
-struct Request;
+class Request;
 
 class Methods
 {
