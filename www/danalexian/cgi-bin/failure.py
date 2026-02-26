@@ -1,3 +1,5 @@
 #!/usr/bin/python3
 #ne doit pas marcher
-ne marche pas
+import time
+
+time.sleep(150)

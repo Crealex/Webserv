@@ -436,8 +436,6 @@ bool Loop::_getRequest(int idClient)
 	if (this->_checkBody(idClient) == -1)
 		return (false);
 	this->_epoll.setEvents(this->_clients[idClient], EPOLLOUT);
-	this->_clients[idClient]->setTimeoutRequest();
-	this->_clients[idClient]->setTimeout();
 	return (true);
 }
 
@@ -524,8 +522,8 @@ void Loop::_printSend(int idClient)
 
 void Loop::runLoop()
 {
-	int counter;
-
+	int	counter;
+	
 	counter = 0;
 	fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);				  // INFO: Ajouter par alex pour gerer les cmds
 	this->_epoll.addEpollFd(STDIN_FILENO, EPOLLIN | EPOLLET); // Comme ci dessus ^^^
@@ -535,6 +533,7 @@ void Loop::runLoop()
 		int idClient;
 		int epollCounterWait;
 		epoll_event events[this->_epoll.getNbSockets()];
+
 
 		epollCounterWait = 0;
 		idClient = 0;
@@ -575,7 +574,7 @@ void Loop::runLoop()
 				_clients[idClient]->isCGI(_servers[_clients[idClient]->getHostname()]);
 				if (_clients[idClient]->getIsCGI())
 				{
-					_clients[idClient]->startCGI(_servers[_clients[idClient]->getHostname()], _epoll);
+					_clients[idClient]->startCGI(_servers[_clients[idClient]->getHostname()]);
 				}
 			} else if (_clients[idClient]->getIsCGI())
 			{
