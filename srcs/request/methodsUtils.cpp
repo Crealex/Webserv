@@ -12,31 +12,34 @@
 std::string findTarget(std::string locPath, std::vector<Location> loc, Request dataError, std::string method)
 {
 	unsigned int i = 0;
+	unsigned int maxSize = 0;
 
 	while (loc.size() > i)
 	{
-		try
+		if (loc.at(i).getPath().size() < locPath.size())
+			maxSize = loc.at(i).getPath().size();
+		else
+			maxSize = locPath.size();
+		std::cout << "path in vector: " << loc.at(i).getPath() << " path in locPath: " << locPath << " maxSize: " << maxSize << std::endl;
+		std::cout << "value of compare " << loc.at(i).getPath().compare(0, maxSize, locPath) << std::endl;
+		if (loc.at(i).getPath().compare(0, maxSize, locPath) == 0)
 		{
-			if (loc.at(i).getPath() == locPath)
+			std::cout << "method: " << method << std::endl;
+			if (!loc.at(i).getMethodValue(method))
 			{
-				if (!loc.at(i).getMethodValue(method))
-				{
-					if (loc.at(i).getReturn().first.empty())
-						throw ResponseError(405, "Method not allowed", dataError);
-					return (loc.at(i).getReturn().first);
-				}
-				if (loc.at(i).getAutoIndex())
-					return loc.at(i).getPath();
-				else if (!loc.at(i).getIndex().empty())
-					return (locPath + "/" + loc.at(i).getIndex());
-				else if (!loc.at(i).getReturn().first.empty())
-					return (loc.at(i).getReturn().first);
+				if (loc.at(i).getReturn().first.empty())
+					throw ResponseError(405, "Method not allowed", dataError);
+				std::cout << "here" << std::endl;
+				return (loc.at(i).getReturn().first);
 			}
-			i++;
-		} catch (std::exception &e)
-		{
-			throw ResponseError(401, "Unauthorized", dataError);
+			if (loc.at(i).getAutoIndex())
+				return loc.at(i).getPath();
+			else if (!loc.at(i).getIndex().empty())
+				return (locPath + "/" + loc.at(i).getIndex());
+			else if (!loc.at(i).getReturn().first.empty())
+				return (loc.at(i).getReturn().first);
 		}
+		i++;
 	}
 	return (locPath);
 }
