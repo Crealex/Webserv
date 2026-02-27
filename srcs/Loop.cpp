@@ -464,15 +464,6 @@ void Loop::_createResponse(int idClient)
 		if (met)
 			delete met;
 	}
-	size_t pos = this->_clients[idClient]->getRequest().getContentType().find("boundary=");
-	if (pos == std::string::npos)
-		std::cout << "no boundary motherfucker" << std::endl;
-	std::string bound = this->_clients[idClient]->getRequest().getContentType().substr(pos + 9, this->_clients[idClient]->getRequest().getContentType().size() - pos - 9);
-	std::cout << "bound : " << bound << std::endl;
-	if (this->_clients[idClient]->getResponse().find_first_of(bound) != this->_clients[idClient]->getResponse().find_last_of(bound))
-		std::cout << "you are different" << std::endl;
-	else
-		std::cout << "you are not different" << std::endl;
 	this->_clients[idClient]->setTimeout();
 }
 
