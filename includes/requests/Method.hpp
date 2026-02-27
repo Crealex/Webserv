@@ -37,7 +37,9 @@ bool		addBody(std::string *resp, std::string file);
 bool		addLocation(std::string *resp, std::string host, std::string location);
 bool		addLocation(std::string *resp, std::string location);
 bool		addContentType(std::string *resp, std::string type);
+int			findBestMatchingLocation(const std::string& path, const std::vector<Location>& locations);
 std::string	findTarget(std::string locPath, std::vector<Location> loc, Request dataError, std::string method);
+bool		isDir(const std::string &path);
 
 Methods*	createMethod(std::string buffer, size_t maxSize, bool &ret);
 Request		createRequest(std::string buffer, size_t maxSize);
