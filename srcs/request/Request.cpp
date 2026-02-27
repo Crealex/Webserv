@@ -245,6 +245,9 @@ void Request::setFirstLine(std::string &line)
 	{
 		_error = true;
 	}
+
+	while (*(_location.end() - 1) == '/')
+		_location.erase(_location.end() - 1);
 }
 
 /**
