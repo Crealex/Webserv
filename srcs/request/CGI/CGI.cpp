@@ -249,9 +249,10 @@ bool CGI::_cmpExt(std::string ext, std::map<std::string, std::string> map)
 	return false;
 }
 
-bool CGI::isCGI(std::string path, Server server)
+bool CGI::isCGI(std::string path, Server &server)
 {
 	std::string ext = _retExtension(path);
+
 	if (ext == path)
 	{
 		Location loc = _retRightLoc(path, server);
