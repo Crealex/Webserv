@@ -4,7 +4,7 @@
 
 std::vector<std::string> Request::_v = Request::_acceptedType();
 
-Request::Request() : _ContentLength(0), _keepAlive(false), _error(false)
+Request::Request() : _ContentLength(0), _bodySize(0), _keepAlive(false), _error(true)
 {
 }
 
@@ -103,6 +103,8 @@ void Request::reset()
 
 void Request::_parseAccept()
 {
+	if (_accept.empty())
+		return ;
 	std::istringstream ss(_accept);
 	std::string	newAccept;
 	std::string	line;
@@ -121,10 +123,9 @@ void Request::_parseAccept()
 
 void Request::_checkGet()
 {
-	if (_userAgent.empty() || 
-		_accept.empty())
+	if (_accept.empty())
 	{
-		throw ResponseError(411, "Missing value", *this);
+		throw ResponseError(400, "Bad Request", *this);
 	}
 
 	int leave = 0;
@@ -153,11 +154,15 @@ void Request::_checkGet()
 void Request::_checkPost()
 {
 	int leave = 0;
+
 	if (_ContentType.empty() || 
 		_body.empty())
 	{
-		throw ResponseError(411, "Missing value", *this);
+		throw ResponseError(400, "Bad Request", *this);
 	}
+
+	if (_ContentLength == 0)
+		throw ResponseError(411, "Length Required", *this);
 
 	for (std::vector<std::string>::iterator it = _v.begin(); // INFO: Toutes la boucle for complémentent modif (par alex avec l'aval de kiki)
 		it != _v.end(); it++)
@@ -183,7 +188,7 @@ void Request::_checkPost()
 
 void Request::checkRequest(const unsigned int maxSize)
 {
-	if (_error)
+	if (_error || _host.empty())
 	{
 		throw ResponseError(400, "Bad request", *this);
 	}	
@@ -293,7 +298,8 @@ void Request::parseHeader(std::string &buffer)
 	std::map<std::string, std::string*> ptrMap = createMap();
 	std::istringstream iss(buffer);
 	std::string line;
-
+	
+	_error = false;
 	std::getline(iss, line);
 	setFirstLine(line);
 	while (std::getline(iss, line)) 
