@@ -48,7 +48,7 @@ class CGI {
 		void	startSubprocess(const std::string path, const std::string interpreter);
 		void	constructFD();
 
-		bool	isCGI(std::string path, Server server);
+		bool	isCGI(std::string path, Server &server);
 };
 
 #endif
