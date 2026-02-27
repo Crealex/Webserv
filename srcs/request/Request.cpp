@@ -231,9 +231,15 @@ void Request::setFirstLine(std::string &line)
 
 	ss >> _method;
 	ss >> _location;
-	ss >>_protocol;
-	if (ss >> check)
+	ss >> _protocol;
+
+	if (ss >> check ||
+		_method.empty() ||
+		_location.empty() ||
+		_protocol.empty())
+	{
 		_error = true;
+	}
 }
 
 /**
@@ -298,9 +304,14 @@ void Request::parseHeader(std::string &buffer)
 		if (line.empty())
 			break ;
 
+		if (line.find(": ") == std::string::npos)
+			_error = true;
+
 		std::stringstream ss(line);
 		std::string word;
 		ss >> word;
+		if (word.empty())
+			_error = true;
 		if (word == "Content-Length:")
 		{
 			if (!(ss >> _ContentLength))
