@@ -57,7 +57,7 @@ static std::string extractGoodPath(std::string locPath)
 	unsigned int	lastSlash;
 
 	if (locPath == "/" || locPath.empty())
-		return (locPath);
+		return ("/");
 	lastSlash = locPath.find_last_of('/');
 	lastPart = locPath.substr(lastSlash, locPath.size());
 	 if (isDir(lastPart))
@@ -84,6 +84,7 @@ std::string findTarget(std::string locPath, std::vector<Location> loc, Request d
 	std::string goodPath;
 
 	goodPath = extractGoodPath(locPath);
+	std::cout << "locPath: " << locPath << std::endl;
 	if (goodPath.empty())
 		goodPath = locPath;
 	
@@ -106,7 +107,13 @@ std::string findTarget(std::string locPath, std::vector<Location> loc, Request d
 	if (loc.at(bestMatch).getAutoIndex())
 		return locPath;
 	else if (!loc.at(bestMatch).getIndex().empty())
-		return (goodPath + "/" + loc.at(bestMatch).getIndex());
+	{
+		// Gérer le cas spécial où goodPath est "/"
+		if (goodPath == "/")
+			return ("/" + loc.at(bestMatch).getIndex());
+		else
+			return (goodPath + "/" + loc.at(bestMatch).getIndex());
+	}
 	else if (!loc.at(bestMatch).getReturn().first.empty())
 		return (loc.at(bestMatch).getReturn().first);
 	return (locPath);

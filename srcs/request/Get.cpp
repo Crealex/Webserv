@@ -108,7 +108,7 @@ const std::string Get::createResponse(const Server &srv)
 
 	ResponseBuilder resp(dataError, this->_protocol);
 	target = findTarget(this->_location, srv.getLocations(), dataError, "GET");
-	std::cout << "location: " << this->_location << std::endl;
+	std::cout << "target: " << target << std::endl;
 	if (target.find("http") == std::string::npos)
 	{
 		path = srv.getRoot() + "/" + target;
