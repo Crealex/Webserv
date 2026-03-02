@@ -476,12 +476,22 @@ void Loop::_createTimeoutResponse(int idClient)
 
 inline void Loop::_sendResponse(int idClient)
 {
-	this->_createTimeoutResponse(idClient);
-	while (send(this->_clients[idClient]->getFdClient(), this->_clients[idClient]->getResponse().c_str(),
-			   this->_clients[idClient]->getResponse().size(), MSG_NOSIGNAL) == -1)
+	while (1)
 	{
-		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
 		this->_createTimeoutResponse(idClient);
+		int sendRet = send(this->_clients[idClient]->getFdClient(),
+							this->_clients[idClient]->getResponse().c_str(),
+							this->_clients[idClient]->getResponse().size(), MSG_NOSIGNAL);
+		
+		if (sendRet == -1)
+			continue ;
+
+		int size = this->_clients[idClient]->getResponse().size();
+		if (sendRet == size)
+			break ;
+
+		std::string newResp = this->_clients[idClient]->getResponse().substr(sendRet, size - sendRet);
+		this->_clients[idClient]->setResponse(newResp);
 	}
 }
 
