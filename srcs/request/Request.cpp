@@ -246,6 +246,9 @@ void Request::setFirstLine(std::string &line)
 		_error = true;
 	}
 
+	if (_location == "/")
+		return ;
+
 	while (*(_location.end() - 1) == '/')
 		_location.erase(_location.end() - 1);
 }
@@ -308,7 +311,7 @@ void Request::parseHeader(std::string &buffer)
 	while (std::getline(iss, line)) 
 	{
 		if (!line.empty() && line[line.size() - 1] == '\r') // INFO: Ajouter par Alex (pour gerer les \r)
-        line.erase(line.size() - 1);
+			line.erase(line.size() - 1);
 		// extract and parse the different element of the request
 		if (line.empty())
 			break ;
