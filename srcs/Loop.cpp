@@ -585,6 +585,8 @@ void Loop::runLoop()
 			{
 				if (!_clients[idClient]->checkCGI(_servers[_clients[idClient]->getHostname()]))
 					continue;
+				this->_sendResponse(idClient);
+				this->_printSend(idClient);
 				if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
 				{
 					this->_closeClients(idClient);
