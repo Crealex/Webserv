@@ -79,10 +79,10 @@ std::pair<unsigned int, std::string> Get::_findCodeMess(const Server &srv)
 bool Get::_isAllowedAutoIndex(const Server &srv)
 {
 	int bestMatch = findBestMatchingLocation(this->_location, srv.getLocations());
-	
+
 	if (bestMatch != -1)
 		return srv.getLocations().at(bestMatch).getAutoIndex();
-	
+
 	return (false);
 }
 
@@ -107,12 +107,12 @@ const std::string Get::createResponse(const Server &srv)
 	dataError.setUserAgent(this->_userAgent);
 
 	ResponseBuilder resp(dataError, this->_protocol);
-	target = findTarget(this->_location, srv.getLocations(), dataError, "GET");
-	std::cout << "target: " << target << std::endl;
+	target = findTarget(this->_location, srv.getLocations(), dataError, "GET", srv.getRoot());
+	// std::cout << "target: " << target << std::endl;
 	if (target.find("http") == std::string::npos)
 	{
 		path = srv.getRoot() + "/" + target;
-		if (!isDir(path))
+		if (!isDir(path, dataError))
 		{
 			file.open(path.c_str());
 			if (!file.is_open())
@@ -134,7 +134,7 @@ const std::string Get::createResponse(const Server &srv)
 			.contentLength(0)
 			.startLine(codeMess.first, codeMess.second)
 			.append("\r\n\r\n");
-	} else if (isDir(path))
+	} else if (isDir(path, dataError))
 	{
 		if (!this->_isAllowedAutoIndex(srv))
 			throw ResponseError(401, "Unauthorized", dataError);
