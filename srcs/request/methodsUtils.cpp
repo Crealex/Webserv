@@ -7,34 +7,33 @@
 
 // INFO: All prototypes are in methodClass.hpp
 
-
 // FOR findTarget
 
 /**
  * @brief Find the best matching location for a given path
- * 
+ *
  * This function finds the most specific location that matches the given path
  * using hierarchical matching (prefix matching with '/' boundary check).
- * 
+ *
  * @param path The path to match (e.g., "/uploads/test/file.txt")
  * @param locations Vector of all configured locations
  * @return Index of the best matching location, or -1 if no match found
  */
-int findBestMatchingLocation(const std::string& path, const std::vector<Location>& locations)
+int findBestMatchingLocation(const std::string &path, const std::vector<Location> &locations)
 {
 	std::string normalizedPath = path;
-	
+
 	if (normalizedPath.size() > 1 && normalizedPath[normalizedPath.size() - 1] == '/')
 		normalizedPath = normalizedPath.substr(0, normalizedPath.size() - 1);
-	
+
 	int bestMatch = -1;
 	size_t bestMatchLen = 0;
-	
+
 	for (size_t i = 0; i < locations.size(); i++)
 	{
-		const std::string& locPath = locations[i].getPath();
+		const std::string &locPath = locations[i].getPath();
 		size_t locLen = locPath.size();
-		
+
 		if (normalizedPath.compare(0, locLen, locPath) == 0)
 		{
 			if (normalizedPath.size() == locLen || normalizedPath[locLen] == '/')
@@ -47,74 +46,71 @@ int findBestMatchingLocation(const std::string& path, const std::vector<Location
 			}
 		}
 	}
-	
+
 	return bestMatch;
 }
 
-static std::string extractGoodPath(std::string locPath)
+static std::string extractGoodPath(std::string locPath, std::string root, Request dataError)
 {
-	std::string		lastPart;
-	unsigned int	lastSlash;
+	std::string lastPart;
+	unsigned int lastSlash;
 
-	if (locPath == "/" || locPath.empty())
-		return ("/");
 	lastSlash = locPath.find_last_of('/');
 	lastPart = locPath.substr(lastSlash, locPath.size());
-	 if (isDir(lastPart))
+	if (isDir(root + locPath, dataError))
 		return (locPath);
 	return (locPath.substr(0, lastSlash));
 }
 
 // UTILS
-bool isDir(const std::string &path)
+bool isDir(const std::string &path, Request dataError)
 {
 	struct stat structStat;
 
 	if (path.empty())
 		return (false);
 	structStat.st_mode = 0;
-	stat(path.c_str(), &structStat);
+	if (stat(path.c_str(), &structStat) == -1)
+		throw ResponseError(404, "Not found", dataError);
 	if (S_ISDIR(structStat.st_mode))
 		return (true);
 	return (false);
 }
 
-std::string findTarget(std::string locPath, std::vector<Location> loc, Request dataError, std::string method)
+std::string findTarget(std::string locPath, std::vector<Location> loc, Request dataError, std::string method, std::string root)
 {
 	std::string goodPath;
 
-	goodPath = extractGoodPath(locPath);
-	std::cout << "locPath: " << locPath << std::endl;
+	if (locPath.empty() || locPath == "/")
+		goodPath = "/";
+	else
+		goodPath = extractGoodPath(locPath, root, dataError);
 	if (goodPath.empty())
 		goodPath = locPath;
-	
-	std::cout << "goodPath: " << goodPath << std::endl;
-	
+
 	int bestMatch = findBestMatchingLocation(goodPath, loc);
-	
+
 	if (bestMatch == -1)
 	{
 		return (locPath);
 	}
-	
+
 	if (!loc.at(bestMatch).getMethodValue(method))
 	{
 		if (loc.at(bestMatch).getReturn().first.empty())
 			throw ResponseError(405, "Method not allowed", dataError);
 		return (loc.at(bestMatch).getReturn().first);
 	}
-	
+
 	if (loc.at(bestMatch).getAutoIndex())
 		return locPath;
 	else if (!loc.at(bestMatch).getIndex().empty())
 	{
-		// Gérer le cas spécial où goodPath est "/"
 		if (goodPath == "/")
 			return ("/" + loc.at(bestMatch).getIndex());
 		else
 			return (goodPath + "/" + loc.at(bestMatch).getIndex());
-	}
-	else if (!loc.at(bestMatch).getReturn().first.empty())
+	} else if (!loc.at(bestMatch).getReturn().first.empty())
 		return (loc.at(bestMatch).getReturn().first);
 	return (locPath);
 }
