@@ -1,8 +1,8 @@
 
 #include "../../includes/requests/Post.hpp"
 #include "../../includes/requests/Request.hpp"
-#include "../../includes/requests/ResponseError.hpp"
 #include "../../includes/requests/ResponseBuilder.hpp"
+#include "../../includes/requests/ResponseError.hpp"
 
 Post::Post(const Request &requ) : Methods(requ), _contentType(requ.getContentType()), _contentLength(requ.getContentLength()), _body(requ.getBody())
 {
@@ -18,8 +18,8 @@ std::string extractBoundary(std::string contentType)
 	{
 		res = contentType.erase(0, contentType.find('=') + 1);
 	}
-	while (!res.empty() && (res[res.length() - 1] == '\r' || res[res.length() - 1] == '\n'))                                        
-		res.erase(res.length() - 1); 
+	while (!res.empty() && (res[res.length() - 1] == '\r' || res[res.length() - 1] == '\n'))
+		res.erase(res.length() - 1);
 	return (res);
 }
 
@@ -59,24 +59,21 @@ const std::string Post::createResponse(const Server &srv)
 		boundary = extractBoundary(this->_contentType);
 		_handlePostFile(boundary);
 		newFile.open(path.c_str(), std::ios::binary);
-	}
-	else {
+	} else
+	{
 		newFile.open(path.c_str(), std::ios::app);
 	}
 	bodySize = this->_body.size();
 
 	if (!newFile.is_open())
-		throw (ResponseError(401, "Unauthorized", dataError));
+		throw(ResponseError(401, "Unauthorized", dataError));
 
 	newFile << this->_body;
 	return resp.contentType(this->_contentType)
-				.location(path)
-				.append("\n")
-				.lastModified(path)
-				.contentLength(bodySize)
-				.body(this->_body)
-				.startLine(201, "Created")
-				.build();
-
+		.location(path)
+		.lastModified(path)
+		.contentLength(bodySize)
+		.body(this->_body)
+		.startLine(201, "Created")
+		.build();
 }
-

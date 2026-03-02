@@ -78,34 +78,11 @@ std::pair<unsigned int, std::string> Get::_findCodeMess(const Server &srv)
 
 bool Get::_isAllowedAutoIndex(const Server &srv)
 {
-	for (size_t i = 0; i < srv.getLocations().size(); i++)
-	{
-		try
-		{
-			if (this->_location == srv.getLocations().at(i).getPath() || this->_location == srv.getLocations().at(i).getPath() + "/")
-			{
-				if (srv.getLocations().at(i).getAutoIndex())
-					return (true);
-				break;
-			}
-		} catch (...)
-		{
-			return (false);
-		}
-	}
-	return (false);
-}
-
-bool isDir(const std::string &path)
-{
-	struct stat structStat;
-
-	if (path.empty())
-		return (false);
-	structStat.st_mode = 0;
-	stat(path.c_str(), &structStat);
-	if (S_ISDIR(structStat.st_mode))
-		return (true);
+	int bestMatch = findBestMatchingLocation(this->_location, srv.getLocations());
+	
+	if (bestMatch != -1)
+		return srv.getLocations().at(bestMatch).getAutoIndex();
+	
 	return (false);
 }
 
@@ -131,6 +108,7 @@ const std::string Get::createResponse(const Server &srv)
 
 	ResponseBuilder resp(dataError, this->_protocol);
 	target = findTarget(this->_location, srv.getLocations(), dataError, "GET");
+	std::cout << "target: " << target << std::endl;
 	if (target.find("http") == std::string::npos)
 	{
 		path = srv.getRoot() + "/" + target;

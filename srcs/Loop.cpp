@@ -1,5 +1,6 @@
 #include "../includes/Loop.hpp"
 #include "../includes/Logger.hpp"
+#include <cerrno>
 #include <sstream>
 #include <sys/epoll.h>
 
@@ -79,7 +80,7 @@ void Loop::_createMapServer(std::vector<Server> servers)
 	}
 }
 
-void	Loop::_listenSocket(size_t &i, size_t &j, size_t &sizeSockData)
+void Loop::_listenSocket(size_t &i, size_t &j, size_t &sizeSockData)
 {
 	int checkFail;
 	std::vector<SocketData *>::iterator eltToErase;
@@ -94,11 +95,11 @@ void	Loop::_listenSocket(size_t &i, size_t &j, size_t &sizeSockData)
 	}
 }
 
-void	Loop::_bindSocket()
+void Loop::_bindSocket()
 {
-	int		checkFail;
-	size_t	sizeSockets;
-	size_t	sizeSockData;
+	int checkFail;
+	size_t sizeSockets;
+	size_t sizeSockData;
 
 	checkFail = 0;
 	sizeSockets = this->_sockets.size();
@@ -129,7 +130,7 @@ void	Loop::_bindSocket()
 	}
 }
 
-void	Loop::_createSocket(std::vector<Server> srvs)
+void Loop::_createSocket(std::vector<Server> srvs)
 {
 	size_t sizeSrvs;
 
@@ -520,7 +521,7 @@ void Loop::_printSend(int idClient)
 		   << RESET << this->_clients[idClient]->getRequest().getRawRequest();
 	Logger::log(Logger::INFO, requSS.str());
 	respSS << BOLD << "RESPONSE:\n"
-		<< RESET << this->_clients[idClient]->getResponse();
+		   << RESET << this->_clients[idClient]->getResponse();
 	Logger::log(Logger::INFO, respSS.str());
 }
 
@@ -528,8 +529,8 @@ void Loop::_printSend(int idClient)
 
 void Loop::runLoop()
 {
-	int	counter;
-	
+	int counter;
+
 	counter = 0;
 	fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);				  // INFO: Ajouter par alex pour gerer les cmds
 	this->_epoll.addEpollFd(STDIN_FILENO, EPOLLIN | EPOLLET); // Comme ci dessus ^^^
@@ -563,12 +564,10 @@ void Loop::runLoop()
 				if (this->_isExit)
 					break;
 				continue;
-			}
-			else if (events[indexEvent].events & EPOLLIN && this->_isServerSocket(events[indexEvent].data.fd))
+			} else if (events[indexEvent].events & EPOLLIN && this->_isServerSocket(events[indexEvent].data.fd))
 			{
 				this->_acceptClient(events[indexEvent].data.fd);
-			}
-			else if (events[indexEvent].events & EPOLLIN && this->_isClientSocket(events[indexEvent].data.fd, idClient))
+			} else if (events[indexEvent].events & EPOLLIN && this->_isClientSocket(events[indexEvent].data.fd, idClient))
 			{
 				if (!this->_getRequest(idClient))
 				{
@@ -582,8 +581,7 @@ void Loop::runLoop()
 				{
 					_clients[idClient]->startCGI(_servers[_clients[idClient]->getHostname()]);
 				}
-			}
-			else if (this->_isClientSocket(events[indexEvent].data.fd, idClient) && this->_clients[idClient]->getIsCGI())
+			} else if (this->_isClientSocket(events[indexEvent].data.fd, idClient) && this->_clients[idClient]->getIsCGI())
 			{
 				if (!_clients[idClient]->checkCGI(_servers[_clients[idClient]->getHostname()]))
 					continue;
@@ -595,8 +593,7 @@ void Loop::runLoop()
 					this->_clients[idClient]->resetClient();
 					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN | EPOLLET);
 				}
-			}
-			else if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient) && !_clients[idClient]->getIsCGI())
+			} else if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient) && !_clients[idClient]->getIsCGI())
 			{
 				this->_createResponse(idClient);
 				this->_sendResponse(idClient);
