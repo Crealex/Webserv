@@ -71,7 +71,8 @@ bool isDir(const std::string &path, Request dataError)
 		return (false);
 	structStat.st_mode = 0;
 	if (stat(path.c_str(), &structStat) == -1)
-		throw ResponseError(404, "Not found", dataError);
+		//throw ResponseError(404, "Not found", dataError);
+		(void)dataError;
 	if (S_ISDIR(structStat.st_mode))
 		return (true);
 	return (false);
@@ -108,7 +109,7 @@ std::string findTarget(std::string locPath, std::vector<Location> loc, Request d
 	{
 		if (goodPath == "/")
 			return ("/" + loc.at(bestMatch).getIndex());
-		else
+		else if (isDir(locPath, dataError))
 			return (goodPath + "/" + loc.at(bestMatch).getIndex());
 	} else if (!loc.at(bestMatch).getReturn().first.empty())
 		return (loc.at(bestMatch).getReturn().first);

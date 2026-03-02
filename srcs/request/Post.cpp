@@ -54,6 +54,7 @@ const std::string Post::createResponse(const Server &srv)
 	ResponseBuilder resp(dataError, this->_protocol);
 	target = findTarget(this->_location, srv.getLocations(), dataError, "POST", srv.getRoot());
 	path = srv.getRoot() + target;
+	std::cout << "target in post: " << target << std::endl;
 	if (this->_contentType.find("multipart/form-data") < this->_contentType.size())
 	{
 		boundary = extractBoundary(this->_contentType);
