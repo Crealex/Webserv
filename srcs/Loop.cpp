@@ -359,6 +359,7 @@ int Loop::_receiveRequest(int idClient)
 {
 	int sizeRecv;
 	char buffer[10000];
+	std::string	bufferStr;
 
 	sizeRecv = ::recv(this->_clients[idClient]->getFdClient(), buffer, sizeof(buffer) - 1, 0);
 	if (sizeRecv == -1)
@@ -370,6 +371,8 @@ int Loop::_receiveRequest(int idClient)
 	if (sizeRecv == 0)
 		return (sizeRecv);
 	this->_clients[idClient]->setBuf(buffer, sizeRecv);
+	bufferStr = buffer;
+	Logger::log(Logger::INFO, "REQUEST:\n" + bufferStr);
 	return (sizeRecv);
 }
 
@@ -507,9 +510,9 @@ void Loop::_printSend(int idClient)
 	std::stringstream requSS;
 	if (!SEND)
 		return;
-	requSS << BOLD << "REQUEST:\n"
-		   << RESET << this->_clients[idClient]->getRequest().getRawRequest();
-	Logger::log(Logger::INFO, requSS.str());
+	// requSS << BOLD << "REQUEST:\n"
+	//	   << RESET << this->_clients[idClient]->getRequest().getRawRequest();
+	// Logger::log(Logger::INFO, requSS.str());
 	respSS << BOLD << "RESPONSE:\n"
 		   << RESET << this->_clients[idClient]->getResponse();
 	Logger::log(Logger::INFO, respSS.str());
