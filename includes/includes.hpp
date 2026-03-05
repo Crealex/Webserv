@@ -16,6 +16,7 @@
 
 #include <cstddef>
 #include <cstdlib>
+#include <cstring>
 #include <ctime>
 #include <dirent.h>
 #include <fcntl.h>
