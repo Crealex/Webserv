@@ -292,6 +292,11 @@ bool	Client::checkCGI(Server &serv)
 	return false;
 }
 
+void	Client::settingRequestStatus(enum statusType newStatus)
+{
+	this->_request.setStatus(newStatus);
+}
+
 void	Client::printAddPort()
 {
 	std::stringstream	port;

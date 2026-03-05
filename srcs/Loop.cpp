@@ -316,6 +316,27 @@ void Loop::_parsingRequest(int idClient, size_t posCRLF)
 	std::string body;
 	int sizeBuf;
 
+	switch (this->_clients[idClient]->getRequest().getStatus())
+	{
+		case NOTHING :
+			posCRLF = this->_clients[idClient]->getBuf().find("\r\n\r\n");
+			if (posCRLF != std::string::npos)
+				this->_clients[idClient]->settingRequestStatus(CRLFFOUND);
+			break;
+		
+		case CRLFFOUND :
+		case PARSINGHEADERDONE :
+		case READY :
+	}
+
+	if () == NOTHING)
+	{
+	}
+	else if (this->_clients[idClient])
+	{
+		/* code */
+	}
+	
 	header = this->_clients[idClient]->getBuf().substr(0, posCRLF + 4);
 	this->_clients[idClient]->setRequestHeader(header);
 	sizeBuf = this->_clients[idClient]->getBuf().size();
@@ -333,11 +354,11 @@ int Loop::_receive(int idClient)
 	std::memset(buffer, '\0',10000);
 	printf("before buffer : %s\n", buffer);
 	sizeRecv = ::recv(this->_clients[idClient]->getFdClient(), buffer, 9999, 0);
-	if (sizeRecv == -1)
-	{
-		buffer[0] = '\0';
-		return (sizeRecv);
-	}
+	// if (sizeRecv == -1)
+	// {
+	// 	buffer[0] = '\0';
+	// 	return (sizeRecv);
+	// }
 	buffer[sizeRecv] = '\0';
 	if (sizeRecv == 0)
 		return (sizeRecv);
@@ -409,20 +430,12 @@ bool Loop::_checkBody(int idClient)
 bool Loop::_receiveRequest(int idClient)
 {
 	int		recvStatus;
-	size_t	posCRLF;
 
-	posCRLF = std::string::npos;
-	do
-	{
-		recvStatus = this->_receive(idClient);
-		if (recvStatus <= 0)
-			break ;
-		posCRLF = this->_clients[idClient]->getBuf().find("\r\n\r\n");
-	} while (posCRLF == std::string::npos);
-
-	if (posCRLF == std::string::npos)
+	recvStatus = this->_receive(idClient);
+	if (recvStatus == 0)
 		return (false);
-	this->_parsingRequest(idClient, posCRLF);
+
+	this->_parsingRequest(idClient);
 	if (!this->_checkBody(idClient))
 		return (false);
 	this->_epoll.setEvents(this->_clients[idClient], EPOLLOUT);
