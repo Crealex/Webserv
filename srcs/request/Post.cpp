@@ -45,21 +45,22 @@ void Post::_handlePostFile(std::string boundary)
  */
 const std::string Post::createResponse(const Server &srv)
 {
-	std::ofstream	newFile;
-	Request			dataError;
-	std::string		path;
-	std::string		boundary;
-	std::string		target;
-	ssize_t			bodySize;
-	bool			fileExist;
-	struct stat		statBuffer;
+	//std::cout << MAGENTA << BOLD << "IN POST" << RESET << std::endl;
+	std::ofstream newFile;
+	Request dataError;
+	std::string path;
+	std::string boundary;
+	std::string target;
+	ssize_t bodySize;
+	bool fileExist;
+	struct stat statBuffer;
 	std::pair<unsigned int, std::string> codeMess;
 
 	dataError = this->_createDataError();
 	ResponseBuilder resp(dataError, this->_protocol);
 	target = findTarget(this->_location, srv.getLocations(), dataError, "POST", srv.getRoot());
 	path = srv.getRoot() + target;
-	std::cout << "target in post: " << target << std::endl;
+	//std::cout << "target in post: " << target << std::endl;
 	fileExist = (stat(path.c_str(), &statBuffer) == 0);
 	codeMess.first = 201;
 	codeMess.second = "Created";

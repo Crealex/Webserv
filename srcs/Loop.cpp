@@ -290,7 +290,7 @@ bool Loop::_isCGI(int fd, int &idClient)
 {
 	int sizeClients;
 
-	std::cout << RED << BOLD << "fd = " << fd << RESET << std::endl;
+	//std::cout << RED << BOLD << "fd = " << fd << RESET << std::endl;
 	sizeClients = this->_clients.size();
 	for (int i = 0; i < sizeClients; i++)
 	{
@@ -359,7 +359,7 @@ int Loop::_receiveRequest(int idClient)
 {
 	int sizeRecv;
 	char buffer[10000];
-	std::string	bufferStr;
+	std::string bufferStr;
 
 	sizeRecv = ::recv(this->_clients[idClient]->getFdClient(), buffer, sizeof(buffer) - 1, 0);
 	if (sizeRecv == -1)
@@ -384,9 +384,10 @@ int Loop::_addBodyLen(int idClient)
 
 	counter = this->_clients[idClient]->getBuf().size();
 	contentLen = this->_clients[idClient]->getRequest().getContentLength();
-	while (counter < contentLen)
+	while (counter < contentLen) // Plutot <= non?
 	{
 		sizeRecv = this->_receiveRequest(idClient);
+		//std::cout << "size Recv: " << sizeRecv << std::endl;
 		if (sizeRecv == -1)
 			return (sizeRecv);
 		counter += sizeRecv;
@@ -430,7 +431,7 @@ bool Loop::_getRequest(int idClient)
 	if (recvStatus <= 0)
 		return (false);
 	if (!this->_parsingRequest(idClient))
-		this->_getRequest(idClient);
+		this->_getRequest(idClient); // MAIS ??????????????????? c'est pas un getter ???
 	if (this->_checkBody(idClient) == -1)
 		return (false);
 	this->_epoll.setEvents(this->_clients[idClient], EPOLLOUT);
@@ -484,15 +485,15 @@ inline void Loop::_sendResponse(int idClient)
 	{
 		this->_createTimeoutResponse(idClient);
 		int sendRet = send(this->_clients[idClient]->getFdClient(),
-							this->_clients[idClient]->getResponse().c_str(),
-							this->_clients[idClient]->getResponse().size(), MSG_NOSIGNAL);
-		
+			this->_clients[idClient]->getResponse().c_str(),
+			this->_clients[idClient]->getResponse().size(), MSG_NOSIGNAL);
+
 		if (sendRet == -1)
-			continue ;
+			continue;
 
 		int size = this->_clients[idClient]->getResponse().size();
 		if (sendRet == size)
-			break ;
+			break;
 
 		std::string newResp = this->_clients[idClient]->getResponse().substr(sendRet, size - sendRet);
 		this->_clients[idClient]->setResponse(newResp);
@@ -574,6 +575,7 @@ void Loop::runLoop()
 			{
 				if (!this->_getRequest(idClient))
 				{
+					//std::cout << "close client because getRequest return false" << std::endl;
 					this->_closeClients(idClient);
 					continue;
 				}
