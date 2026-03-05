@@ -193,33 +193,7 @@ void Loop::_handleCmd()
 	} else if (in == "ap")
 		this->_printSocket();
 	else if (in == "c")
-		std::cout << LIGHT_MAGENTA << "\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣄⡀⠀⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡸⠋⠀⠘⣇⠀⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠇⠀⠀⠀⢸⠀⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡜⠀⠀⠀⠀⢸⠀⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠇⠀⠀⠀⠀⢸⠇⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡎⠀⠀⠀⠀⠀⢸⠀⠀⠀\n\
-⠀⠀⢀⣀⣀⣀⠀⠀⠀⠀⠀⢀⣀⣤⡤⠤⠤⠤⠤⢤⣤⣀⡤⢖⡿⠛⠉⢳⠀⠀⠀⠀⠀⢸⠀⠀⠀\n\
-⠀⢼⠁⠉⠉⠛⠻⢭⡓⠒⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠰⣏⠀⠀⠀⢸⠀⠀⠀⠀⠀⡤⠀⠀⠀\n\
-⠀⠸⡄⠀⠀⠀⠀⢸⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠂⠀⠀⡜⠀⠀⠀⠀⢀⡇⠀⠀⠀\n\
-⠀⠀⢷⠀⠀⠀⠠⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢣⢠⠏⠀⠀⠀⠀⢸⠃⠀⠀⠀\n\
-⠀⠀⠈⢧⠀⢀⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡞⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀\n\
-⠀⠀⠀⠈⢳⡈⠁⠀⠀⠀⠀⠀⣀⡀⠀⠀⠀⠀⠀⠀⠀⣶⣶⣦⠀⠀⢹⠀⠀⠀⠀⠀⡎⠀⠀⠀⠀\n\
-⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⢠⣾⣟⣹⡄⠀⠀⠀⠀⡀⠀⣿⣿⣿⡇⠀⢈⣧⠤⠤⠶⠶⢷⠒⠒⠂⠀\n\
-⠀⠀⢀⣀⣠⡧⠄⠀⠀⠀⣾⣿⣿⣿⠇⠀⠀⠀⠙⠁⠀⠙⠻⠿⠃⠀⠨⣼⣤⣀⡀⠀⠈⢧⠀⠀⠀\n\
-⠘⠉⠁⠀⢸⣤⡤⠀⠀⠀⠛⢿⡿⠋⠀⠀⠀⠀⠴⠦⠀⠀⠀⠀⠀⠐⣲⣯⡀⠀⠈⠙⠓⠺⣧⣄⡀\n\
-⠀⣀⡤⠚⠉⢳⡴⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡼⠃⠀⠈⠓⢦⡀⠀⠀⢸⠀⠈\n\
-⠀⠁⠀⢀⡔⠉⠙⡶⢄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠴⠚⠁⠀⠀⠀⠀⠀⠀⠈⠓⠆⠀⡇⠀\n\
-⠀⠀⠰⠋⠀⠀⢸⡇⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠁⠀\n\
-⠀⠀⠀⠀⠀⠀⠈⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡎⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠹⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠙⢆⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠄⠀⢰⠇⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⠶⠺⣇⠀⣀⡜⠀⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢱⡄⠀⠀⠀⠹⡟⠒⢢⡀⠀⠀⠀⠀⢀⡏⠀⠀⠀⠈⠉⠉⠁⠀⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣄⠀⠀⢀⡇⠀⠀⠻⣄⠀⠀⠀⡸⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢷⠶⠋⠀⠀⠀⠀⠈⣣⠶⠖⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
-				  << RESET << std::endl;
+		std::cout << LIGHT_MAGENTA << CAT << RESET << std::endl;
 }
 
 void Loop::_closeClients(int idClient)
@@ -290,7 +264,7 @@ bool Loop::_isCGI(int fd, int &idClient)
 {
 	int sizeClients;
 
-	std::cout << RED << BOLD << "fd = " << fd << RESET << std::endl;
+	//std::cout << RED << BOLD << "fd = " << fd << RESET << std::endl;
 	sizeClients = this->_clients.size();
 	for (int i = 0; i < sizeClients; i++)
 	{
@@ -359,6 +333,7 @@ int Loop::_receiveRequest(int idClient)
 {
 	int sizeRecv;
 	char buffer[10000];
+	std::string bufferStr;
 
 	sizeRecv = ::recv(this->_clients[idClient]->getFdClient(), buffer, sizeof(buffer) - 1, 0);
 	if (sizeRecv == -1)
@@ -370,6 +345,8 @@ int Loop::_receiveRequest(int idClient)
 	if (sizeRecv == 0)
 		return (sizeRecv);
 	this->_clients[idClient]->setBuf(buffer, sizeRecv);
+	bufferStr = buffer;
+	Logger::log(Logger::INFO, "REQUEST:\n" + bufferStr);
 	return (sizeRecv);
 }
 
@@ -381,9 +358,10 @@ int Loop::_addBodyLen(int idClient)
 
 	counter = this->_clients[idClient]->getBuf().size();
 	contentLen = this->_clients[idClient]->getRequest().getContentLength();
-	while (counter < contentLen)
+	while (counter < contentLen) // Plutot <= non?
 	{
 		sizeRecv = this->_receiveRequest(idClient);
+		//std::cout << "size Recv: " << sizeRecv << std::endl;
 		if (sizeRecv == -1)
 			return (sizeRecv);
 		counter += sizeRecv;
@@ -433,7 +411,7 @@ bool Loop::_getRequest(int idClient)
 	if (recvStatus <= 0)
 		return (false);
 	if (!this->_parsingRequest(idClient))
-		this->_getRequest(idClient);
+		this->_getRequest(idClient); // MAIS ??????????????????? c'est pas un getter ???
 	if (this->_checkBody(idClient) == -1)
 		return (false);
 	this->_epoll.setEvents(this->_clients[idClient], EPOLLOUT);
@@ -482,12 +460,23 @@ void Loop::_createTimeoutResponse(int idClient)
 
 inline void Loop::_sendResponse(int idClient)
 {
-	this->_createTimeoutResponse(idClient);
-	while (send(this->_clients[idClient]->getFdClient(), this->_clients[idClient]->getResponse().c_str(),
-			   this->_clients[idClient]->getResponse().size(), MSG_NOSIGNAL) == -1)
+	std::cout << "fd client = " << _clients[idClient]->getFdClient() << std::endl;
+	while (1)
 	{
-		std::cout << RED << "send failed, retry in processing" << RESET << std::endl;
 		this->_createTimeoutResponse(idClient);
+		int sendRet = send(this->_clients[idClient]->getFdClient(),
+			this->_clients[idClient]->getResponse().c_str(),
+			this->_clients[idClient]->getResponse().size(), MSG_NOSIGNAL);
+
+		if (sendRet == -1)
+			continue;
+
+		int size = this->_clients[idClient]->getResponse().size();
+		if (sendRet == size)
+			break;
+
+		std::string newResp = this->_clients[idClient]->getResponse().substr(sendRet, size - sendRet);
+		this->_clients[idClient]->setResponse(newResp);
 	}
 }
 
@@ -512,9 +501,9 @@ void Loop::_printSend(int idClient)
 	std::stringstream requSS;
 	if (!SEND)
 		return;
-	requSS << BOLD << "REQUEST:\n"
-		   << RESET << this->_clients[idClient]->getRequest().getRawRequest();
-	Logger::log(Logger::INFO, requSS.str());
+	// requSS << BOLD << "REQUEST:\n"
+	//	   << RESET << this->_clients[idClient]->getRequest().getRawRequest();
+	// Logger::log(Logger::INFO, requSS.str());
 	respSS << BOLD << "RESPONSE:\n"
 		   << RESET << this->_clients[idClient]->getResponse();
 	Logger::log(Logger::INFO, respSS.str());
@@ -566,6 +555,7 @@ void Loop::runLoop()
 			{
 				if (!this->_getRequest(idClient))
 				{
+					//std::cout << "close client because getRequest return false" << std::endl;
 					this->_closeClients(idClient);
 					continue;
 				}
@@ -580,6 +570,8 @@ void Loop::runLoop()
 			{
 				if (!_clients[idClient]->checkCGI(_servers[_clients[idClient]->getHostname()]))
 					continue;
+				this->_sendResponse(idClient);
+				this->_printSend(idClient);
 				if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
 				{
 					this->_closeClients(idClient);

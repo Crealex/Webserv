@@ -269,7 +269,10 @@ bool	Client::checkCGI(Server &serv)
 	try
 	{
 		_CGI.checkSubprocess(this->_request);
-		if (std::difftime(std::time(NULL), _timeRequest) > MAXTIMEREQUEST)
+		
+		double diff = std::difftime(std::time(NULL), _timeRequest);	
+		// printf("diff = %f\n", diff);
+		if (diff > MAXTIMEREQUEST)
 		{
 			throw ResponseError(408, "Request timeout", _request);
 		}
@@ -277,18 +280,13 @@ bool	Client::checkCGI(Server &serv)
 	catch (ResponseError &e)
 	{
 		_response = e.createResponse(serv);
-		::send(_fdSocket, _response.c_str(), _response.size(), 0);
-		_CGI.reset();
 		return true;
 	}
 	if (_CGI.subprocessExited())
 	{
 		_response = _CGI.getResponse();
 		_checkCGIResponse();
-		std::cout << BOLD << RED << "CGI RESPONSE : \n" << RESET << _response << std::endl;
-		if (::send(_fdSocket, _response.c_str(), _response.size(), 0) == -1)
-			throw std::runtime_error("Error sending response");
-		_CGI.reset();
+		// std::cout << BOLD << RED << "CGI RESPONSE : \n" << RESET << _response << std::endl;
 		return true;
 	}
 	return false;

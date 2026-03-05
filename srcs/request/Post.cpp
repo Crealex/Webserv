@@ -3,6 +3,8 @@
 #include "../../includes/requests/Request.hpp"
 #include "../../includes/requests/ResponseBuilder.hpp"
 #include "../../includes/requests/ResponseError.hpp"
+#include <fcntl.h>
+#include <sys/stat.h>
 
 Post::Post(const Request &requ) : Methods(requ), _contentType(requ.getContentType()), _contentLength(requ.getContentLength()), _body(requ.getBody())
 {
@@ -43,24 +45,39 @@ void Post::_handlePostFile(std::string boundary)
  */
 const std::string Post::createResponse(const Server &srv)
 {
+	//std::cout << MAGENTA << BOLD << "IN POST" << RESET << std::endl;
 	std::ofstream newFile;
 	Request dataError;
 	std::string path;
 	std::string boundary;
 	std::string target;
 	ssize_t bodySize;
+	bool fileExist;
+	struct stat statBuffer;
+	std::pair<unsigned int, std::string> codeMess;
 
 	dataError = this->_createDataError();
 	ResponseBuilder resp(dataError, this->_protocol);
-	target = findTarget(this->_location, srv.getLocations(), dataError, "POST");
+	target = findTarget(this->_location, srv.getLocations(), dataError, "POST", srv.getRoot());
 	path = srv.getRoot() + target;
+	//std::cout << "target in post: " << target << std::endl;
+	fileExist = (stat(path.c_str(), &statBuffer) == 0);
+	codeMess.first = 201;
+	codeMess.second = "Created";
 	if (this->_contentType.find("multipart/form-data") < this->_contentType.size())
 	{
+		if (fileExist)
+			throw ResponseError(409, "Conflict", dataError);
 		boundary = extractBoundary(this->_contentType);
 		_handlePostFile(boundary);
 		newFile.open(path.c_str(), std::ios::binary);
 	} else
 	{
+		if (fileExist)
+		{
+			codeMess.first = 200;
+			codeMess.second = "OK";
+		}
 		newFile.open(path.c_str(), std::ios::app);
 	}
 	bodySize = this->_body.size();
@@ -74,6 +91,6 @@ const std::string Post::createResponse(const Server &srv)
 		.lastModified(path)
 		.contentLength(bodySize)
 		.body(this->_body)
-		.startLine(201, "Created")
+		.startLine(codeMess.first, codeMess.second)
 		.build();
 }
