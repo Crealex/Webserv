@@ -67,7 +67,6 @@ document.querySelectorAll(".card button").forEach((btn) =>
     }
     console.log(response);
     const body = await response.text();
-    console.log("here");
     const status = response.status;
     const length = response.headers.get("content-length");
     const type = response.headers.get("content-type");
@@ -86,5 +85,6 @@ document.querySelectorAll(".card button").forEach((btn) =>
     headerDiv.innerHTML = `<strong>content-length: </strong>${length}<br/><strong>content-type: </strong>${type}<br/><strong>date: </strong>${date}<br/><strong>last-modified: </strong>${lModified}`;
     bodyDiv.innerHTML = `<strong>body:</strong> ${body}`;
     timeDiv.innerHTML = `<strong>Response's time: </strong>${time}ms`;
+	console.log("end of script");
   }),
 );

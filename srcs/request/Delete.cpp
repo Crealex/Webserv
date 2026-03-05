@@ -64,7 +64,7 @@ const std::string Delete::createResponse(const Server &srv)
 	contentFile = createFileStr(file);
 
 	if (std::remove(path.c_str()))
-		throw(ResponseError(500, "Can't remove content", dataError));
+		throw(ResponseError(403, "Directory not empty", dataError));
 
 	return resp.date()
 		.contentType("*/*", this->_location)
