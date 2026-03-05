@@ -306,7 +306,7 @@ void Loop::_acceptClient(int fd)
 		newClient->setSockadd(newSockadd);
 		newClient->setHostname(this->_hostnameOfSrvSock);
 		this->_clients.push_back(newClient);
-		this->_epoll.addEpollFd(newClient->getFdClient(), EPOLLIN|EPOLLET);
+		this->_epoll.addEpollFd(newClient->getFdClient(), EPOLLIN);
 	}
 }
 
@@ -528,7 +528,7 @@ void Loop::runLoop()
 
 	counter = 0;
 	fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);				  // INFO: Ajouter par alex pour gerer les cmds
-	this->_epoll.addEpollFd(STDIN_FILENO, EPOLLIN | EPOLLET); // Comme ci dessus ^^^
+	this->_epoll.addEpollFd(STDIN_FILENO, EPOLLIN); // Comme ci dessus ^^^
 	this->_displayHelp();
 	while (!this->_isExit && !g_exit)
 	{
@@ -591,7 +591,7 @@ void Loop::runLoop()
 				} else
 				{
 					this->_clients[idClient]->resetClient();
-					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN|EPOLLET);
+					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN);
 				}
 			} else if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient) && !_clients[idClient]->getIsCGI())
 			{
@@ -604,7 +604,7 @@ void Loop::runLoop()
 				} else
 				{
 					this->_clients[idClient]->resetClient();
-					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN|EPOLLET);
+					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN);
 				}
 			}
 		}
