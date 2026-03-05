@@ -99,6 +99,7 @@ void Request::reset()
 	_bodySize = 0;
 	_ContentLength = 0;
 	_keepAlive = false;
+	_status = NOTHING;
 }
 
 void Request::_parseAccept()

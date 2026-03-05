@@ -41,11 +41,11 @@ class Loop
 
 		void	_acceptClient(int fd);
 
-		void	_parsingRequest(int idClient, size_t posCRLF);
+		void	_parsingRequest(int idClient);
 		int		_receive(int idClient);
 		void	_addBodyLen(int idClient);
 		void	_addBodyChunked(int idClient, size_t &posCRLF);
-		bool	_checkBody(int idClient);
+		void	_checkBody(int idClient);
 		bool	_receiveRequest(int idClient);
 
 		void	_createResponse(int idClient);

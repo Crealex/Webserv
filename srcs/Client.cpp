@@ -6,6 +6,7 @@ Client::Client()
 {
 	this->_fdSocket = -1;
 	this->_time = this->getTimeNow();
+	this->_isSend = false;
 }
 
 Client::~Client()
@@ -68,6 +69,11 @@ std::string const	&Client::getResponse() const
 	return (this->_response);
 }
 
+bool const			&Client::getIsSend() const
+{
+	return (this->_isSend);
+}
+
 // SETTERS
 void	Client::setHostname(std::string newHostname)
 {
@@ -94,7 +100,11 @@ void	Client::setSockadd(sockaddr_in newSockadd)
 
 void	Client::setResponse(const std::string &str)
 {
+	if (!this->_response.empty())
+		this->_response.clear();
+	printf("resp : %lu\n", this->_response.size());
 	this->_response = str;
+	printf("resp : %lu\n", this->_response.size());
 }
 
 void	Client::setRequestHeader(std::string &str)
@@ -117,6 +127,10 @@ void	Client::setTimeout()
 	this->_time = this->getTimeNow();
 }
 
+void	Client::setIsSend(bool newIsSend)
+{
+	this->_isSend = newIsSend;
+}
 
 //METHODS
 
@@ -166,6 +180,7 @@ void	Client::resetClient()
 	this->_CGI.reset();
 	if (!this->_response.empty())
 		this->_response.clear();
+	this->_isSend = false;
 }
 
 void	Client::checkRequest(Server server)

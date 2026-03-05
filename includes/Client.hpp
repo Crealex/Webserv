@@ -24,6 +24,7 @@ class Client
 		std::string	_response;
 		std::time_t	_timeRequest;
 		std::time_t	_time;
+		bool		_isSend;
 
 
 		std::string	_intToIp();
@@ -42,6 +43,7 @@ class Client
 		sockaddr_in const	&getSockadd() const;
 		Request	const		&getRequest() const;
 		std::string const	&getResponse() const;
+		bool const			&getIsSend() const;
 
 		void	setHostname(std::string newHostname);
 		void	setFdClient(int newFd);
@@ -52,6 +54,7 @@ class Client
 		void	setResponse(const std::string &str);
 		void	setTimeoutRequest();
 		void	setTimeout();
+		void	setIsSend(bool newIsSend);
 		
 		std::time_t	getTimeNow();
 
