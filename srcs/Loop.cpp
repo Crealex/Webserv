@@ -151,7 +151,7 @@ void Loop::_displayHelp()
 	q - to quit the webserv\n\
 	l - to enable or disable the logs\n\
 	ap - to display the address/port open\n\
-	c - to dispaly a beautifl cat in ascii art\n\
+	c - to display a beautiful ascii art cat\n\
 	\r----------------------------------------------------"
 			  << std::endl;
 }
@@ -214,6 +214,7 @@ void Loop::_checkAllTimeout()
 		return;
 	for (int i = 0; i < nbClients; i++)
 	{
+		// this->_createTimeoutResponse(i);
 		if (this->_clients[i]->checkTimeout())
 		{
 			this->_closeClients(i);
@@ -323,6 +324,7 @@ int Loop::_receive(int idClient)
 		return (sizeRecv);
 	this->_clients[idClient]->setBuf(buffer, sizeRecv);
 	bufferStr = buffer;
+	sleep(5);
 	Logger::log(Logger::INFO, "REQUEST:\n" + bufferStr);
 	return (sizeRecv);
 }
@@ -428,8 +430,10 @@ bool Loop::_receiveRequest(int idClient)
 	{
 		this->_clients[idClient]->setTimeoutRequest();
 		this->_clients[idClient]->setTimeout();
+		this->_clients[idClient]->setHasRequest(true);
 		this->_clients[idClient]->settingRequestStatus(SETTIMEOUT);
 	}
+	sleep(1);
 	recvStatus = this->_receive(idClient);
 	if (recvStatus == 0)
 		return (false);
@@ -463,6 +467,7 @@ void Loop::_createResponse(int idClient)
 		if (met)
 			delete met;
 	}
+	// this->_createTimeoutResponse(idClient);
 	this->_clients[idClient]->setTimeout();
 }
 
@@ -471,12 +476,17 @@ void Loop::_createTimeoutResponse(int idClient)
 	try
 	{
 		if (this->_clients[idClient]->checkTimeoutRequest())
+		{
+			printf("in the if\n");
 			throw ResponseError(408, "Request Timeout", this->_clients[idClient]->getRequest());
+		}
 	} catch (ResponseError &e)
 	{
+		printf("in the catch\n");
+		// this->_clients[idClient]->settingRequestStatus(READY);
+		// this->_epoll.setEvents(this->_clients[idClient], EPOLLOUT);
 		this->_clients[idClient]->setResponse(e.createResponse(this->_servers.at(this->_clients[idClient]->getHostname())));
 	}
-	this->_clients[idClient]->setTimeout();
 }
 
 inline void Loop::_sendResponse(int idClient)
@@ -488,8 +498,9 @@ inline void Loop::_sendResponse(int idClient)
 	sizeSend = 0;
 	sizeResp = this->_clients[idClient]->getResponse().size();
 	this->_createTimeoutResponse(idClient);
+	printf( YELLOW "RESPOOOOOOOOOOOOONSE : %s\n" RESET, this->_clients[idClient]->getResponse().c_str());
 	sizeSend = send(this->_clients[idClient]->getFdClient(),
-		this->_clients[idClient]->getResponse().data(),
+		this->_clients[idClient]->getResponse().c_str(),
 		this->_clients[idClient]->getResponse().size(), MSG_NOSIGNAL);
 
 	// if (sizeSend == -1)
@@ -497,6 +508,7 @@ inline void Loop::_sendResponse(int idClient)
 
 	if (sizeSend >= sizeResp)
 	{
+		printf("is enough\n");
 		this->_clients[idClient]->setIsSend(true);
 		return ;
 	}
@@ -566,6 +578,7 @@ void Loop::runLoop()
 		}
 		for (int indexEvent = 0; indexEvent < epollCounterWait; indexEvent++)
 		{
+			printf("in the loop, events : %i\n", events[0].events);
 			if (events[indexEvent].events & EPOLLIN && events[indexEvent].data.fd == STDIN_FILENO)
 			{
 				this->_handleCmd();
@@ -599,7 +612,7 @@ void Loop::runLoop()
 				this->_printSend(idClient);
 				if (this->_clients[idClient]->getIsSend())
 				{
-					if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
+					if (!this->_clients[idClient]->getRequest().getkeepAlive())
 					{
 						this->_closeClients(idClient);
 					} else
@@ -610,15 +623,19 @@ void Loop::runLoop()
 				}
 			} else if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient) && !_clients[idClient]->getIsCGI())
 			{
+				printf("in the send\n");
 				this->_sendResponse(idClient);
 				this->_printSend(idClient);
 				if (this->_clients[idClient]->getIsSend())
 				{
-					if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
+					if (!this->_clients[idClient]->getRequest().getkeepAlive())
 					{
+						printf("not keep alive\n");
 						this->_closeClients(idClient);
-					} else
+					}
+					else
 					{
+						printf("keep alive\n");
 						this->_clients[idClient]->resetClient();
 						this->_epoll.setEvents(this->_clients[idClient], EPOLLIN);
 					}

@@ -25,7 +25,7 @@ class Client
 		std::time_t	_timeRequest;
 		std::time_t	_time;
 		bool		_isSend;
-
+		bool		_hasRequest;
 
 		std::string	_intToIp();
 		int			_getSizeBody();
@@ -44,6 +44,7 @@ class Client
 		Request	const		&getRequest() const;
 		std::string const	&getResponse() const;
 		bool const			&getIsSend() const;
+		bool const			&getHasRequest() const;
 
 		void	setHostname(std::string newHostname);
 		void	setFdClient(int newFd);
@@ -55,6 +56,7 @@ class Client
 		void	setTimeoutRequest();
 		void	setTimeout();
 		void	setIsSend(bool newIsSend);
+		void	setHasRequest(bool newHasRequest);
 		
 		std::time_t	getTimeNow();
 

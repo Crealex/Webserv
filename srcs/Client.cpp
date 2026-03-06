@@ -6,7 +6,9 @@ Client::Client()
 {
 	this->_fdSocket = -1;
 	this->_time = this->getTimeNow();
+	this->_timeRequest = this->getTimeNow();
 	this->_isSend = false;
+	this->_hasRequest = false;
 }
 
 Client::~Client()
@@ -74,6 +76,11 @@ bool const			&Client::getIsSend() const
 	return (this->_isSend);
 }
 
+bool const			&Client::getHasRequest() const
+{
+	return (this->_hasRequest);
+}
+
 // SETTERS
 void	Client::setHostname(std::string newHostname)
 {
@@ -130,6 +137,11 @@ void	Client::setIsSend(bool newIsSend)
 	this->_isSend = newIsSend;
 }
 
+void	Client::setHasRequest(bool newHasRequest)
+{
+	this->_hasRequest = newHasRequest;
+}
+
 //METHODS
 
 // PRIVATE
@@ -179,6 +191,7 @@ void	Client::resetClient()
 	if (!this->_response.empty())
 		this->_response.clear();
 	this->_isSend = false;
+	this->_hasRequest = false;
 }
 
 void	Client::checkRequest(Server server)
@@ -190,9 +203,13 @@ bool	Client::checkTimeoutRequest()
 {
 	std::time_t timeout;
 
-	timeout = std::difftime(this->getTimeNow(), this->_timeRequest);
-	if (timeout > MAXTIMEREQUEST)
-		return (true);
+	if (this->_hasRequest)
+	{
+		printf("in here\n");
+		timeout = std::difftime(this->getTimeNow(), this->_timeRequest);
+		if (timeout > MAXTIMEREQUEST)
+			return (true);
+	}
 	return (false);
 }
 
