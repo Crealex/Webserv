@@ -50,6 +50,14 @@ int findBestMatchingLocation(const std::string &path, const std::vector<Location
 	return bestMatch;
 }
 
+/**
+ * @brief extract the wihitout the file (if terminated by a file)
+ *
+ * @param locPath the raw path
+ * @param root the root path
+ * @param dataError the struct Request for send a Response Error if needed
+ * @return the path without a file if needed
+ */
 static std::string extractGoodPath(std::string locPath, std::string root, Request dataError)
 {
 	std::string lastPart;
@@ -62,7 +70,13 @@ static std::string extractGoodPath(std::string locPath, std::string root, Reques
 	return (locPath.substr(0, lastSlash));
 }
 
-// UTILS
+/**
+ * @brief CHeck if the path in argument is a directory
+ *
+ * @param path the path to check
+ * @param dataError the struct Request for send a Response Error if needed
+ * @return true if is a directory or false if is not
+ */
 bool isDir(const std::string &path, Request dataError)
 {
 	struct stat structStat;
@@ -70,14 +84,24 @@ bool isDir(const std::string &path, Request dataError)
 	if (path.empty())
 		return (false);
 	structStat.st_mode = 0;
-	if (stat(path.c_str(), &structStat) == -1)
-		//throw ResponseError(404, "Not found", dataError);
+	if (stat(path.c_str(), &structStat) == -1) // TODO: To remove
+		// throw ResponseError(404, "Not found", dataError);
 		(void)dataError;
 	if (S_ISDIR(structStat.st_mode))
 		return (true);
 	return (false);
 }
 
+/**
+ * @brief research et check if the path is a knowed location define in the config file and if these properties are good
+ *
+ * @param locPath The path to check //TODO : To continue
+ * @param loc
+ * @param dataError
+ * @param method
+ * @param root
+ * @return
+ */
 std::string findTarget(std::string locPath, std::vector<Location> loc, Request dataError, std::string method, std::string root)
 {
 	std::string goodPath;
@@ -118,7 +142,15 @@ std::string findTarget(std::string locPath, std::vector<Location> loc, Request d
 
 // *** ADDING LINE TO RESPONSE
 
-//	HTTP/1.1 200 OK
+/**
+ * @brief add the first line of the response (ex: HTTP/1.1 200 OK)
+ *
+ * @param resp a string with the response already builded
+ * @param protocol the protocl (1.0 or 1.1)
+ * @param code the status code
+ * @param mess the message associate at the status code
+ * @return false if a error occured, otherwise true
+ */
 bool addStartLine(std::string *resp, std::string protocol, unsigned int code, std::string mess)
 {
 	std::stringstream ss;
