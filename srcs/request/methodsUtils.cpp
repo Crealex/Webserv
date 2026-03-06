@@ -58,14 +58,14 @@ int findBestMatchingLocation(const std::string &path, const std::vector<Location
  * @param dataError the struct Request for send a Response Error if needed
  * @return the path without a file if needed
  */
-static std::string extractGoodPath(std::string locPath, std::string root, Request dataError)
+static std::string extractGoodPath(std::string locPath, std::string root)
 {
 	std::string lastPart;
 	unsigned int lastSlash;
 
 	lastSlash = locPath.find_last_of('/');
 	lastPart = locPath.substr(lastSlash, locPath.size());
-	if (isDir(root + locPath, dataError))
+	if (isDir(root + locPath))
 		return (locPath);
 	return (locPath.substr(0, lastSlash));
 }
@@ -77,16 +77,14 @@ static std::string extractGoodPath(std::string locPath, std::string root, Reques
  * @param dataError the struct Request for send a Response Error if needed
  * @return true if is a directory or false if is not
  */
-bool isDir(const std::string &path, Request dataError)
+bool isDir(const std::string &path)
 {
 	struct stat structStat;
 
 	if (path.empty())
 		return (false);
 	structStat.st_mode = 0;
-	if (stat(path.c_str(), &structStat) == -1) // TODO: To remove
-		// throw ResponseError(404, "Not found", dataError);
-		(void)dataError;
+	stat(path.c_str(), &structStat);
 	if (S_ISDIR(structStat.st_mode))
 		return (true);
 	return (false);
@@ -95,12 +93,12 @@ bool isDir(const std::string &path, Request dataError)
 /**
  * @brief research et check if the path is a knowed location define in the config file and if these properties are good
  *
- * @param locPath The path to check //TODO : To continue
- * @param loc
- * @param dataError
- * @param method
- * @param root
- * @return
+ * @param locPath The path to check
+ * @param loc a vector of the class Location with every location define in the config file
+ * @param dataError the struct Request for send a Response Error if needed
+ * @param method The method requested
+ * @param root the path of the root file
+ * @return the full path to the target
  */
 std::string findTarget(std::string locPath, std::vector<Location> loc, Request dataError, std::string method, std::string root)
 {
@@ -109,7 +107,7 @@ std::string findTarget(std::string locPath, std::vector<Location> loc, Request d
 	if (locPath.empty() || locPath == "/")
 		goodPath = "/";
 	else
-		goodPath = extractGoodPath(locPath, root, dataError);
+		goodPath = extractGoodPath(locPath, root);
 	if (goodPath.empty())
 		goodPath = locPath;
 
@@ -133,7 +131,7 @@ std::string findTarget(std::string locPath, std::vector<Location> loc, Request d
 	{
 		if (goodPath == "/")
 			return ("/" + loc.at(bestMatch).getIndex());
-		else if (isDir(locPath, dataError))
+		else if (isDir(locPath))
 			return (goodPath + "/" + loc.at(bestMatch).getIndex());
 	} else if (!loc.at(bestMatch).getReturn().first.empty())
 		return (loc.at(bestMatch).getReturn().first);
@@ -167,15 +165,28 @@ bool addStartLine(std::string *resp, std::string protocol, unsigned int code, st
 	return (true);
 }
 
+/**
+ * @brief extract the extension of the filename and search in the class MimTypes the corresponding type
+ *
+ * @param file  the full filename
+ * @return the correct mimeType in relation to the extension
+ */
 std::string findMimeType(std::string file)
 {
 	std::string extension;
 
-	// std::cout << "file in " << file << std::endl;
 	extension = file.substr(file.find_last_of(".") + 1, file.length());
 	return MimeTypes::getType(extension);
 }
-//	Content-Type: text/html; charset=UTF-8
+
+/**
+ * @brief adding the content type line to the response
+ *
+ * @param resp the string containing the response
+ * @param accept the accepted content type
+ * @param file the name of the file
+ * @return true if all works like excepted, otherwise false
+ */
 bool addContentType(std::string *resp, std::string accept, std::string file)
 {
 	std::string contentType;
@@ -200,7 +211,13 @@ bool addContentType(std::string *resp, std::string accept, std::string file)
 	return (false);
 }
 
-// For post.cpp
+/**
+ * @brief Adding the contentType line with a specific type
+ *
+ * @param resp A string containing the response
+ * @param type the specific type to add
+ * @return true if works like excepted, otherwise false
+ */
 bool addContentType(std::string *resp, std::string type)
 {
 	try
@@ -213,7 +230,12 @@ bool addContentType(std::string *resp, std::string type)
 	return (true);
 }
 
-//	Date: Fri, 21 Jun 2024 14:18:33 GMT
+/**
+ * @brief adding the date line to the response
+ *
+ * @param resp containing the response
+ * @return true if everything works lke excepted, otherwise false
+ */
 bool addDate(std::string *resp)
 {
 	char buff[100];
@@ -229,7 +251,13 @@ bool addDate(std::string *resp)
 	return (true);
 }
 
-//	Last-Modified: Thu, 17 Oct 2019 07:18:26 GMT
+/**
+ * @brief adding the last modifed line to the response
+ *
+ * @param resp a string containing the response
+ * @param pathTarget the path to the traget file
+ * @return true if everthing works as excepted, otherwise false
+ */
 bool addLastModif(std::string *resp, std::string pathTarget)
 {
 	struct stat buff;
@@ -263,6 +291,13 @@ bool addLastModif(std::string *resp, std::string pathTarget)
 	return (true);
 }
 
+/**
+ * @brief adding the content lenght line
+ *
+ * @param resp a string with the response
+ * @param path the path the file
+ * @return true if everything works as excepted, otherwise false
+ */
 bool addContentLenght(std::string *resp, std::string path)
 {
 	unsigned int size;
@@ -287,7 +322,14 @@ bool addContentLenght(std::string *resp, std::string path)
 	return (true);
 }
 
-//	Content-Length: 1234
+/**
+ * @brief adding the content lenght file, with the contebt of the file in argument
+ *
+ * @param resp a string containing the response
+ * @param path a string containing the path to the file
+ * @param fileStr a string containing the content of the file
+ * @return true if everything works as excepted, otherwise false
+ */
 bool addContentLenght(std::string *resp, std::string path, std::string fileStr)
 {
 	unsigned int size;
@@ -315,6 +357,13 @@ bool addContentLenght(std::string *resp, std::string path, std::string fileStr)
 	return (true);
 }
 
+/**
+ * @brief adding the content lenght line with a predefined size
+ *
+ * @param resp a string with the response
+ * @param bodySize The size of the content
+ * @return true if everything works as excepted, otherwise false
+ */
 bool addContentLenght(std::string *resp, ssize_t bodySize)
 {
 	std::stringstream ss;
@@ -330,14 +379,26 @@ bool addContentLenght(std::string *resp, ssize_t bodySize)
 	return (true);
 }
 
-//	<!doctype html>
-//	<!-- Contenu HTML -->
+/**
+ * @brief adding the body to the response
+ *
+ * @param resp a string containing the response
+ * @param file The content to add to the response
+ * @return return true if everything works as excepted, otherwise false
+ */
 bool addBody(std::string *resp, std::string file)
 {
 	resp->append("\n" + file + "\r\n\r\n");
 	return (true);
 }
 
+/**
+ * @brief adding the location line to the response
+ *
+ * @param resp a string containing the response
+ * @param location the location to add to the response
+ * @return true if everything works as excepted, otherwise false
+ */
 bool addLocation(std::string *resp, std::string location)
 {
 	try

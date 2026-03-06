@@ -112,7 +112,7 @@ const std::string Get::createResponse(const Server &srv)
 	if (target.find("http") == std::string::npos)
 	{
 		path = srv.getRoot() + "/" + target;
-		if (!isDir(path, dataError))
+		if (!isDir(path))
 		{
 			file.open(path.c_str());
 			if (!file.is_open())
@@ -134,7 +134,7 @@ const std::string Get::createResponse(const Server &srv)
 			.contentLength(0)
 			.startLine(codeMess.first, codeMess.second)
 			.append("\r\n\r\n");
-	} else if (isDir(path, dataError))
+	} else if (isDir(path))
 	{
 		if (!this->_isAllowedAutoIndex(srv))
 			throw ResponseError(401, "Unauthorized", dataError);
