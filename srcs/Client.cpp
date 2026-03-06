@@ -102,9 +102,7 @@ void	Client::setResponse(const std::string &str)
 {
 	if (!this->_response.empty())
 		this->_response.clear();
-	printf("resp : %lu\n", this->_response.size());
 	this->_response = str;
-	printf("resp : %lu\n", this->_response.size());
 }
 
 void	Client::setRequestHeader(std::string &str)
