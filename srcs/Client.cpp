@@ -6,7 +6,9 @@ Client::Client()
 {
 	this->_fdSocket = -1;
 	this->_time = this->getTimeNow();
+	this->_timeRequest = this->getTimeNow();
 	this->_isSend = false;
+	this->_hasRequest = false;
 }
 
 Client::~Client()
@@ -74,6 +76,11 @@ bool const			&Client::getIsSend() const
 	return (this->_isSend);
 }
 
+bool const			&Client::getHasRequest() const
+{
+	return (this->_hasRequest);
+}
+
 // SETTERS
 void	Client::setHostname(std::string newHostname)
 {
@@ -102,14 +109,12 @@ void	Client::setResponse(const std::string &str)
 {
 	if (!this->_response.empty())
 		this->_response.clear();
-	printf("resp : %lu\n", this->_response.size());
 	this->_response = str;
-	printf("resp : %lu\n", this->_response.size());
 }
 
-void	Client::setRequestHeader(std::string &str)
+void	Client::startingParseRequest()
 {
-	this->_request.parseHeader(str);
+	this->_request.startParse(this->_buf);
 }
 
 void	Client::setRequestBody()
@@ -130,6 +135,11 @@ void	Client::setTimeout()
 void	Client::setIsSend(bool newIsSend)
 {
 	this->_isSend = newIsSend;
+}
+
+void	Client::setHasRequest(bool newHasRequest)
+{
+	this->_hasRequest = newHasRequest;
 }
 
 //METHODS
@@ -181,6 +191,7 @@ void	Client::resetClient()
 	if (!this->_response.empty())
 		this->_response.clear();
 	this->_isSend = false;
+	this->_hasRequest = false;
 }
 
 void	Client::checkRequest(Server server)
@@ -192,9 +203,13 @@ bool	Client::checkTimeoutRequest()
 {
 	std::time_t timeout;
 
-	timeout = std::difftime(this->getTimeNow(), this->_timeRequest);
-	if (timeout > MAXTIMEREQUEST)
-		return (true);
+	if (this->_hasRequest)
+	{
+		// printf("request time : time now : %li, set time : %li\n", this->getTimeNow(), this->_timeRequest);
+		timeout = std::difftime(this->getTimeNow(), this->_timeRequest);
+		if (timeout > MAXTIMEREQUEST)
+			return (true);
+	}
 	return (false);
 }
 
@@ -310,6 +325,11 @@ bool	Client::checkCGI(Server &serv)
 void	Client::settingRequestStatus(enum statusType newStatus)
 {
 	this->_request.setStatus(newStatus);
+}
+
+void	Client::settingKeepAlive(bool newKeepAlive)
+{
+	this->_request.setkeepAlive(newKeepAlive);
 }
 
 void	Client::printAddPort()

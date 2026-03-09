@@ -25,7 +25,7 @@ class Client
 		std::time_t	_timeRequest;
 		std::time_t	_time;
 		bool		_isSend;
-
+		bool		_hasRequest;
 
 		std::string	_intToIp();
 		int			_getSizeBody();
@@ -44,17 +44,19 @@ class Client
 		Request	const		&getRequest() const;
 		std::string const	&getResponse() const;
 		bool const			&getIsSend() const;
+		bool const			&getHasRequest() const;
 
 		void	setHostname(std::string newHostname);
 		void	setFdClient(int newFd);
 		void	setBuf(const char *newBuf, int size);
 		void	setSockadd(sockaddr_in newSockadd);
-		void	setRequestHeader(std::string &str);
+		void	startingParseRequest();
 		void	setRequestBody();
 		void	setResponse(const std::string &str);
 		void	setTimeoutRequest();
 		void	setTimeout();
 		void	setIsSend(bool newIsSend);
+		void	setHasRequest(bool newHasRequest);
 		
 		std::time_t	getTimeNow();
 
@@ -67,6 +69,7 @@ class Client
 		bool	checkTimeoutRequest();
 		bool	checkTimeout();
 		void	settingRequestStatus(enum statusType newStatus);
+		void	settingKeepAlive(bool newKeepAlive);
 
 		void	printAddPort();
 };

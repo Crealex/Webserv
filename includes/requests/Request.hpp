@@ -10,7 +10,7 @@
 enum	statusType
 {
 	NOTHING,
-	CRLFFOUND,
+	SETTIMEOUT,
 	PARSINGHEADERDONE,
 	READY,
 };
@@ -37,6 +37,8 @@ class Request {
 		size_t			_bodySize;
 		bool			_keepAlive;
 		bool			_error;
+		bool			_firstLine;
+		bool			_header;
 		enum statusType	_status;
 
 		void	_parseAccept();
@@ -44,6 +46,7 @@ class Request {
 		void	_checkGet();
 
 		void								setFirstLine(std::string &line);
+		void								parseHeader(std::string &buffer);
 		std::string							retBody(std::string &str);
 		std::map<std::string, std::string*>	createMap();
 		
@@ -55,12 +58,13 @@ class Request {
 		~Request();
 
 		std::string	getRawRequest() const;
-		void		parseHeader(std::string &buffer);
 		void		parseBody(std::string &buffer);
+		void		startParse(std::string &buffer);
 		void		checkRequest(const unsigned int maxSize);
 		void		reset();
 
 		bool			getkeepAlive() const;
+		bool			getHeader() const;
 		std::string		getMethod() const;
 		std::string		getLocation() const;
 		std::string		getProtocol() const;
