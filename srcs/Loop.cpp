@@ -390,10 +390,12 @@ void Loop::_checkBody(int idClient)
 
 void Loop::_parsingRequest(int idClient) // A REVOIR AVEC KILIAN
 {
+	std::string	body;
 	int 		sizeBuf;
 
 	if (this->_clients[idClient]->getRequest().getStatus() == SETTIMEOUT)
 	{
+		this->_clients[idClient]->resetBuf();
 		this->_clients[idClient]->settingRequestStatus(PARSINGHEADERDONE);
 	}
 	if (this->_clients[idClient]->getRequest().getStatus() == PARSINGHEADERDONE)
