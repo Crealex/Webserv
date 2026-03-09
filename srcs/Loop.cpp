@@ -193,33 +193,7 @@ void Loop::_handleCmd()
 	} else if (in == "ap")
 		this->_printSocket();
 	else if (in == "c")
-		std::cout << LIGHT_MAGENTA << "\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣄⡀⠀⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡸⠋⠀⠘⣇⠀⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠇⠀⠀⠀⢸⠀⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡜⠀⠀⠀⠀⢸⠀⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠇⠀⠀⠀⠀⢸⠇⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡎⠀⠀⠀⠀⠀⢸⠀⠀⠀\n\
-⠀⠀⢀⣀⣀⣀⠀⠀⠀⠀⠀⢀⣀⣤⡤⠤⠤⠤⠤⢤⣤⣀⡤⢖⡿⠛⠉⢳⠀⠀⠀⠀⠀⢸⠀⠀⠀\n\
-⠀⢼⠁⠉⠉⠛⠻⢭⡓⠒⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠰⣏⠀⠀⠀⢸⠀⠀⠀⠀⠀⡤⠀⠀⠀\n\
-⠀⠸⡄⠀⠀⠀⠀⢸⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠂⠀⠀⡜⠀⠀⠀⠀⢀⡇⠀⠀⠀\n\
-⠀⠀⢷⠀⠀⠀⠠⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢣⢠⠏⠀⠀⠀⠀⢸⠃⠀⠀⠀\n\
-⠀⠀⠈⢧⠀⢀⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡞⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀\n\
-⠀⠀⠀⠈⢳⡈⠁⠀⠀⠀⠀⠀⣀⡀⠀⠀⠀⠀⠀⠀⠀⣶⣶⣦⠀⠀⢹⠀⠀⠀⠀⠀⡎⠀⠀⠀⠀\n\
-⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⢠⣾⣟⣹⡄⠀⠀⠀⠀⡀⠀⣿⣿⣿⡇⠀⢈⣧⠤⠤⠶⠶⢷⠒⠒⠂⠀\n\
-⠀⠀⢀⣀⣠⡧⠄⠀⠀⠀⣾⣿⣿⣿⠇⠀⠀⠀⠙⠁⠀⠙⠻⠿⠃⠀⠨⣼⣤⣀⡀⠀⠈⢧⠀⠀⠀\n\
-⠘⠉⠁⠀⢸⣤⡤⠀⠀⠀⠛⢿⡿⠋⠀⠀⠀⠀⠴⠦⠀⠀⠀⠀⠀⠐⣲⣯⡀⠀⠈⠙⠓⠺⣧⣄⡀\n\
-⠀⣀⡤⠚⠉⢳⡴⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡼⠃⠀⠈⠓⢦⡀⠀⠀⢸⠀⠈\n\
-⠀⠁⠀⢀⡔⠉⠙⡶⢄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠴⠚⠁⠀⠀⠀⠀⠀⠀⠈⠓⠆⠀⡇⠀\n\
-⠀⠀⠰⠋⠀⠀⢸⡇⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠁⠀\n\
-⠀⠀⠀⠀⠀⠀⠈⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡎⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠹⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠙⢆⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠄⠀⢰⠇⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⠶⠺⣇⠀⣀⡜⠀⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢱⡄⠀⠀⠀⠹⡟⠒⢢⡀⠀⠀⠀⠀⢀⡏⠀⠀⠀⠈⠉⠉⠁⠀⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣄⠀⠀⢀⡇⠀⠀⠻⣄⠀⠀⠀⡸⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n\
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢷⠶⠋⠀⠀⠀⠀⠈⣣⠶⠖⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
-				  << RESET << std::endl;
+		std::cout << LIGHT_MAGENTA << CAT << RESET << std::endl;
 }
 
 void Loop::_closeClients(int idClient)
@@ -332,41 +306,24 @@ void Loop::_acceptClient(int fd)
 		newClient->setSockadd(newSockadd);
 		newClient->setHostname(this->_hostnameOfSrvSock);
 		this->_clients.push_back(newClient);
-		this->_epoll.addEpollFd(newClient->getFdClient(), EPOLLIN | EPOLLET);
+		this->_epoll.addEpollFd(newClient->getFdClient(), EPOLLIN);
 	}
 }
 
-bool Loop::_parsingRequest(int idClient)
-{
-	size_t posCRLF;
-	std::string header;
-	std::string body;
-	int sizeBuf;
-
-	posCRLF = this->_clients[idClient]->getBuf().find("\r\n\r\n");
-	if (posCRLF == std::string::npos)
-		return (false);
-	header = this->_clients[idClient]->getBuf().substr(0, posCRLF + 4);
-	this->_clients[idClient]->setRequestHeader(header);
-	sizeBuf = this->_clients[idClient]->getBuf().size();
-	body = this->_clients[idClient]->getBuf().substr(posCRLF + 4, sizeBuf - posCRLF - 4);
-	this->_clients[idClient]->resetBuf();
-	this->_clients[idClient]->setBuf(body.c_str(), sizeBuf - posCRLF - 4);
-	return (true);
-}
-
-int Loop::_receiveRequest(int idClient)
+int Loop::_receive(int idClient)
 {
 	int sizeRecv;
 	char buffer[10000];
 	std::string bufferStr;
-
-	sizeRecv = ::recv(this->_clients[idClient]->getFdClient(), buffer, sizeof(buffer) - 1, 0);
-	if (sizeRecv == -1)
-	{
-		buffer[0] = '\0';
-		return (sizeRecv);
-	}
+	
+	std::memset(buffer, '\0',10000);
+	printf("before buffer : %s\n", buffer);
+	sizeRecv = ::recv(this->_clients[idClient]->getFdClient(), buffer, 9999, 0);
+	// if (sizeRecv == -1)
+	// {
+	// 	buffer[0] = '\0';
+	// 	return (sizeRecv);
+	// }
 	buffer[sizeRecv] = '\0';
 	if (sizeRecv == 0)
 		return (sizeRecv);
@@ -376,65 +333,109 @@ int Loop::_receiveRequest(int idClient)
 	return (sizeRecv);
 }
 
-int Loop::_addBodyLen(int idClient)
-{
-	int counter;
-	int sizeRecv;
-	int contentLen;
+// void Loop::_addBodyLen(int idClient)
+// {
+// 	int counter;
+// 	int sizeRecv;
+// 	int contentLen;
+	
+// 	counter = this->_clients[idClient]->getBuf().size();
+// 	printf("counter : %i\n", counter);
+// 	contentLen = this->_clients[idClient]->getRequest().getContentLength();
+// 	while (counter < contentLen)
+// 	{
+// 		sizeRecv = this->_receive(idClient);
+// 		printf("counter : %i, size recv : %i\n", counter, sizeRecv);
+// 		if (sizeRecv <= 0)
+// 		{
+// 			::sleep(1);
+// 		}
+// 		else
+// 			counter += sizeRecv;
+// 	}
+// 	printf("counter : %i\n", counter);
+// }
 
-	counter = this->_clients[idClient]->getBuf().size();
-	contentLen = this->_clients[idClient]->getRequest().getContentLength();
-	while (counter < contentLen) // Plutot <= non?
-	{
-		sizeRecv = this->_receiveRequest(idClient);
-		//std::cout << "size Recv: " << sizeRecv << std::endl;
-		if (sizeRecv == -1)
-			return (sizeRecv);
-		counter += sizeRecv;
-	}
-	return (0);
-}
+// void Loop::_addBodyChunked(int idClient, size_t &posCRLF)
+// {
+// 	int sizeRecv;
+	
+// 	posCRLF = this->_clients[idClient]->getBuf().find("\r\n\r\n");
+// 	while (posCRLF != std::string::npos)
+// 	{
+// 		sizeRecv = this->_receive(idClient);
+// 		if (sizeRecv <= 0)
+// 		break ;
+// 		posCRLF = this->_clients[idClient]->getBuf().find("\r\n\r\n");
+// 	}
+// }
 
-int Loop::_addBodyChunked(int idClient)
+void Loop::_checkBody(int idClient)
 {
 	size_t posCRLF;
-	int sizeRecv;
+
+	if (this->_clients[idClient]->getRequest().getContentLength() > 0)
+	{
+		std::cout << "in content length : " << this->_clients[idClient]->getRequest().getContentLength() << ", fd client : " << idClient << std::endl;
+		// this->_addBodyLen(idClient);
+		if (this->_clients[idClient]->getBuf().size() == this->_clients[idClient]->getRequest().getContentLength())
+			this->_clients[idClient]->settingRequestStatus(READY);
+	}
+	else if (this->_clients[idClient]->getRequest().getTranferEncoding().find("chunked") != std::string::npos)
+	{
+		std::cout << "chunked" << std::endl;
+		// this->_addBodyChunked(idClient, posCRLF);
+		posCRLF = this->_clients[idClient]->getBuf().find("\r\n\r\n");
+		if (posCRLF != std::string::npos)
+			this->_clients[idClient]->settingRequestStatus(READY);
+	}
+	else
+		this->_clients[idClient]->settingRequestStatus(READY);
+}
+
+void Loop::_parsingRequest(int idClient) // A REVOIR AVEC KILIAN
+{
+	size_t		posCRLF;
+	std::string	header;
+	std::string	body;
+	int 		sizeBuf;
 
 	posCRLF = this->_clients[idClient]->getBuf().find("\r\n\r\n");
-	while (posCRLF != std::string::npos)
+	if (this->_clients[idClient]->getRequest().getStatus() == NOTHING)
 	{
-		sizeRecv = this->_receiveRequest(idClient);
-		if (sizeRecv == -1)
-			return (sizeRecv);
-		posCRLF = this->_clients[idClient]->getBuf().find("\r\n\r\n");
+		if (posCRLF != std::string::npos)
+		{
+			this->_clients[idClient]->settingRequestStatus(CRLFFOUND);
+		}
 	}
-	return (0);
+	if (this->_clients[idClient]->getRequest().getStatus() == CRLFFOUND)
+	{
+		header = this->_clients[idClient]->getBuf().substr(0, posCRLF + 4);
+		sizeBuf = this->_clients[idClient]->getBuf().size();
+		body = this->_clients[idClient]->getBuf().substr(posCRLF + 4, sizeBuf - posCRLF - 4);
+		this->_clients[idClient]->resetBuf();
+		this->_clients[idClient]->setBuf(body.c_str(), sizeBuf - posCRLF - 4);
+		this->_clients[idClient]->setRequestHeader(header);
+		this->_clients[idClient]->settingRequestStatus(PARSINGHEADERDONE);
+	}
+	if (this->_clients[idClient]->getRequest().getStatus() == PARSINGHEADERDONE)
+	{
+		this->_checkBody(idClient);
+	}
+	if (this->_clients[idClient]->getRequest().getStatus() == READY)
+		this->_clients[idClient]->setRequestBody();
 }
 
-int Loop::_checkBody(int idClient)
+bool Loop::_receiveRequest(int idClient)
 {
-	if (this->_clients[idClient]->getRequest().getContentLength() > 0)
-		if (this->_addBodyLen(idClient) == -1)
-			return (-1);
-	if (this->_clients[idClient]->getRequest().getTranferEncoding().find("chunked") != std::string::npos)
-		if (this->_addBodyChunked(idClient) == -1)
-			return (-1);
-	this->_clients[idClient]->setRequestBody();
-	return (0);
-}
+	int		recvStatus;
 
-bool Loop::_getRequest(int idClient)
-{
-	int recvStatus;
-
-	recvStatus = this->_receiveRequest(idClient);
-	if (recvStatus <= 0)
+	recvStatus = this->_receive(idClient);
+	if (recvStatus == 0)
 		return (false);
-	if (!this->_parsingRequest(idClient))
-		this->_getRequest(idClient); // MAIS ??????????????????? c'est pas un getter ???
-	if (this->_checkBody(idClient) == -1)
-		return (false);
-	this->_epoll.setEvents(this->_clients[idClient], EPOLLOUT);
+	this->_parsingRequest(idClient);
+	if (this->_clients[idClient]->getRequest().getStatus() == READY)
+		this->_epoll.setEvents(this->_clients[idClient], EPOLLOUT);
 	return (true);
 }
 
@@ -447,7 +448,6 @@ void Loop::_createResponse(int idClient)
 	try
 	{
 		this->_clients[idClient]->checkRequest(this->_servers.at(this->_clients[idClient]->getHostname()));
-		// std::cout << GREEN << "after at" << RESET << std::endl;
 		if (method == "GET")
 			met = new Get(this->_clients[idClient]->getRequest());
 		else if (method == "POST")
@@ -481,23 +481,32 @@ void Loop::_createTimeoutResponse(int idClient)
 
 inline void Loop::_sendResponse(int idClient)
 {
-	while (1)
+	int	sizeSend;
+	int	sizeResp;
+	std::string	newResp;
+
+	sizeSend = 0;
+	printf("SIIIIIIIIIZE : %lu\n", this->_clients[idClient]->getResponse().size());
+	sizeResp = this->_clients[idClient]->getResponse().size();
+	std::cout << "fd client in send = " << _clients[idClient]->getFdClient() << std::endl;
+	this->_createTimeoutResponse(idClient);
+	sizeSend = send(this->_clients[idClient]->getFdClient(),
+		this->_clients[idClient]->getResponse().data(),
+		this->_clients[idClient]->getResponse().size(), MSG_NOSIGNAL);
+
+		printf("size send : %i, resp size : %i\n", sizeSend, sizeResp);
+	// if (sizeSend == -1)
+	// 	return ;
+
+	if (sizeSend >= sizeResp)
 	{
-		this->_createTimeoutResponse(idClient);
-		int sendRet = send(this->_clients[idClient]->getFdClient(),
-			this->_clients[idClient]->getResponse().c_str(),
-			this->_clients[idClient]->getResponse().size(), MSG_NOSIGNAL);
-
-		if (sendRet == -1)
-			continue;
-
-		int size = this->_clients[idClient]->getResponse().size();
-		if (sendRet == size)
-			break;
-
-		std::string newResp = this->_clients[idClient]->getResponse().substr(sendRet, size - sendRet);
-		this->_clients[idClient]->setResponse(newResp);
+		this->_clients[idClient]->setIsSend(true);
+		return ;
 	}
+	newResp = this->_clients[idClient]->getResponse().substr(sizeSend, sizeResp - sizeSend);
+	printf("size new resp : %lu\n", newResp.size());
+	this->_clients[idClient]->setResponse(newResp);
+	printf("size new resp : %lu\n", this->_clients[idClient]->getResponse().size());
 }
 
 void Loop::_printSocket()
@@ -537,7 +546,7 @@ void Loop::runLoop()
 
 	counter = 0;
 	fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);				  // INFO: Ajouter par alex pour gerer les cmds
-	this->_epoll.addEpollFd(STDIN_FILENO, EPOLLIN | EPOLLET); // Comme ci dessus ^^^
+	this->_epoll.addEpollFd(STDIN_FILENO, EPOLLIN); // Comme ci dessus ^^^
 	this->_displayHelp();
 	while (!this->_isExit && !g_exit)
 	{
@@ -570,12 +579,14 @@ void Loop::runLoop()
 				continue;
 			} else if (events[indexEvent].events & EPOLLIN && this->_isServerSocket(events[indexEvent].data.fd))
 			{
+				std::cout << "before accept" << std::endl;
 				this->_acceptClient(events[indexEvent].data.fd);
 			} else if (events[indexEvent].events & EPOLLIN && this->_isClientSocket(events[indexEvent].data.fd, idClient))
 			{
-				if (!this->_getRequest(idClient))
+				std::cout << "fd client : " << this->_clients[idClient]->getFdClient() << std::endl;
+				if (this->_receiveRequest(idClient) == false)
 				{
-					//std::cout << "close client because getRequest return false" << std::endl;
+					std::cout << "close client because getRequest return false" << std::endl;
 					this->_closeClients(idClient);
 					continue;
 				}
@@ -586,32 +597,39 @@ void Loop::runLoop()
 				{
 					_clients[idClient]->startCGI(_servers[_clients[idClient]->getHostname()]);
 				}
+				this->_createResponse(idClient);
 			} else if (this->_isClientSocket(events[indexEvent].data.fd, idClient) && this->_clients[idClient]->getIsCGI())
 			{
 				if (!_clients[idClient]->checkCGI(_servers[_clients[idClient]->getHostname()]))
 					continue;
 				this->_sendResponse(idClient);
 				this->_printSend(idClient);
-				if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
+				if (this->_clients[idClient]->getIsSend())
 				{
-					this->_closeClients(idClient);
-				} else
-				{
-					this->_clients[idClient]->resetClient();
-					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN | EPOLLET);
+					if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
+					{
+						this->_closeClients(idClient);
+					} else
+					{
+						this->_clients[idClient]->resetClient();
+						this->_epoll.setEvents(this->_clients[idClient], EPOLLIN);
+					}
 				}
 			} else if (events[indexEvent].events & EPOLLOUT && this->_isClientSocket(events[indexEvent].data.fd, idClient) && !_clients[idClient]->getIsCGI())
 			{
-				this->_createResponse(idClient);
 				this->_sendResponse(idClient);
 				this->_printSend(idClient);
-				if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
+				printf("after\n");
+				if (this->_clients[idClient]->getIsSend())
 				{
-					this->_closeClients(idClient);
-				} else
-				{
-					this->_clients[idClient]->resetClient();
-					this->_epoll.setEvents(this->_clients[idClient], EPOLLIN | EPOLLET);
+					if (this->_clients[idClient]->getRequest().getkeepAlive() == false)
+					{
+						this->_closeClients(idClient);
+					} else
+					{
+						this->_clients[idClient]->resetClient();
+						this->_epoll.setEvents(this->_clients[idClient], EPOLLIN);
+					}
 				}
 			}
 		}

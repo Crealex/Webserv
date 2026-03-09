@@ -4,7 +4,7 @@
 
 std::vector<std::string> Request::_v = Request::_acceptedType();
 
-Request::Request() : _ContentLength(0), _bodySize(0), _keepAlive(false), _error(true)
+Request::Request() : _ContentLength(0), _bodySize(0), _keepAlive(false), _error(true), _status(NOTHING)
 {
 }
 
@@ -99,6 +99,7 @@ void Request::reset()
 	_bodySize = 0;
 	_ContentLength = 0;
 	_keepAlive = false;
+	_status = NOTHING;
 }
 
 void Request::_parseAccept()
@@ -362,7 +363,6 @@ void Request::parseBody(std::string &buffer)
 {
 	// std::cout << RED << "buffer = " << buffer << "pos = " << pos << RESET << std::endl;
 	_body = retBody(buffer);
-	// std::cout << "body = " << ret._body;
 }
 
 std::string	Request::getRawRequest() const
@@ -455,6 +455,11 @@ std::string Request::getStrContentLength() const
 	return str;
 }
 
+enum statusType	Request::getStatus() const
+{
+	return _status;
+}
+
 void	Request::setkeepAlive(bool b)
 {
 	_keepAlive = b;
@@ -508,4 +513,9 @@ void	Request::setBody(std::string str)
 void	Request::setContentLength(unsigned int n)
 {
 	_ContentLength = n;
+}
+
+void	Request::setStatus(enum statusType newStatus)
+{
+	_status = newStatus;
 }

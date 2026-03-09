@@ -7,6 +7,14 @@
 # include "Get.hpp"
 # include "Delete.hpp"
 
+enum	statusType
+{
+	NOTHING,
+	CRLFFOUND,
+	PARSINGHEADERDONE,
+	READY,
+};
+
 class Request {
 
 	private:
@@ -29,6 +37,7 @@ class Request {
 		size_t			_bodySize;
 		bool			_keepAlive;
 		bool			_error;
+		enum statusType	_status;
 
 		void	_parseAccept();
 		void	_checkPost();
@@ -65,6 +74,7 @@ class Request {
 		std::string		getBody() const;
 		unsigned int	getContentLength() const;
 		std::string		getStrContentLength() const;
+		enum statusType	getStatus() const;
 
 		void	setkeepAlive(bool b);
 		void	setMethod(std::string str);
@@ -77,6 +87,7 @@ class Request {
 		void	setContentType(std::string str);
 		void	setBody(std::string str);
 		void	setContentLength(unsigned int n);	
+		void	setStatus(enum statusType newStatus);	
 };
 
 #endif
