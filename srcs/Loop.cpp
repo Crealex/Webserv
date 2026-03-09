@@ -214,15 +214,13 @@ void Loop::_checkAllTimeout()
 		return;
 	for (int i = 0; i < nbClients; i++)
 	{
-		if (this->_clients[i]->getHasRequest())
-			this->_createTimeoutResponse(i);
-		if (this->_clients[i]->checkTimeout())
-		{
-			printf(MAGENTA "in the general timeout\n" RESET);
-			this->_closeClients(i);
-			nbClients = this->_clients.size();
-			i--;
-		}
+		this->_createTimeoutResponse(i);
+		// {
+		// 	printf(MAGENTA "in the general timeout\n" RESET);
+		// 	this->_closeClients(i);
+		// 	nbClients = this->_clients.size();
+		// 	i--;
+		// }
 	}
 }
 
@@ -461,7 +459,7 @@ void Loop::_createTimeoutResponse(int idClient)
 {
 	try
 	{
-		if (this->_clients[idClient]->checkTimeoutRequest())
+		if (this->_clients[idClient]->checkTimeout())
 		{
 			printf("in the if\n");
 			throw ResponseError(408, "Request Timeout", this->_clients[idClient]->getRequest());
@@ -472,6 +470,7 @@ void Loop::_createTimeoutResponse(int idClient)
 		// this->_clients[idClient]->settingRequestStatus(READY);
 		this->_epoll.setEvents(this->_clients[idClient], EPOLLOUT);
 		this->_clients[idClient]->settingKeepAlive(false);
+		// this->_clients[idClient]->setHasRequest(false);
 		this->_clients[idClient]->setResponse(e.createResponse(this->_servers.at(this->_clients[idClient]->getHostname())));
 	}
 }
@@ -485,7 +484,7 @@ inline void Loop::_sendResponse(int idClient)
 	sizeSend = 0;
 	sizeResp = this->_clients[idClient]->getResponse().size();
 	// this->_createTimeoutResponse(idClient);
-	printf( YELLOW "RESPOOOOOOOOOOOOONSE : %s\n" RESET, this->_clients[idClient]->getResponse().c_str());
+	// printf( YELLOW "RESPOOOOOOOOOOOOONSE : %s\n" RESET, this->_clients[idClient]->getResponse().c_str());
 	sizeSend = send(this->_clients[idClient]->getFdClient(),
 		this->_clients[idClient]->getResponse().c_str(),
 		this->_clients[idClient]->getResponse().size(), MSG_NOSIGNAL);
