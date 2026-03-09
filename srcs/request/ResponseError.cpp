@@ -110,16 +110,14 @@ const std::string ResponseError::createResponse(const Server &srv)
 	if (target.empty())
 	{
 		fileStr = createBodyHTML(this->_code, this->_message);
-	}
-	else
+	} else
 	{
 		path = target;
 		file.open(path.c_str());
 		if (!file.is_open())
 		{
 			fileStr = createBodyHTML(this->_code, this->_message);
-		}
-		else
+		} else
 		{
 			fileStr = createFileStr(file);
 		}
@@ -127,7 +125,7 @@ const std::string ResponseError::createResponse(const Server &srv)
 	return resp.contentType("text/html")
 		.date()
 		.lastModified(path)
-		.contentLength(fileStr.size())
+		.contentLength(fileStr.size() + 4)
 		.startLine(this->_code, this->_message)
 		.body(fileStr)
 		.build();
