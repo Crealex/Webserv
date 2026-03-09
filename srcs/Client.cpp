@@ -327,6 +327,11 @@ void	Client::settingRequestStatus(enum statusType newStatus)
 	this->_request.setStatus(newStatus);
 }
 
+void	Client::settingKeepAlive(bool newKeepAlive)
+{
+	this->_request.setkeepAlive(newKeepAlive);
+}
+
 void	Client::printAddPort()
 {
 	std::stringstream	port;

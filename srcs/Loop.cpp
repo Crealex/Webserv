@@ -324,7 +324,6 @@ int Loop::_receive(int idClient)
 		return (sizeRecv);
 	this->_clients[idClient]->setBuf(buffer, sizeRecv);
 	bufferStr = buffer;
-	sleep(5);
 	Logger::log(Logger::INFO, "REQUEST:\n" + bufferStr);
 	return (sizeRecv);
 }
@@ -391,27 +390,10 @@ void Loop::_checkBody(int idClient)
 
 void Loop::_parsingRequest(int idClient) // A REVOIR AVEC KILIAN
 {
-	size_t		posCRLF;
-	std::string	header;
-	std::string	body;
 	int 		sizeBuf;
 
-	posCRLF = this->_clients[idClient]->getBuf().find("\r\n\r\n");
 	if (this->_clients[idClient]->getRequest().getStatus() == SETTIMEOUT)
 	{
-		if (posCRLF != std::string::npos)
-		{
-			this->_clients[idClient]->settingRequestStatus(CRLFFOUND);
-		}
-	}
-	if (this->_clients[idClient]->getRequest().getStatus() == CRLFFOUND)
-	{
-		header = this->_clients[idClient]->getBuf().substr(0, posCRLF + 4);
-		sizeBuf = this->_clients[idClient]->getBuf().size();
-		body = this->_clients[idClient]->getBuf().substr(posCRLF + 4, sizeBuf - posCRLF - 4);
-		this->_clients[idClient]->resetBuf();
-		this->_clients[idClient]->setBuf(body.c_str(), sizeBuf - posCRLF - 4);
-		this->_clients[idClient]->setRequestHeader(header);
 		this->_clients[idClient]->settingRequestStatus(PARSINGHEADERDONE);
 	}
 	if (this->_clients[idClient]->getRequest().getStatus() == PARSINGHEADERDONE)
@@ -485,6 +467,7 @@ void Loop::_createTimeoutResponse(int idClient)
 		printf("in the catch\n");
 		// this->_clients[idClient]->settingRequestStatus(READY);
 		// this->_epoll.setEvents(this->_clients[idClient], EPOLLOUT);
+		this->_clients[idClient]->settingKeepAlive(false);
 		this->_clients[idClient]->setResponse(e.createResponse(this->_servers.at(this->_clients[idClient]->getHostname())));
 	}
 }

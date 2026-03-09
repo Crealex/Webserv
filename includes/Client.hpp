@@ -69,6 +69,7 @@ class Client
 		bool	checkTimeoutRequest();
 		bool	checkTimeout();
 		void	settingRequestStatus(enum statusType newStatus);
+		void	settingKeepAlive(bool newKeepAlive);
 
 		void	printAddPort();
 };
