@@ -484,7 +484,7 @@ inline void Loop::_sendResponse(int idClient)
 
 	sizeSend = 0;
 	sizeResp = this->_clients[idClient]->getResponse().size();
-	this->_createTimeoutResponse(idClient);
+	// this->_createTimeoutResponse(idClient);
 	printf( YELLOW "RESPOOOOOOOOOOOOONSE : %s\n" RESET, this->_clients[idClient]->getResponse().c_str());
 	sizeSend = send(this->_clients[idClient]->getFdClient(),
 		this->_clients[idClient]->getResponse().c_str(),
