@@ -4,7 +4,7 @@
 
 std::vector<std::string> Request::_v = Request::_acceptedType();
 
-Request::Request() : _ContentLength(0), _bodySize(0), _keepAlive(false), _error(true)
+Request::Request() : _ContentLength(0), _bodySize(0), _keepAlive(false), _error(false), _firstLine(false), _header(false), _status(NOTHING)
 {
 }
 
@@ -99,6 +99,8 @@ void Request::reset()
 	_bodySize = 0;
 	_ContentLength = 0;
 	_keepAlive = false;
+	_firstLine = false;
+	_status = NOTHING;
 }
 
 void Request::_parseAccept()
@@ -234,6 +236,8 @@ void Request::setFirstLine(std::string &line)
 	std::stringstream ss(line);
 	std::string check;
 
+	_firstLine = true;
+
 	ss >> _method;
 	ss >> _location;
 	ss >> _protocol;
@@ -305,11 +309,14 @@ void Request::parseHeader(std::string &buffer)
 	std::istringstream iss(buffer);
 	std::string line;
 	
-	_error = false;
-	std::getline(iss, line);
-	setFirstLine(line);
 	while (std::getline(iss, line)) 
 	{
+		if (!_firstLine)
+		{
+			setFirstLine(line);
+			continue ;
+		}
+
 		if (!line.empty() && line[line.size() - 1] == '\r') // INFO: Ajouter par Alex (pour gerer les \r)
 			line.erase(line.size() - 1);
 		// extract and parse the different element of the request
@@ -317,8 +324,10 @@ void Request::parseHeader(std::string &buffer)
 			break ;
 
 		if (line.find(": ") == std::string::npos)
+		{
+			std::cout << BLUE << "double dot" << RESET << std::endl;
 			_error = true;
-
+		}
 		std::stringstream ss(line);
 		std::string word;
 		ss >> word;
@@ -327,7 +336,9 @@ void Request::parseHeader(std::string &buffer)
 		if (word == "Content-Length:")
 		{
 			if (!(ss >> _ContentLength))
+			{
 				_error = true;
+			}
 			continue ;
 		}
 		if (word == "Connection:")
@@ -341,7 +352,9 @@ void Request::parseHeader(std::string &buffer)
 		{
 			std::string* strPtr = ptrMap.at(word);
 			if (!strPtr->empty())
+			{
 				_error = true;
+			}
 			std::string str;
 			while (ss >> word)
 				str.append(word + ' ');
@@ -353,16 +366,40 @@ void Request::parseHeader(std::string &buffer)
 		}
 	}
 
-	_URI = _host + _location;
-	size_t pos = _location.find_first_of('?', 0);
-	_query = _location.substr(pos + 1);
+	if (!_host.empty() && !_location.empty())
+		_URI = _host + _location;
+	
+	if (!_location.empty())
+	{
+		size_t pos = _location.find_first_of('?', 0);
+		_query = _location.substr(pos + 1);
+	}
+}
+
+void Request::startParse(std::string &buffer)
+{
+	size_t CRLF = buffer.find("\r\n\r\n");
+
+	if (CRLF == std::string::npos)
+	{
+		printf(GREEN "no CRLF\n" RESET);
+		parseHeader(buffer);
+		buffer.clear();
+	}
+	else
+	{
+		printf(GREEN "CRLF\n" RESET);
+		std::string buff = buffer.substr(0, CRLF);
+		parseHeader(buffer);
+		buffer.erase(0, CRLF + 4);
+		_status = PARSINGHEADERDONE;
+	}
 }
 
 void Request::parseBody(std::string &buffer)
 {
 	// std::cout << RED << "buffer = " << buffer << "pos = " << pos << RESET << std::endl;
 	_body = retBody(buffer);
-	// std::cout << "body = " << ret._body;
 }
 
 std::string	Request::getRawRequest() const
@@ -441,6 +478,11 @@ bool Request::getkeepAlive() const
 	return _keepAlive;
 }
 
+bool Request::getHeader() const
+{
+	return _header;
+}
+
 unsigned int Request::getContentLength() const
 {
 	return _ContentLength;
@@ -453,6 +495,11 @@ std::string Request::getStrContentLength() const
 	ss << _ContentLength;
 	ss >> str;
 	return str;
+}
+
+enum statusType	Request::getStatus() const
+{
+	return _status;
 }
 
 void	Request::setkeepAlive(bool b)
@@ -508,4 +555,9 @@ void	Request::setBody(std::string str)
 void	Request::setContentLength(unsigned int n)
 {
 	_ContentLength = n;
+}
+
+void	Request::setStatus(enum statusType newStatus)
+{
+	_status = newStatus;
 }

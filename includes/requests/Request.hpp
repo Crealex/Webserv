@@ -7,6 +7,14 @@
 # include "Get.hpp"
 # include "Delete.hpp"
 
+enum	statusType
+{
+	NOTHING,
+	SETTIMEOUT,
+	PARSINGHEADERDONE,
+	READY,
+};
+
 class Request {
 
 	private:
@@ -29,12 +37,16 @@ class Request {
 		size_t			_bodySize;
 		bool			_keepAlive;
 		bool			_error;
+		bool			_firstLine;
+		bool			_header;
+		enum statusType	_status;
 
 		void	_parseAccept();
 		void	_checkPost();
 		void	_checkGet();
 
 		void								setFirstLine(std::string &line);
+		void								parseHeader(std::string &buffer);
 		std::string							retBody(std::string &str);
 		std::map<std::string, std::string*>	createMap();
 		
@@ -46,12 +58,13 @@ class Request {
 		~Request();
 
 		std::string	getRawRequest() const;
-		void		parseHeader(std::string &buffer);
 		void		parseBody(std::string &buffer);
+		void		startParse(std::string &buffer);
 		void		checkRequest(const unsigned int maxSize);
 		void		reset();
 
 		bool			getkeepAlive() const;
+		bool			getHeader() const;
 		std::string		getMethod() const;
 		std::string		getLocation() const;
 		std::string		getProtocol() const;
@@ -65,6 +78,7 @@ class Request {
 		std::string		getBody() const;
 		unsigned int	getContentLength() const;
 		std::string		getStrContentLength() const;
+		enum statusType	getStatus() const;
 
 		void	setkeepAlive(bool b);
 		void	setMethod(std::string str);
@@ -77,6 +91,7 @@ class Request {
 		void	setContentType(std::string str);
 		void	setBody(std::string str);
 		void	setContentLength(unsigned int n);	
+		void	setStatus(enum statusType newStatus);	
 };
 
 #endif
