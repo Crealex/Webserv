@@ -112,9 +112,9 @@ void	Client::setResponse(const std::string &str)
 	this->_response = str;
 }
 
-void	Client::setRequestHeader(std::string &str)
+void	Client::startingParseRequest()
 {
-	this->_request.parseHeader(str);
+	this->_request.startParse(this->_buf);
 }
 
 void	Client::setRequestBody()
@@ -205,7 +205,7 @@ bool	Client::checkTimeoutRequest()
 
 	if (this->_hasRequest)
 	{
-		printf("in here\n");
+		// printf("request time : time now : %li, set time : %li\n", this->getTimeNow(), this->_timeRequest);
 		timeout = std::difftime(this->getTimeNow(), this->_timeRequest);
 		if (timeout > MAXTIMEREQUEST)
 			return (true);

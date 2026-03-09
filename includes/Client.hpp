@@ -50,7 +50,7 @@ class Client
 		void	setFdClient(int newFd);
 		void	setBuf(const char *newBuf, int size);
 		void	setSockadd(sockaddr_in newSockadd);
-		void	setRequestHeader(std::string &str);
+		void	startingParseRequest();
 		void	setRequestBody();
 		void	setResponse(const std::string &str);
 		void	setTimeoutRequest();

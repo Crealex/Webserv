@@ -4,7 +4,7 @@
 
 std::vector<std::string> Request::_v = Request::_acceptedType();
 
-Request::Request() : _ContentLength(0), _bodySize(0), _keepAlive(false), _error(false), _status(NOTHING), _firstLine(false), _header(false)
+Request::Request() : _ContentLength(0), _bodySize(0), _keepAlive(false), _error(false), _firstLine(false), _header(false), _status(NOTHING)
 {
 }
 
@@ -99,6 +99,7 @@ void Request::reset()
 	_bodySize = 0;
 	_ContentLength = 0;
 	_keepAlive = false;
+	_firstLine = false;
 	_status = NOTHING;
 }
 
@@ -308,14 +309,14 @@ void Request::parseHeader(std::string &buffer)
 	std::istringstream iss(buffer);
 	std::string line;
 	
-	if (!_firstLine)
-	{
-		std::getline(iss, line);
-		setFirstLine(line);
-	}
-
 	while (std::getline(iss, line)) 
 	{
+		if (!_firstLine)
+		{
+			setFirstLine(line);
+			continue ;
+		}
+
 		if (!line.empty() && line[line.size() - 1] == '\r') // INFO: Ajouter par Alex (pour gerer les \r)
 			line.erase(line.size() - 1);
 		// extract and parse the different element of the request
@@ -323,8 +324,10 @@ void Request::parseHeader(std::string &buffer)
 			break ;
 
 		if (line.find(": ") == std::string::npos)
+		{
+			std::cout << BLUE << "double dot" << RESET << std::endl;
 			_error = true;
-
+		}
 		std::stringstream ss(line);
 		std::string word;
 		ss >> word;
@@ -333,7 +336,9 @@ void Request::parseHeader(std::string &buffer)
 		if (word == "Content-Length:")
 		{
 			if (!(ss >> _ContentLength))
+			{
 				_error = true;
+			}
 			continue ;
 		}
 		if (word == "Connection:")
@@ -347,7 +352,9 @@ void Request::parseHeader(std::string &buffer)
 		{
 			std::string* strPtr = ptrMap.at(word);
 			if (!strPtr->empty())
+			{
 				_error = true;
+			}
 			std::string str;
 			while (ss >> word)
 				str.append(word + ' ');
@@ -375,12 +382,16 @@ void Request::startParse(std::string &buffer)
 
 	if (CRLF == std::string::npos)
 	{
+		printf(GREEN "no CRLF\n" RESET);
 		parseHeader(buffer);
+		buffer.clear();
 	}
 	else
 	{
+		printf(GREEN "CRLF\n" RESET);
 		std::string buff = buffer.substr(0, CRLF);
 		parseHeader(buffer);
+		buffer.erase(0, CRLF + 4);
 		_status = PARSINGHEADERDONE;
 	}
 }
