@@ -4,7 +4,7 @@
 
 std::vector<std::string> Request::_v = Request::_acceptedType();
 
-Request::Request() : _ContentLength(0), _bodySize(0), _keepAlive(false), _error(true), _status(NOTHING)
+Request::Request() : _ContentLength(0), _bodySize(0), _keepAlive(false), _error(false), _status(NOTHING), _firstLine(false), _header(false)
 {
 }
 
@@ -235,6 +235,8 @@ void Request::setFirstLine(std::string &line)
 	std::stringstream ss(line);
 	std::string check;
 
+	_firstLine = true;
+
 	ss >> _method;
 	ss >> _location;
 	ss >> _protocol;
@@ -306,9 +308,12 @@ void Request::parseHeader(std::string &buffer)
 	std::istringstream iss(buffer);
 	std::string line;
 	
-	_error = false;
-	std::getline(iss, line);
-	setFirstLine(line);
+	if (!_firstLine)
+	{
+		std::getline(iss, line);
+		setFirstLine(line);
+	}
+
 	while (std::getline(iss, line)) 
 	{
 		if (!line.empty() && line[line.size() - 1] == '\r') // INFO: Ajouter par Alex (pour gerer les \r)
@@ -354,9 +359,30 @@ void Request::parseHeader(std::string &buffer)
 		}
 	}
 
-	_URI = _host + _location;
-	size_t pos = _location.find_first_of('?', 0);
-	_query = _location.substr(pos + 1);
+	if (!_host.empty() && !_location.empty())
+		_URI = _host + _location;
+	
+	if (!_location.empty())
+	{
+		size_t pos = _location.find_first_of('?', 0);
+		_query = _location.substr(pos + 1);
+	}
+}
+
+void Request::startParse(std::string &buffer)
+{
+	size_t CRLF = buffer.find("\r\n\r\n");
+
+	if (CRLF == std::string::npos)
+	{
+		parseHeader(buffer);
+	}
+	else
+	{
+		std::string buff = buffer.substr(0, CRLF);
+		parseHeader(buffer);
+		_status = PARSINGHEADERDONE;
+	}
 }
 
 void Request::parseBody(std::string &buffer)
@@ -439,6 +465,11 @@ std::string Request::getBody() const
 bool Request::getkeepAlive() const
 {
 	return _keepAlive;
+}
+
+bool Request::getHeader() const
+{
+	return _header;
 }
 
 unsigned int Request::getContentLength() const
