@@ -204,7 +204,6 @@ bool Client::checkTimeoutRequest()
 
 	if (this->_hasRequest)
 	{
-		// printf("request time : time now : %li, set time : %li\n", this->getTimeNow(), this->_timeRequest);
 		timeout = std::difftime(this->getTimeNow(), this->_timeRequest);
 		if (timeout > MAXTIMEREQUEST)
 			return (true);
@@ -299,10 +298,9 @@ bool Client::checkCGI(Server &serv)
 		_CGI.checkSubprocess(this->_request);
 
 		double diff = std::difftime(std::time(NULL), _timeRequest);
-		// printf("diff = %f\n", diff);
 		if (diff > MAXTIMEREQUEST)
 		{
-			throw ResponseError(504, "Gateaway timeout", _request);
+			throw ResponseError(504, "Gateway timeout", _request);
 		}
 	} catch (ResponseError &e)
 	{

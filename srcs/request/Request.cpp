@@ -218,6 +218,9 @@ void Request::checkRequest(const unsigned int maxSize)
 		throw ResponseError(400, "Bad request", *this);
 	}
 
+	if (_protocol == "HTTP/1.0")
+		_keepAlive = false;
+
 	_parseAccept();
 	if (_method == "POST")
 		_checkPost();
@@ -382,13 +385,11 @@ void Request::startParse(std::string &buffer)
 
 	if (CRLF == std::string::npos)
 	{
-		printf(GREEN "no CRLF\n" RESET);
 		parseHeader(buffer);
 		buffer.clear();
 	}
 	else
 	{
-		printf(GREEN "CRLF\n" RESET);
 		std::string buff = buffer.substr(0, CRLF);
 		parseHeader(buffer);
 		buffer.erase(0, CRLF + 4);
