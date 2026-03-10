@@ -1,60 +1,29 @@
 # Webserv
-Create a webserver in C and CPP, with beautiful people
 
-## Github tips:
+*This project has been created as part of the 42 curriculum by dvauthey, atomasi, ktintim-*
 
-### Branch
+## Description
+The goal of the project "webserv" is to understand and create a basic web server that accepts the requests through the network protocol HTTP 1.0 and 1.1 .
 
-On essaye de créer une branche par feature et on merge (via pull request) une fois la feature finie.
+## Instructions
+The `make` command is used in the terminal to compile our code.
+Start the executable "webServ" with the path of a configuration file as the argument.
+It should look like this : `./webServ configFile.conf`.
 
-### Pull request
-
-Une pull request créer un espace "bac a sable" qui permet de tester l'integration de la branch avec le main sans risquer de casser le main.
-
-Possibilité de creer des scripts pour tester automatiquement notre programme afin de se faciliter le travail de test en chaque pull.
-
-Tout est gerable via l'interface graphique de github ou directement en ligne de commande (voir [[#Utils cmds]])
-
-### Workflow de base:
-1. On crée une branche pour la feature voulue
-2. Une fois la feature finie, on crée une pull request pour demander de merge avec le main
-3. Les autres membres de la team valide la pull request (apres avoir lu le code et fait des tests)
-4. On croise les doigts pour que tout ne soit pas cassé :..)
-
-### Utils cmds
-- **Create and go to new branch:** `git -b checkout <new-branch>`
-- **Setup new branch when push:** `git push --set-upstream origin <branch> `
-- **Create new pull request:** `gh pr create --title "Title of pull request" --body "Explain the pull request"`
-
-### Warning
-
-Comme toujours bien communiquer (même si en théorie les pulls requests nous empeche de faire trop de betises)
-
-Si plusieurs personnes travaillent sur la meme feature a definir si:
-1. On cree des sous-branches
-2. On travaille en asychrone
-3. Inshallah
-
-Definir si besoin de seulement une personne pour valider la pull request ou si il faut que **Toute la team** la valide.
-
-Avant d'utilser les commandes `gh` il faut faire `gh login` pour se log à son compte github (c'est pas très compliqué promis)
-
-### Creer une issue sur github
-
-
-- **Soit avec la commande:** `gh issue create --title "My new issue" --body "Here are more details."`
-- Soit directement avec l'interface graphique de github (voir le liens dans liens utiles)
-
-#### Brief minimum
-
-Il serait bien de definir un minimum d'information a mettre dans chaque issues comme par exemple:
-- La personne concernee par le probleme
-- l'entree qui a creer le probleme
-- une description breve mais clair du probleme
-- si possible le partie sur code concernee
-- etc..
-
-### Liens utiles
-
-- **Pull request:** [https://docs.github.com/fr/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request?tool=cli]
-- **Issues**: [https://docs.github.com/fr/issues/tracking-your-work-with-issues/using-issues/creating-an-issue]
+## Resources
+Here are some resources we used :
+- c++ : https://cppreference.com/
+- epoll : https://medium.com/@hajorda/non-blocking-sockets-and-i-o-multiplexing-with-epoll-in-c-bd3d8e54c20a
+- RFC 1945 HTTP 1.0 : http://abcdrfc.free.fr/rfc-vf/rfc1945.html#2
+- RFC 2616 HTTP 1.1 : https://datatracker.ietf.org/doc/html/rfc2616
+- HTTP : https://developer.mozilla.org/fr/docs/Web/HTTP/Guides/Overview
+- Sockets in C : https://www.codequoi.com/programmation-reseau-via-socket-en-c/
+	- https://www.geeksforgeeks.org/cpp/socket-programming-in-cpp/
+- How does internet work (video) :  https://www.youtube.com/watch?v=lL3ElCmq6jc&list=TLPQMDMxMTIwMjUFo8dLglhDKQ&index=16
+- codes HTTP : https://fr.wikipedia.org/wiki/Liste_des_codes_HTTP
+- Video on TCP : https://youtu.be/PeHghSv29ag?si=ANnguIHXv5-VaJvZTTP
+- Request : https://developer.mozilla.org/fr/docs/Web/HTTP/Reference/Methods/GET
+	- https://developer.mozilla.org/fr/docs/Web/HTTP/Reference/Methods/POST
+	- https://developer.mozilla.org/fr/docs/Web/HTTP/Reference/Methods/DELETE
+- cgi : https://www.alimnaqvi.com/blog/webserv#cgi
+**AI's utilisation:** AI was mostly used to understand key concepts and to create parts of the testing site.
