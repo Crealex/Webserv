@@ -6,6 +6,11 @@
 
 volatile bool g_exit = false;
 
+/**
+ * @brief to handle the ctrl+c signal
+ * 
+ * @param signal 
+ */
 void signalHandler(int signal)
 {
 	(void)signal;
@@ -60,6 +65,11 @@ Loop::~Loop()
 // METHODS
 // PRIVATE
 
+/**
+ * @brief	allow the socket to be non blocking
+ * 
+ * @param socketFd	the socket to set as non blocking
+ */
 void Loop::_sockOptNonBlocking(int &socketFd)
 {
 	int opt;
@@ -69,6 +79,11 @@ void Loop::_sockOptNonBlocking(int &socketFd)
 	::setsockopt(socketFd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(int));
 }
 
+/**
+ * @brief	create the maop of servers with their hostname as keys
+ * 
+ * @param servers	the list of all the servers
+ */
 void Loop::_createMapServer(std::vector<Server> servers)
 {
 	int nbServers;
@@ -80,6 +95,13 @@ void Loop::_createMapServer(std::vector<Server> servers)
 	}
 }
 
+/**
+ * @brief	allows to listen on the given socket with params i/j
+ * 
+ * @param i			index of an elt in the Socket list
+ * @param j			index of an elt in the SocketData list
+ * @param sizeSockData	size of the SocketData list for one Socket elt
+ */
 void Loop::_listenSocket(size_t &i, size_t &j, size_t &sizeSockData)
 {
 	int checkFail;
@@ -95,6 +117,10 @@ void Loop::_listenSocket(size_t &i, size_t &j, size_t &sizeSockData)
 	}
 }
 
+/**
+ * @brief	allows to bind all the sockets
+ * 
+ */
 void Loop::_bindSocket()
 {
 	int checkFail;
@@ -130,6 +156,13 @@ void Loop::_bindSocket()
 	}
 }
 
+/**
+ * @brief	create a Socket elt that contains the hostname
+ * 			and the sockets that are created with the add/port associated with the hostname,
+ * 			then it calls the binding function (bindSocket())
+ * 
+ * @param srvs	list of all the servers
+ */
 void Loop::_createSocket(std::vector<Server> srvs)
 {
 	size_t sizeSrvs;
@@ -143,6 +176,10 @@ void Loop::_createSocket(std::vector<Server> srvs)
 	this->_bindSocket();
 }
 
+/**
+ * @brief	allow to display the helper with the command our webserv can take
+ * 
+ */
 void Loop::_displayHelp()
 {
 	std::cout << "----------------------------------------------------\n\
@@ -156,6 +193,10 @@ void Loop::_displayHelp()
 			  << std::endl;
 }
 
+/**
+ * @brief	allow to use commands in the terminal to enable some features (logger, quit, etc)
+ * 
+ */
 void Loop::_handleCmd()
 {
 	std::string in;
@@ -196,6 +237,11 @@ void Loop::_handleCmd()
 		std::cout << LIGHT_MAGENTA << CAT << RESET << std::endl;
 }
 
+/**
+ * @brief	close the client indicated with his index
+ * 
+ * @param idClient
+ */
 void Loop::_closeClients(int idClient)
 {
 	::epoll_ctl(this->_epoll.getEpollFd(), EPOLL_CTL_DEL, this->_clients[idClient]->getFdClient(), 0);
@@ -205,6 +251,10 @@ void Loop::_closeClients(int idClient)
 	this->_clients.erase(this->_clients.begin() + idClient);
 }
 
+/**
+ * @brief	check the inactivity time out of the clients and create a 408 error if it timed out
+ * 
+ */
 void Loop::_checkAllTimeout()
 {
 	int nbClients;
@@ -272,6 +322,11 @@ bool Loop::_isCGI(int fd, int &idClient)
 	return (false);
 }
 
+/**
+ * @brief	allow to accept the server socket to create a client socket and adding it to the epoll list
+ * 
+ * @param fd	the fd of the server socket we want to accept
+ */
 void Loop::_acceptClient(int fd)
 {
 	int fdClient;
@@ -305,6 +360,12 @@ void Loop::_acceptClient(int fd)
 	}
 }
 
+/**
+ * @brief	receive in a buffer the information and add it to the buffer of client
+ * 
+ * @param idClient 
+ * @return int	the number of bytes that receive received
+ */
 int Loop::_receive(int idClient)
 {
 	int sizeRecv;
@@ -322,6 +383,12 @@ int Loop::_receive(int idClient)
 	return (sizeRecv);
 }
 
+/**
+ * @brief	check the type of the body (length or chunked or no body) and check if the body is complete
+ * 			to set the request status as READY
+ * 
+ * @param idClient 
+ */
 void Loop::_checkBody(int idClient)
 {
 	size_t posCRLF;
@@ -343,6 +410,11 @@ void Loop::_checkBody(int idClient)
 	}
 }
 
+/**
+ * @brief	check if the timeout is set to start parsing the
+ * 
+ * @param idClient 
+ */
 void Loop::_parsingRequest(int idClient) // A REVOIR AVEC KILIAN
 {
 	if (this->_clients[idClient]->getRequest().getStatus() == SETTIMEOUT)
@@ -357,6 +429,15 @@ void Loop::_parsingRequest(int idClient) // A REVOIR AVEC KILIAN
 		this->_clients[idClient]->setRequestBody();
 }
 
+/**
+ * @brief	start the receive of the request
+ * 			set the timeout every time receive is triggered and receive a buffer to send to the parsing (parsingRequest())
+ * 			if the request is READY, the event for this fd is set to EPOLLOUT to send a response
+ * 
+ * @param idClient
+ * @return true		if there's something in the recv
+ * @return false	if there's nothing in the recv
+ */
 bool Loop::_receiveRequest(int idClient)
 {
 	int		recvStatus;
@@ -364,10 +445,10 @@ bool Loop::_receiveRequest(int idClient)
 	if (this->_clients[idClient]->getRequest().getStatus() == NOTHING)
 	{
 		this->_clients[idClient]->setTimeoutRequest();
-		this->_clients[idClient]->setTimeout();
 		this->_clients[idClient]->setHasRequest(true);
 		this->_clients[idClient]->settingRequestStatus(SETTIMEOUT);
 	}
+	this->_clients[idClient]->setTimeout();
 	recvStatus = this->_receive(idClient);
 	if (recvStatus == 0)
 		return (false);
@@ -379,6 +460,13 @@ bool Loop::_receiveRequest(int idClient)
 	return (true);
 }
 
+/**
+ * @brief	create the response by checking if the request is valid
+ * 			if the request is valid, check the method to create a response
+ * 			if not, create a response error with the good error code
+ * 
+ * @param idClient 
+ */
 void Loop::_createResponse(int idClient)
 {
 	Methods *met;
@@ -407,6 +495,11 @@ void Loop::_createResponse(int idClient)
 	this->_clients[idClient]->setTimeout();
 }
 
+/**
+ * @brief	if it is a timeout, create a response error with the error code 408
+ * 
+ * @param idClient 
+ */
 void Loop::_createTimeoutResponse(int idClient)
 {
 	try
@@ -423,6 +516,12 @@ void Loop::_createTimeoutResponse(int idClient)
 	}
 }
 
+/**
+ * @brief	send the adequate response
+ * 			if the response is too big, it replace the reponse with what is left of the response that was not sent
+ * 
+ * @param idClient 
+ */
 inline void Loop::_sendResponse(int idClient)
 {
 	int	sizeSend;
@@ -444,6 +543,10 @@ inline void Loop::_sendResponse(int idClient)
 	this->_clients[idClient]->setResponse(newResp);
 }
 
+/**
+ * @brief	print the address / port from where the server listen
+ * 
+ */
 void Loop::_printSocket()
 {
 	if (!SOCKET)
@@ -459,6 +562,11 @@ void Loop::_printSocket()
 	}
 }
 
+/**
+ * @brief	print the response that was sent
+ * 
+ * @param idClient 
+ */
 void Loop::_printSend(int idClient)
 {
 	std::stringstream respSS;
@@ -472,6 +580,11 @@ void Loop::_printSend(int idClient)
 
 // PUBLIC
 
+/**
+ * @brief	the loop of events that run the server
+ *			the main action are accept, recv and create the response then send it
+ * 
+ */
 void Loop::runLoop()
 {
 	int counter;

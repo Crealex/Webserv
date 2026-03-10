@@ -96,6 +96,12 @@ void Client::setFdClient(int newFd)
 	this->_fdSocket = newFd;
 }
 
+/**
+ * @brief	set the buffer to something if it's empty, append if it's not
+ * 
+ * @param newBuf 
+ * @param size 
+ */
 void Client::setBuf(const char *newBuf, int size)
 {
 	if (this->_buf.empty())
@@ -200,19 +206,6 @@ void Client::resetClient()
 void Client::checkRequest(Server server)
 {
 	this->_request.checkRequest(server.getMaxSize());
-}
-
-bool Client::checkTimeoutRequest()
-{
-	std::time_t timeout;
-
-	if (this->_hasRequest)
-	{
-		timeout = std::difftime(this->getTimeNow(), this->_timeRequest);
-		if (timeout > MAXTIMEREQUEST)
-			return (true);
-	}
-	return (false);
 }
 
 bool Client::checkTimeout()
