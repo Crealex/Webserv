@@ -1,14 +1,21 @@
-#include "../../includes/configStruct.hpp"
 #include "../../includes/colors.hpp"
+#include "../../includes/configStruct.hpp"
 #include "../../includes/printDebug.hpp"
 
-struct bracketData {
+struct bracketData
+{
 	bool inServer;
-	bool inLocation ;
+	bool inLocation;
 };
 
 typedef void (*directiveHandler)(std::string &line, server *srv, bracketData *brackets);
 
+/**
+ * @brief extract the keyword of a line
+ *
+ * @param line the current line
+ * @return the keyword extracted
+ */
 std::string extractDirective(std::string &line)
 {
 	std::stringstream ss(line);
@@ -18,16 +25,28 @@ std::string extractDirective(std::string &line)
 	return (ret);
 }
 
+/**
+ * @brief remove all white space before a line
+ *
+ * @param line tje current line
+ */
 void rmWhiteSpaces(std::string *line)
 {
 	if (line->empty())
-		return ;
+		return;
 	while (!line->empty() && (line->at(0) == '	' || line->at(0) == ' '))
 	{
 		line->erase(0, 1);
 	}
 }
 
+/**
+ * @brief Update if we are in bracket and which one
+ *
+ * @param line the current line
+ * @param srv the struct server
+ * @param A struct containing multiple boolean to know if we are in a bracket and which bracket
+ */
 static void updateLocationBracket(std::string &line, server *srv, bracketData *brackets)
 {
 	unsigned int locI;
@@ -40,6 +59,13 @@ static void updateLocationBracket(std::string &line, server *srv, bracketData *b
 	srv->locations.at(locI).path = line;
 }
 
+/**
+ * @brief Use to add a string to the struct server
+ *
+ * @param line the current line
+ * @param srv the struct server
+ * @param brackets A struct containing multiple boolean to know if we are in a bracket and which bracket
+ */
 static void addElem(std::string &line, server *srv, bracketData *brackets)
 {
 	std::string directive = extractDirective(line);
@@ -59,8 +85,7 @@ static void addElem(std::string &line, server *srv, bracketData *brackets)
 			srv->locations[LocI].uploadPath = line;
 		else
 			throw std::invalid_argument("Error with the line: " + line);
-	}
-	else if (brackets->inServer)
+	} else if (brackets->inServer)
 	{
 		if (directive == "hostname")
 			srv->hostname = line;
@@ -70,13 +95,19 @@ static void addElem(std::string &line, server *srv, bracketData *brackets)
 			srv->maxSize = line;
 		else
 			throw std::invalid_argument("Error with the line: " + line);
-	}
-	else 
+	} else
 	{
-			throw std::invalid_argument("Error with the line: " + line);
+		throw std::invalid_argument("Error with the line: " + line);
 	}
 }
 
+/**
+ * @brief Use to add a vector element to the struct
+ *
+ * @param line The current line
+ * @param srv The struct server
+ * @param brackets A struct containing multiple boolean to know if we are in a bracket and which bracket
+ */
 static void addVect(std::string &line, server *srv, bracketData *brackets)
 {
 	std::string directive = extractDirective(line);
@@ -88,9 +119,8 @@ static void addVect(std::string &line, server *srv, bracketData *brackets)
 			srv->locations[locI].cgi.push_back(line);
 		else
 			throw std::invalid_argument("Error, impossible to add this line: " + line);
-		
-	}
-	else if (brackets->inServer)
+
+	} else if (brackets->inServer)
 	{
 		if (directive == "listen")
 			srv->listen.push_back(line);
@@ -98,12 +128,16 @@ static void addVect(std::string &line, server *srv, bracketData *brackets)
 			srv->errorPages.push_back(line);
 		else
 			throw std::invalid_argument("Error, impossible to add this line: " + line);
-	}
-	else
-			throw std::invalid_argument("Error, impossible to add this line: " + line);
+	} else
+		throw std::invalid_argument("Error, impossible to add this line: " + line);
 }
 
-static std::map<std::string, directiveHandler > createDispatchTable()
+/**
+ * @brief declare the dispatch table to know wich function call depending the keyword
+ *
+ * @return
+ */
+static std::map<std::string, directiveHandler> createDispatchTable()
 {
 	std::map<std::string, directiveHandler> dispatchTable;
 
@@ -113,19 +147,22 @@ static std::map<std::string, directiveHandler > createDispatchTable()
 	dispatchTable["maxSize"] = &addElem;
 	dispatchTable["errorPage"] = &addVect;
 	dispatchTable["location"] = &updateLocationBracket;
-	dispatchTable["autoIndex"]= &addElem;
+	dispatchTable["autoIndex"] = &addElem;
 	dispatchTable["method"] = &addElem;
 	dispatchTable["index"] = &addElem;
 	dispatchTable["return"] = &addElem;
 	dispatchTable["cgi"] = &addVect;
 	dispatchTable["uploadPath"] = &addElem;
 	dispatchTable["path"] = &addElem;
-	
 
 	return (dispatchTable);
-
 }
 
+/**
+ * @brief Check if required element is empty
+ *
+ * @param srv The struct server
+ */
 void checkEmptyElem(server *srv)
 {
 	if (srv->maxSize.empty())
@@ -138,10 +175,18 @@ void checkEmptyElem(server *srv)
 		throw std::invalid_argument("Error, missing listen");
 	if (srv->hostname.empty())
 		throw std::invalid_argument("Error, missing hostname");
-	return ;
+	return;
 }
 
-
+/**
+ * @brief Add each raw line in the corresponding attributs in the server Struct
+ *
+ * @param line the current line
+ * @param srv The struct server
+ * @param brackets A struct with multiple bollean to know if we are in a bracket and whicj bracket
+ * @param cline The count of the line
+ * @param dispatchTable  The dispatch table to know wich function called depending on the line
+ */
 static void addLine(std::string line, server *srv, bracketData *brackets, std::size_t cline, std::map<std::string, directiveHandler> dispatchTable)
 {
 	std::map<std::string, directiveHandler>::iterator it = dispatchTable.begin();
@@ -149,10 +194,10 @@ static void addLine(std::string line, server *srv, bracketData *brackets, std::s
 	std::string directive = extractDirective(line);
 	std::stringstream numLine;
 
-	numLine	<< cline;
+	numLine << cline;
 	rmWhiteSpaces(&line);
 	if (line.empty())
-		return ;
+		return;
 	while (it != ite)
 	{
 		if (directive.find(it->first) < line.size())
@@ -161,7 +206,7 @@ static void addLine(std::string line, server *srv, bracketData *brackets, std::s
 				it->second(line, srv, brackets);
 			else
 				throw std::invalid_argument("Directive need to be in a server bracket! (at line: " + numLine.str());
-			return ;	
+			return;
 		}
 		if (directive.find("}") < line.size())
 		{
@@ -169,13 +214,20 @@ static void addLine(std::string line, server *srv, bracketData *brackets, std::s
 				brackets->inLocation = false;
 			else if (brackets->inServer)
 				brackets->inServer = false;
-			return ;
+			return;
 		}
 		it++;
 	}
 	throw std::invalid_argument("Invalid directive: " + directive);
 }
 
+/**
+ * @brief Create a struct server (define in configStruct.hpp) with all raw information line in the config file
+ *
+ * @param configFile A pointer on the isfstream of the configfile
+ * @param eof a boolean defining if it's the end of the file or not
+ * @return A complete struct server
+ */
 server createStruct(std::ifstream *configFile, bool *eof)
 {
 	server configStruct;
@@ -204,9 +256,14 @@ server createStruct(std::ifstream *configFile, bool *eof)
 	if (configFile->eof())
 		*eof = true;
 	return (configStruct);
-
 }
 
+/**
+ * @brief Create a vector of the struct server containing all raw informations of the servers define in the config file
+ *
+ * @param configPath The path to the config file
+ * @return A vector of the struct server (define in configStruct.hpp)
+ */
 std::vector<server> createVectStructSrv(std::string configPath)
 {
 	std::vector<server> vectSrv;
@@ -221,31 +278,11 @@ std::vector<server> createVectStructSrv(std::string configPath)
 	{
 		if (line == "server {")
 			vectSrv.push_back(createStruct(&configFile, &eof));
-		else if (line.empty()) {
+		else if (line.empty())
+		{
 			continue;
-		}
-		else
+		} else
 			throw std::invalid_argument("Error, invalid directive, excpected: server { , reality: " + line);
 	}
 	return (vectSrv);
 }
-
-
-//int main(void)
-//{
-//	try 
-//	{
-//		std::vector<server> testStruct = createVectStructSrv("../../newGood.conf");
-//		unsigned int i = 0;
-//		while (i < testStruct.size())
-//		{
-//			std::cout << BOLD << MAGENTA << "Server " << i << ":" << RESET << std::endl;
-//			printStructV2(testStruct.at(i));
-//			i++;
-//		}
-//	} 
-//	catch (std::exception &e) 
-//	{
-//		std::cout << RED << e.what() << RESET << std::endl;
-//	}
-//}

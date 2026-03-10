@@ -10,6 +10,12 @@ Post::Post(const Request &requ) : Methods(requ), _contentType(requ.getContentTyp
 {
 }
 
+/**
+ * @brief extract the string which serves as delimiter (boundary)
+ *
+ * @param contentType attributs content type of the request (which as the boundary inside)
+ * @return a string with the boundary extracted
+ */
 std::string extractBoundary(std::string contentType)
 {
 	std::string res;
@@ -25,6 +31,11 @@ std::string extractBoundary(std::string contentType)
 	return (res);
 }
 
+/**
+ * @brief handle the case of it's a file sended via a form
+ *
+ * @param boundary the delimiter between the start and the end of the file (in body)
+ */
 void Post::_handlePostFile(std::string boundary)
 {
 	std::size_t start;
@@ -41,11 +52,10 @@ void Post::_handlePostFile(std::string boundary)
  * @brief Build the http response when a request post is recieve
  *
  * @param srv The class Server
- * @return A string with the resopnse to send
+ * @return A string with the response to send
  */
 const std::string Post::createResponse(const Server &srv)
 {
-	//std::cout << MAGENTA << BOLD << "IN POST" << RESET << std::endl;
 	std::ofstream newFile;
 	Request dataError;
 	std::string path;
@@ -60,7 +70,6 @@ const std::string Post::createResponse(const Server &srv)
 	ResponseBuilder resp(dataError, this->_protocol);
 	target = findTarget(this->_location, srv.getLocations(), dataError, "POST", srv.getRoot());
 	path = srv.getRoot() + target;
-	//std::cout << "target in post: " << target << std::endl;
 	fileExist = (stat(path.c_str(), &statBuffer) == 0);
 	codeMess.first = 201;
 	codeMess.second = "Created";

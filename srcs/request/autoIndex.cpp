@@ -8,6 +8,12 @@
 #include <sys/stat.h>
 #include <vector>
 
+/**
+ * @brief fill the information of each file in a struct define in fileInfo.hpp
+ *
+ * @param path the path of the directory
+ * @return A vector of the struc fileInfo 
+ */
 std::vector<fileInfo> fillFileInfos(const std::string &path)
 {
 	std::vector<fileInfo> filesInfos;
@@ -30,8 +36,7 @@ std::vector<fileInfo> fillFileInfos(const std::string &path)
 			current.size = fileStat.st_size;
 			current.lastModified = fileStat.st_mtim.tv_sec;
 			current.isDir = S_ISDIR(fileStat.st_mode);
-		}
-		else 
+		} else
 		{
 			current.size = 0;
 			current.lastModified = 0;
@@ -44,7 +49,14 @@ std::vector<fileInfo> fillFileInfos(const std::string &path)
 	return (filesInfos);
 }
 
-static std::string buildPath(const std::string& location, const std::string& name)
+/**
+ * @brief Build the full path if a specific file
+ *
+ * @param location the path to the directory
+ * @param name the name of the specific file
+ * @return A string containing the full path
+ */
+static std::string buildPath(const std::string &location, const std::string &name)
 {
 	std::string ret;
 
@@ -62,12 +74,18 @@ static std::string buildPath(const std::string& location, const std::string& nam
 	return (ret);
 }
 
+/**
+ * @brief Create a table element for each file in the directory
+ *
+ * @param files A vector with each information of each files in the directory
+ * @param path The path of the directory
+ * @return A string containing the html element
+ */
 std::string listContents(std::vector<fileInfo> files, const std::string &path)
 {
 	std::stringstream ret;
 	char date[256];
 	tm *time;
-
 
 	ret << "<table>\n \
 			<tr>\n<th>Name</th>\n<th>Size</th>\n<th>Last Modified</th>\n";
@@ -75,18 +93,27 @@ std::string listContents(std::vector<fileInfo> files, const std::string &path)
 	{
 		time = std::localtime(&files.at(i).lastModified);
 		std::strftime(date, 100, "%d %b %Y %X GMT", time);
-		ret << "<tr><td><a href=\"" << buildPath(path, files.at(i).name) << "\">" << files.at(i).name << (files.at(i).isDir ? "/ " :  " ") << "</a></td><td>"<< files.at(i).size * 0.00125 << "kb</td><td>" << date << "</td></tr>\n";
+		ret << "<tr><td><a href=\"" << buildPath(path, files.at(i).name) << "\">" << files.at(i).name << (files.at(i).isDir ? "/ " : " ") << "</a></td><td>" << files.at(i).size * 0.00125 << "kb</td><td>" << date << "</td></tr>\n";
 	}
 	ret << "</table>\n";
 	return (ret.str());
 }
 
+/**
+ * @brief create the html file containing the page of the autoIndex 
+ *
+ * @param path The absolute path (with root) to the directory to display
+ * @param location The location like define in de config file (relative path) 
+ * @return a string containing the html file created
+ */
 std::string createHTMLAutoIndex(const std::string &path, const std::string &location)
 {
 	std::stringstream body;
 	std::vector<fileInfo> filesInfos;
 
 	filesInfos = fillFileInfos(path);
+	std::cout << "path: " << path << std::endl;
+	std::cout << "location: " << location << std::endl;
 	body << "<!doctype html>\n<html lang=\"en\">\n \
 			<head>\n \
 			<link href=\"/style.css\" rel=\"stylesheet\"/>\n \
@@ -94,8 +121,10 @@ std::string createHTMLAutoIndex(const std::string &path, const std::string &loca
 			<body>\n \
 			<main>\n \
 			<div class=\"intro\">\n \
-			<h2>Content list of " << location << "</h2>\n \
-			" << listContents(filesInfos, location) << "\
+			<h2>Content list of "
+		 << location << "</h2>\n \
+			"
+		 << listContents(filesInfos, location) << "\
 			</div>\n \
 			</main>\n \
 			</body>\n \

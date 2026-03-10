@@ -10,9 +10,11 @@ Delete::Delete(const Request &requ) : Methods(requ)
 }
 
 /**
- * @brief handling when there is no content
+ * @brief handle the case of there is no content to delete
  *
- * @param protocol
+ * @param protocol the communication protocol
+ * @param dataError If a responseError is throw, we need this class
+ * @return the complete response
  */
 static std::string noContent(std::string protocol, Request dataError)
 {
@@ -25,6 +27,12 @@ static std::string noContent(std::string protocol, Request dataError)
 	return (resp);
 }
 
+/**
+ * @brief transfer the file in a string ignoring the special character
+ *
+ * @param file The input stream of the file
+ * @return the file in a string
+ */
 static std::string createFileStr(std::ifstream &file)
 {
 	std::string fileStr;
