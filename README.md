@@ -26,4 +26,5 @@ Here are some resources we used :
 	- https://developer.mozilla.org/fr/docs/Web/HTTP/Reference/Methods/POST
 	- https://developer.mozilla.org/fr/docs/Web/HTTP/Reference/Methods/DELETE
 - cgi : https://www.alimnaqvi.com/blog/webserv#cgi
+
 **AI's utilisation:** AI was mostly used to understand key concepts and to create parts of the testing site.
