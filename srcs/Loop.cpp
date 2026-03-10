@@ -462,8 +462,8 @@ void Loop::_printSocket()
 void Loop::_printSend(int idClient)
 {
 	std::stringstream respSS;
-	std::stringstream requSS;
-	if (!SEND)
+
+	if (!this->_clients[idClient]->getIsSend())
 		return;
 	respSS << BOLD << "RESPONSE:\n"
 		   << RESET << this->_clients[idClient]->getResponse();
