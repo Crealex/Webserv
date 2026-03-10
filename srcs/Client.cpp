@@ -304,7 +304,7 @@ bool	Client::checkCGI(Server &serv)
 		// printf("diff = %f\n", diff);
 		if (diff > MAXTIMEREQUEST)
 		{
-			throw ResponseError(408, "Request timeout", _request);
+			throw ResponseError(504, "Gateway timeout", _request);
 		}
 	}
 	catch (ResponseError &e)
