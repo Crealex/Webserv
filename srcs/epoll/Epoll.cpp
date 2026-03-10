@@ -59,6 +59,11 @@ int	Epoll::createEpoll()
 	return (res);
 }
 
+/**
+ * @brief	add the socket server fds to the epoll list
+ * 
+ * @param sockets 
+ */
 void	Epoll::addEpollServer(std::vector<Socket *> &sockets)
 {
 	epoll_event	res;
@@ -90,6 +95,12 @@ void	Epoll::addEpollServer(std::vector<Socket *> &sockets)
 
 // PUBLIC
 
+/**
+ * @brief	add the fd of clients to the epoll list
+ * 
+ * @param fd 
+ * @param event 
+ */
 void	Epoll::addEpollFd(int fd, uint32_t event)
 {
 	epoll_event	temp;
