@@ -78,6 +78,10 @@ std::vector<std::string> Request::_acceptedType()
 	return v;
 }
 
+/**
+ * @brief clear and setup all variable in the creation state
+ * 
+ */
 void Request::reset()
 {
 	if (!_method.empty())
@@ -123,6 +127,10 @@ void Request::_parseAccept()
 	_accept = newAccept;
 }
 
+/**
+ * @brief check if the requirement for a GET request are fullfilled
+ * 
+ */
 void Request::_checkGet()
 {
 	if (_accept.empty())
@@ -153,6 +161,10 @@ void Request::_checkGet()
 	}
 }
 
+/**
+ * @brief check if the requirement for a POST request are fullfilled
+ * 
+ */
 void Request::_checkPost()
 {
 	int leave = 0;
@@ -188,6 +200,11 @@ void Request::_checkPost()
 	}
 }
 
+/**
+ * @brief check if the request contain error and create them
+ * 
+ * @param maxSize 
+ */
 void Request::checkRequest(const unsigned int maxSize)
 {
 	if (_error || _host.empty())
@@ -301,10 +318,9 @@ std::string Request::retBody(std::string &str)
 }
 
 /**
- * @brief Parse the client request and create a Request structure
+ * @brief Parse the buffer and extract the different element
  * 
  * @param buffer the client request
- * @return The created Request object
  */
 void Request::parseHeader(std::string &buffer)
 {
@@ -379,6 +395,11 @@ void Request::parseHeader(std::string &buffer)
 	}
 }
 
+/**
+ * @brief start the parsing of the buffer and set the status if it's done
+ * 
+ * @param buffer 
+ */
 void Request::startParse(std::string &buffer)
 {
 	size_t CRLF = buffer.find("\r\n\r\n");
@@ -399,10 +420,14 @@ void Request::startParse(std::string &buffer)
 
 void Request::parseBody(std::string &buffer)
 {
-	// std::cout << RED << "buffer = " << buffer << "pos = " << pos << RESET << std::endl;
 	_body = retBody(buffer);
 }
 
+/**
+ * @brief return a raw string that contain the different parsed element of the request
+ * 
+ * @return std::string 
+ */
 std::string	Request::getRawRequest() const
 {
 	std::stringstream rawSS;
