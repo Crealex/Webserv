@@ -218,6 +218,9 @@ void Request::checkRequest(const unsigned int maxSize)
 		throw ResponseError(400, "Bad request", *this);
 	}
 
+	if (_protocol == "HTTP/1.0")
+		_keepAlive = false;
+
 	_parseAccept();
 	if (_method == "POST")
 		_checkPost();
