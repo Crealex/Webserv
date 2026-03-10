@@ -44,6 +44,11 @@ bool CGI::subprocessExited()
 	return _exited;
 }
 
+/**
+ * @brief set the FD in non blocking
+ * 
+ * @param socketFd 
+ */
 void	CGI::_sockOptNonBlocking(int &socketFd)
 {
 		int	opt;
@@ -53,6 +58,12 @@ void	CGI::_sockOptNonBlocking(int &socketFd)
 		::setsockopt(socketFd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(int));
 }
 
+/**
+ * @brief create the enironnement variable for the subprocess
+ * 
+ * @param serv 
+ * @param req 
+ */
 void CGI::setEnvp(Server &serv, Request &req)
 {
 	std::string name;
@@ -75,6 +86,11 @@ void CGI::setEnvp(Server &serv, Request &req)
 	_env.setEnv(filename, name, req);
 }
 
+/**
+ * @brief construct the different FD to communicate with the subprocess
+ * and set them in non blocking mode
+ * 
+ */
 void CGI::constructFD()
 {
 	if (::pipe(_pipeFromCGI) != 0)
@@ -93,6 +109,10 @@ void CGI::constructFD()
 	_sockOptNonBlocking(_pipeToCGI[1]);
 }
 
+/**
+ * @brief kill the subprocess and reset the statue of the CGI
+ * 
+ */
 void CGI::reset()
 {
 	if (_started && !_exited)
@@ -106,6 +126,10 @@ void CGI::reset()
 	closeAllFd();
 }
 
+/**
+ * @brief close all open FD
+ * 
+ */
 void CGI::closeAllFd()
 {
 	if (_pipeFromCGI[0] != -1)
@@ -130,6 +154,12 @@ void CGI::closeAllFd()
 	}
 }
 
+/**
+ * @brief start the subprocess 
+ * 
+ * @param path path to the CGI file
+ * @param interpreter interpreter for the CGI
+ */
 void CGI::startSubprocess(const std::string path, const std::string interpreter)
 {
 	int pid = ::fork();
@@ -169,6 +199,11 @@ void CGI::startSubprocess(const std::string path, const std::string interpreter)
 	}
 }
 
+/**
+ * @brief send the body to the CGI subprocess
+ * 
+ * @param body 
+ */
 void CGI::sendBody(std::string body)
 {
 	if (_started && !body.empty())
@@ -179,6 +214,11 @@ void CGI::sendBody(std::string body)
 	}
 }
 
+/**
+ * @brief get the Response of the CGI subprocess
+ * 
+ * @return std::string 
+ */
 std::string CGI::getResponse()
 {
 	std::string ret;
@@ -200,6 +240,11 @@ std::string CGI::getResponse()
 	return ret;
 }
 
+/**
+ * @brief check if the subprocess finished and if it finished correctly, in that case create a Response error
+ * 
+ * @param req 
+ */
 void CGI::checkSubprocess(Request &req)
 {
 	if (_started)
@@ -249,6 +294,14 @@ bool CGI::_cmpExt(std::string ext, std::map<std::string, std::string> map)
 	return false;
 }
 
+/**
+ * @brief check if the given path is a CGI file supported by the server
+ * 
+ * @param path 
+ * @param server 
+ * @return true 
+ * @return false 
+ */
 bool CGI::isCGI(std::string path, Server &server)
 {
 	std::string ext = _retExtension(path);
