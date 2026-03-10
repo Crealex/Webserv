@@ -12,6 +12,12 @@ ResponseError::~ResponseError() _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW
 {
 }
 
+/**
+ * @brief transfer the content of file in a string
+ *
+ * @param file the input stream of the file
+ * @return A string containing the content of the file
+ */
 std::string createFileStr(std::ifstream &file)
 {
 	std::string fileStr;

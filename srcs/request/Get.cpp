@@ -14,8 +14,8 @@ Get::Get(const Request &requ) : Methods(requ), _userAgent(requ.getUserAgent()), 
 /**
  * @brief Create un string with de content of the file
  *
- * @param file
- * @return
+ * @param file The input stream of the file
+ * @return a string containing the content of the file
  */
 static std::string createFileStr(std::ifstream &file)
 {
@@ -76,6 +76,12 @@ std::pair<unsigned int, std::string> Get::_findCodeMess(const Server &srv)
 	return (ret);
 }
 
+/**
+ * @brief check if autoIndex is allowed
+ *
+ * @param srv the classe Server
+ * @return true if is allowed, otherwise false
+ */
 bool Get::_isAllowedAutoIndex(const Server &srv)
 {
 	int bestMatch = findBestMatchingLocation(this->_location, srv.getLocations());
