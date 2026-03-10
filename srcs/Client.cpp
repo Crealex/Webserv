@@ -1,5 +1,6 @@
 #include "../includes/Client.hpp"
 #include "../includes/requests/Method.hpp"
+#include "../includes/Logger.hpp"
 
 // CONSTRUCTOR & DESTRUCTOR
 Client::Client()
@@ -22,10 +23,13 @@ Client::~Client()
 	std::strftime(display, sizeof(display), "Date: %a, %d.%m.%Y - %X", timeDisplay);
 	_CGI.reset();
 
-	std::cout << MAGENTA;
-	std::cout << "Close of client with fd : " << this->_fdSocket;
-	std::cout << "\t" << display;
-	std::cout << RESET << std::endl;
+	if (Logger::getIsEnabled())
+	{
+		std::cout << MAGENTA;
+		std::cout << "Close of client with fd : " << this->_fdSocket;
+		std::cout << "\t" << display;
+		std::cout << RESET << std::endl;
+	}
 	if (this->_fdSocket > 0)
 		close(this->_fdSocket);
 }
