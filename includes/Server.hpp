@@ -15,14 +15,14 @@ class Server
 	std::string							_hostname;
 	std::vector<addPort_t>				_addressPort;	// port (maybe can be a array)
 	std::string							_root;
-	unsigned int						_maxSize;		// max size body's request
+	std::string							_maxSize;		// max size body's request
 	std::map<unsigned int, std::string>	_errorPage;		// all the error codes
 	std::vector<Location>				_locations;
 	std::pair<std::string, std::string>	_cgiHandler;
 
 	std::vector<std::string>	_getValue(std::string data);
 	bool						_isValidDigit(std::string str);
-	unsigned int				_checkDigitValue(std::string str, bool isMaxSize);
+	unsigned int				_checkDigitValue(std::string str);
 
 	std::string	_parseHostname(std::string data);
 
@@ -36,7 +36,7 @@ class Server
 	std::map<unsigned int, std::string>	_parseErrorPage(std::vector<std::string> data);
 
 	void			_checkMetricPrefix(std::vector<std::string> &infos);
-	unsigned int	_parseMaxSize(std::string data);
+	std::string	_parseMaxSize(std::string data);
 
 	void	_parseElt(struct server data);
 
@@ -53,7 +53,7 @@ class Server
 	std::string const							&getHostname() const;
 	std::vector<addPort_t> const				&getAddressPort() const;
 	std::string const							&getRoot() const;
-	unsigned int const							&getMaxSize() const;
+	std::string const							&getMaxSize() const;
 	std::map<unsigned int, std::string> const	&getErrorPage() const;
 	std::vector<Location> const					&getLocations() const;
 	std::pair<std::string, std::string>	const	&getCgiHandler() const;

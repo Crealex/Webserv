@@ -51,7 +51,7 @@ std::string const	&Server::getRoot() const
 	return (this->_root);
 }
 
-unsigned int const &Server::getMaxSize() const
+std::string const &Server::getMaxSize() const
 {
 	return (this->_maxSize);
 }
@@ -96,7 +96,7 @@ bool	Server::_isValidDigit(std::string str)
 	return (true);
 }
 
-unsigned int	Server::_checkDigitValue(std::string str, bool isMaxSize)
+unsigned int	Server::_checkDigitValue(std::string str)
 {
 	unsigned int		res;
 	size_t				firstDigitNotZero;
@@ -118,8 +118,8 @@ unsigned int	Server::_checkDigitValue(std::string str, bool isMaxSize)
 	if (temp.size() > 10 || (temp.size() == 10 && temp.compare("4294967295") > 0))
 	{
 		temp = "4294967295";
-		if (isMaxSize)
-			std::cout << GREEN << "Max size value too high : max size set to 4294967295" << RESET << std::endl;
+		// if (isMaxSize)
+		// 	std::cout << GREEN << "Max size value too high : max size set to 4294967295" << RESET << std::endl;
 	}
 	ss << temp;
 	ss >> res;
@@ -228,7 +228,7 @@ std::vector<addPort_t>	Server::_parseAddressPort(std::vector<std::string> data)
 		if (colon == infos[1].size() - 1)
 			port = 4242;
 		else
-			port = this->_checkDigitValue(infos[1].substr(colon + 1, infos[1].size() - colon - 1), false);
+			port = this->_checkDigitValue(infos[1].substr(colon + 1, infos[1].size() - colon - 1));
 		if (port > 65535)
 			throw std::invalid_argument(RED "Error : invalid port value" RESET);
 		if (!this->_isDuplicate(address, port, result))
@@ -251,7 +251,7 @@ std::map<unsigned int, std::string>	Server::_parseErrorPage(std::vector<std::str
 		infos = this->_getValue(data[i]);
 		if (infos.size() != 3)
 			throw std::invalid_argument(RED "Error : missing path / code or multiple path / code for error pages" RESET);
-		code = this->_checkDigitValue(infos[1], false);
+		code = this->_checkDigitValue(infos[1]);
 		if (code < 100 || code > 599)
 			throw std::invalid_argument(RED "Error : invalid code error" RESET);
 		it = result.find(code);
@@ -274,18 +274,21 @@ void	Server::_checkMetricPrefix(std::vector<std::string> &infos)
 		throw std::invalid_argument(RED "Error : invalid max size, invalid metric prefix" RESET);
 	if (infos[2] == "k" || infos[2] == "K")
 		infos[1].append("000");
-	if (infos[2] == "m" || infos[2] == "M")
+	else if (infos[2] == "m" || infos[2] == "M")
 		infos[1].append("000000");
-	if (infos[2] == "g" || infos[2] == "G")
+	else if (infos[2] == "g" || infos[2] == "G")
 		infos[1].append("000000000");
+	else if (infos[2] == "t" || infos[2] == "T")
+		infos[1].append("000000000000");
 }
 
-unsigned int	Server::_parseMaxSize(std::string data)
+std::string	Server::_parseMaxSize(std::string data)
 {
 	std::vector<std::string>	infos;
 	int							sizeInfos;
+	size_t						firstDigitNotZero;
+	std::string					allDigitsNotZero;
 	std::string					temp;
-	unsigned int				result;
 
 	infos = this->_getValue(data);
 	sizeInfos = infos.size();
@@ -293,8 +296,20 @@ unsigned int	Server::_parseMaxSize(std::string data)
 		throw std::invalid_argument(RED "Error : invalid max size" RESET);
 	if (sizeInfos == 3)
 		this->_checkMetricPrefix(infos);
-	result = this->_checkDigitValue(infos[1], true);
-	return (result);
+
+	if (this->_isValidDigit(infos[1]))
+		throw std::invalid_argument(RED "Error : invalid digital value : " + infos[1] + RESET);
+
+	allDigitsNotZero = "123456789";
+	firstDigitNotZero = infos[1].find_first_of(allDigitsNotZero.c_str(), 0);
+	if (firstDigitNotZero == std::string::npos)
+		return ("0");
+	else if (firstDigitNotZero > 0)
+		temp = infos[1].substr(firstDigitNotZero, infos[1].size() - firstDigitNotZero);
+	else
+		temp = infos[1];
+	// isValid = this->_checkDigitValue(infos[1], true);
+	return (infos[1]);
 }
 
 void	Server::_parseElt(struct server data)

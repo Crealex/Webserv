@@ -9,6 +9,7 @@ Client::Client()
 	this->_timeRequest = this->getTimeNow();
 	this->_isSend = false;
 	this->_hasRequest = false;
+	this->_FileRequest = -1;
 }
 
 Client::~Client()
@@ -81,6 +82,11 @@ bool const			&Client::getHasRequest() const
 	return (this->_hasRequest);
 }
 
+int const	&Client::getFdRequest() const
+{
+	return (this->_FileRequest);
+}
+
 // SETTERS
 void	Client::setHostname(std::string newHostname)
 {
@@ -142,6 +148,11 @@ void	Client::setHasRequest(bool newHasRequest)
 	this->_hasRequest = newHasRequest;
 }
 
+void	Client::setFileRequest(int newFile)
+{
+	this->_FileRequest = newFile;
+}
+
 //METHODS
 
 // PRIVATE
@@ -192,6 +203,7 @@ void	Client::resetClient()
 		this->_response.clear();
 	this->_isSend = false;
 	this->_hasRequest = false;
+	this->_FileRequest = -1;
 }
 
 void	Client::checkRequest(Server server)

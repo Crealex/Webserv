@@ -26,6 +26,7 @@ class Client
 		std::time_t	_time;
 		bool		_isSend;
 		bool		_hasRequest;
+		int			_FileRequest;
 
 		std::string	_intToIp();
 		int			_getSizeBody();
@@ -45,9 +46,10 @@ class Client
 		std::string const	&getResponse() const;
 		bool const			&getIsSend() const;
 		bool const			&getHasRequest() const;
+		int const			&getFdRequest() const;
 
 		void	setHostname(std::string newHostname);
-		void	setFdClient(int newFd);
+		void	setFileClient(int newFd);
 		void	setBuf(const char *newBuf, int size);
 		void	setSockadd(sockaddr_in newSockadd);
 		void	startingParseRequest();
@@ -57,6 +59,7 @@ class Client
 		void	setTimeout();
 		void	setIsSend(bool newIsSend);
 		void	setHasRequest(bool newHasRequest);
+		void	setFileRequest(int newFd);
 		
 		std::time_t	getTimeNow();
 

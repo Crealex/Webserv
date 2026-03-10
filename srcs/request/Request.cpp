@@ -4,7 +4,7 @@
 
 std::vector<std::string> Request::_v = Request::_acceptedType();
 
-Request::Request() : _ContentLength(0), _bodySize(0), _keepAlive(false), _error(false), _firstLine(false), _header(false), _status(NOTHING)
+Request::Request() : _ContentLength(0), _bodySize("0"), _keepAlive(false), _error(false), _firstLine(false), _header(false), _status(NOTHING)
 {
 }
 
@@ -188,7 +188,7 @@ void Request::_checkPost()
 	}
 }
 
-void Request::checkRequest(const unsigned int maxSize)
+void Request::checkRequest(const std::string maxSize)
 {
 	if (_error || _host.empty())
 	{
@@ -284,16 +284,29 @@ void Request::setFirstLine(std::string &line)
  */
 std::string Request::retBody(std::string &str)
 {
-	std::stringstream target(str);
+	std::stringstream	target(str);
+	std::stringstream	temp;
+	unsigned int		sizeOfBody;
 
 	target.seekg(0, std::ios::end);
 	_bodySize = target.tellg();
 	target.seekg(0, std::ios::beg);
-	char* buffer = new char[_bodySize];
-	target.read(buffer, _bodySize);
-	std::string file(buffer, _bodySize);
-	delete[] buffer;
+	if (_bodySize > "4294967295")
+	{
+		std::fstream	temp("temp.txt");
+		temp = _file;
+		_file << 
 
+	}
+	else
+	{
+		temp << _bodySize;
+		temp >> sizeOfBody;
+		char* buffer = new char[sizeOfBody];
+		target.read(buffer, sizeOfBody);
+		std::string file(buffer, sizeOfBody);
+		delete[] buffer;
+	}
 	return file;
 }
 
@@ -502,6 +515,11 @@ enum statusType	Request::getStatus() const
 	return _status;
 }
 
+int	Request::getFile() const
+{
+	return _file;
+}
+
 void	Request::setkeepAlive(bool b)
 {
 	_keepAlive = b;
@@ -560,4 +578,9 @@ void	Request::setContentLength(unsigned int n)
 void	Request::setStatus(enum statusType newStatus)
 {
 	_status = newStatus;
+}
+
+void	Request::setFile(int newFile)
+{
+	_file = newFile;
 }

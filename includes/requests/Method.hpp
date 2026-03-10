@@ -41,8 +41,8 @@ int			findBestMatchingLocation(const std::string& path, const std::vector<Locati
 std::string	findTarget(std::string locPath, std::vector<Location> loc, Request dataError, std::string method, std::string root);
 bool		isDir(const std::string &path, Request dataError);
 
-Methods*	createMethod(std::string buffer, size_t maxSize, bool &ret);
-Request		createRequest(std::string buffer, size_t maxSize);
+Methods*	createMethod(std::string buffer, std::string maxSize, bool &ret);
+Request		createRequest(std::string buffer, std::string maxSize);
 
 // autoIndex.cpp
 std::string createHTMLAutoIndex(const std::string &path, const std::string &location);

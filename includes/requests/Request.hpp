@@ -34,12 +34,13 @@ class Request {
 		std::string		_URI;
 		std::string		_query;
 		std::string		_body;
-		size_t			_bodySize;
+		std::string		_bodySize;
 		bool			_keepAlive;
 		bool			_error;
 		bool			_firstLine;
 		bool			_header;
 		enum statusType	_status;
+		std::fstream	_file;
 
 		void	_parseAccept();
 		void	_checkPost();
@@ -60,7 +61,7 @@ class Request {
 		std::string	getRawRequest() const;
 		void		parseBody(std::string &buffer);
 		void		startParse(std::string &buffer);
-		void		checkRequest(const unsigned int maxSize);
+		void		checkRequest(const std::string maxSize);
 		void		reset();
 
 		bool			getkeepAlive() const;
@@ -79,6 +80,7 @@ class Request {
 		unsigned int	getContentLength() const;
 		std::string		getStrContentLength() const;
 		enum statusType	getStatus() const;
+		int				getFile() const;
 
 		void	setkeepAlive(bool b);
 		void	setMethod(std::string str);
@@ -92,6 +94,7 @@ class Request {
 		void	setBody(std::string str);
 		void	setContentLength(unsigned int n);	
 		void	setStatus(enum statusType newStatus);	
+		void	setFile(int newFile);
 };
 
 #endif
