@@ -385,13 +385,11 @@ void Request::startParse(std::string &buffer)
 
 	if (CRLF == std::string::npos)
 	{
-		printf(GREEN "no CRLF\n" RESET);
 		parseHeader(buffer);
 		buffer.clear();
 	}
 	else
 	{
-		printf(GREEN "CRLF\n" RESET);
 		std::string buff = buffer.substr(0, CRLF);
 		parseHeader(buffer);
 		buffer.erase(0, CRLF + 4);
