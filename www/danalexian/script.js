@@ -65,9 +65,16 @@ document.querySelectorAll(".card button").forEach((btn) =>
       resultDiv.textContent = "Méthode non valide";
       return;
     }
+	const status = response.status;
     console.log(response);
-    const body = await response.text();
-    const status = response.status;
+	let body;
+	if (status >= 200 && status < 300)
+	{
+		if (method === "POST" || method === "POSTBIGFILE" || method === "POSTFILE")
+			body = "post succeed"
+		else body = await response.text();
+	}
+	else body = await response.text();
     const length = response.headers.get("content-length");
     const type = response.headers.get("content-type");
     const date = response.headers.get("date");

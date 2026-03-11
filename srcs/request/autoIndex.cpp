@@ -12,7 +12,7 @@
  * @brief fill the information of each file in a struct define in fileInfo.hpp
  *
  * @param path the path of the directory
- * @return A vector of the struc fileInfo 
+ * @return A vector of the struc fileInfo
  */
 std::vector<fileInfo> fillFileInfos(const std::string &path)
 {
@@ -100,10 +100,10 @@ std::string listContents(std::vector<fileInfo> files, const std::string &path)
 }
 
 /**
- * @brief create the html file containing the page of the autoIndex 
+ * @brief create the html file containing the page of the autoIndex
  *
  * @param path The absolute path (with root) to the directory to display
- * @param location The location like define in de config file (relative path) 
+ * @param location The location like define in de config file (relative path)
  * @return a string containing the html file created
  */
 std::string createHTMLAutoIndex(const std::string &path, const std::string &location)
@@ -112,8 +112,6 @@ std::string createHTMLAutoIndex(const std::string &path, const std::string &loca
 	std::vector<fileInfo> filesInfos;
 
 	filesInfos = fillFileInfos(path);
-	std::cout << "path: " << path << std::endl;
-	std::cout << "location: " << location << std::endl;
 	body << "<!doctype html>\n<html lang=\"en\">\n \
 			<head>\n \
 			<link href=\"/style.css\" rel=\"stylesheet\"/>\n \
