@@ -302,6 +302,7 @@ bool Client::checkCGI(Server &serv)
 	} catch (ResponseError &e)
 	{
 		_response = e.createResponse(serv);
+		this->settingKeepAlive(false);
 		return true;
 	}
 	if (_CGI.subprocessExited())

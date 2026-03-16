@@ -115,11 +115,11 @@ unsigned int	Server::_checkDigitValue(std::string str, bool isMaxSize)
 		temp = str.substr(firstDigitNotZero, str.size() - firstDigitNotZero);
 	else
 		temp = str;
-	if (temp.size() > 10 || (temp.size() == 10 && temp.compare("4294967295") > 0))
+	if (temp.size() > 9 || (temp.size() == 9 && temp.compare("900000000") > 0))
 	{
-		temp = "4294967295";
+		temp = "900000000";
 		if (isMaxSize)
-			std::cout << GREEN << "Max size value too high : max size set to 4294967295" << RESET << std::endl;
+			std::cout << GREEN << "Max size value too high : max size set to 900000000" << RESET << std::endl;
 	}
 	ss << temp;
 	ss >> res;

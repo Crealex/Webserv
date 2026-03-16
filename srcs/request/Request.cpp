@@ -344,8 +344,8 @@ void Request::parseHeader(std::string &buffer)
 
 		if (line.find(": ") == std::string::npos)
 		{
-			std::cout << BLUE << "double dot" << RESET << std::endl;
 			_error = true;
+			break ;
 		}
 		std::stringstream ss(line);
 		std::string word;
@@ -357,6 +357,7 @@ void Request::parseHeader(std::string &buffer)
 			if (!(ss >> _ContentLength))
 			{
 				_error = true;
+				break ;
 			}
 			continue ;
 		}
@@ -373,6 +374,7 @@ void Request::parseHeader(std::string &buffer)
 			if (!strPtr->empty())
 			{
 				_error = true;
+				break ;
 			}
 			std::string str;
 			while (ss >> word)
@@ -403,7 +405,6 @@ void Request::parseHeader(std::string &buffer)
 void Request::startParse(std::string &buffer)
 {
 	size_t CRLF = buffer.find("\r\n\r\n");
-
 	if (CRLF == std::string::npos)
 	{
 		parseHeader(buffer);

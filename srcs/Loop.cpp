@@ -400,6 +400,20 @@ void Loop::_checkBody(int idClient)
 	}
 	else if (this->_clients[idClient]->getRequest().getTranferEncoding().find("chunked") != std::string::npos)
 	{
+		try
+		{
+			if (this->_clients[idClient]->getBuf().size() > this->_servers[this->_clients[idClient]->getHostname()].getMaxSize())
+			{
+				throw ResponseError(413, "Content too large", this->_clients[idClient]->getRequest());
+			}
+		}
+		catch(ResponseError& e)
+		{
+			this->_clients[idClient]->setResponse(e.createResponse(this->_servers.at(this->_clients[idClient]->getHostname())));
+			this->_clients[idClient]->settingKeepAlive(false);
+			this->_clients[idClient]->settingRequestStatus(READY);
+			return ;
+		}
 		posCRLF = this->_clients[idClient]->getBuf().find("\r\n\r\n");
 		if (posCRLF != std::string::npos)
 			this->_clients[idClient]->settingRequestStatus(READY);
@@ -423,6 +437,18 @@ void Loop::_parsingRequest(int idClient) // A REVOIR AVEC KILIAN
 	}
 	if (this->_clients[idClient]->getRequest().getStatus() == PARSINGHEADERDONE)
 	{
+		try
+		{
+			if (this->_clients[idClient]->getRequest().getContentLength() > this->_servers[this->_clients[idClient]->getHostname()].getMaxSize())
+				throw ResponseError(413, "Content too large", this->_clients[idClient]->getRequest());
+		}
+		catch(ResponseError& e)
+		{
+			this->_clients[idClient]->setResponse(e.createResponse(this->_servers.at(this->_clients[idClient]->getHostname())));
+			this->_clients[idClient]->settingKeepAlive(false);
+			this->_clients[idClient]->settingRequestStatus(READY);
+			return ;
+		}
 		this->_checkBody(idClient);
 	}
 	if (this->_clients[idClient]->getRequest().getStatus() == READY)
@@ -473,25 +499,28 @@ void Loop::_createResponse(int idClient)
 	met = NULL;
 	std::string method = this->_clients[idClient]->getRequest().getMethod();
 
-	try
+	if (this->_clients[idClient]->getResponse().empty())
 	{
-		this->_clients[idClient]->checkRequest(this->_servers.at(this->_clients[idClient]->getHostname()));
-		if (method == "GET")
-			met = new Get(this->_clients[idClient]->getRequest());
-		else if (method == "POST")
-			met = new Post(this->_clients[idClient]->getRequest());
-		else
-			met = new Delete(this->_clients[idClient]->getRequest());
+		try
+		{
+			this->_clients[idClient]->checkRequest(this->_servers.at(this->_clients[idClient]->getHostname()));
+			if (method == "GET")
+				met = new Get(this->_clients[idClient]->getRequest());
+			else if (method == "POST")
+				met = new Post(this->_clients[idClient]->getRequest());
+			else
+				met = new Delete(this->_clients[idClient]->getRequest());
 
-		this->_clients[idClient]->setResponse(met->createResponse(this->_servers.at(this->_clients[idClient]->getHostname())));
-		delete met;
-	} catch (ResponseError &e)
-	{
-		this->_clients[idClient]->setResponse(e.createResponse(this->_servers.at(this->_clients[idClient]->getHostname())));
-		if (met)
+			this->_clients[idClient]->setResponse(met->createResponse(this->_servers.at(this->_clients[idClient]->getHostname())));
 			delete met;
+		} catch (ResponseError &e)
+		{
+			this->_clients[idClient]->setResponse(e.createResponse(this->_servers.at(this->_clients[idClient]->getHostname())));
+			this->_clients[idClient]->settingKeepAlive(false);
+			if (met)
+				delete met;
+		}
 	}
-	// this->_createTimeoutResponse(idClient);
 	this->_clients[idClient]->setTimeout();
 }
 
@@ -534,6 +563,7 @@ inline void Loop::_sendResponse(int idClient)
 		this->_clients[idClient]->getResponse().c_str(),
 		this->_clients[idClient]->getResponse().size(), MSG_NOSIGNAL);
 
+	this->_clients[idClient]->setTimeout();
 	if (sizeSend >= sizeResp)
 	{
 		this->_clients[idClient]->setIsSend(true);

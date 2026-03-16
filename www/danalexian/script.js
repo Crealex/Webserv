@@ -1,4 +1,4 @@
-function uploadFile() {
+async function uploadFile() {
   const input = document.querySelector("#inputFile");
   const form = new FormData();
   if (!input.files[0]) {
@@ -9,10 +9,11 @@ function uploadFile() {
     document.querySelector(".errDisplay").innerHTML = "";
   }
   form.append("file", input.files[0]);
-  return fetch("uploads/" + input.files[0].name, {
+  let response = await fetch("uploads/" + input.files[0].name, {
     method: "POST",
     body: form,
   });
+  return response;
 }
 
 function generateBigFile(sizeInKo) {
